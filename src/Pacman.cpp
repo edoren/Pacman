@@ -2,16 +2,16 @@
 
 // Constructor
 Pacman::Pacman() : lastPos(), timer(), clock() {
-	Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png");
-	this->setTexture(this->texture);
-	this->setTextureRect(sf::IntRect(43, 3, 14, 14));
-	this->setPosition(sf::Vector2f(95, 205));
+    Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png");
+    this->setTexture(this->texture);
+    this->setTextureRect(sf::IntRect(43, 3, 14, 14));
+    this->setPosition(sf::Vector2f(95, 205));
 
-	this->mouth = true;
-	this->setDirection(SPRITE_LEFT);
-	this->animation = true;
-	this->setFrame(0);
-	this->setSpeed(sf::Vector2f(-1,0));
+    this->mouth = true;
+    this->setDirection(SPRITE_LEFT);
+    this->animation = true;
+    this->setFrame(0);
+    this->setSpeed(sf::Vector2f(-1,0));
 }
 
 //Destructor
@@ -19,31 +19,31 @@ Pacman::~Pacman() {}
 
 
 sf::Vector2f Pacman::getLastPos() {
-	return this->lastPos;
+    return this->lastPos;
 }
 
 bool Pacman::getAnimation() {
-	return this->animation;
+    return this->animation;
 }
 
 bool Pacman::getMouthState() {
-	return this->mouth;
+    return this->mouth;
 }
 
 void Pacman::setMouthState(bool mouth) {
-	this->mouth = mouth;
+    this->mouth = mouth;
 }
 
 void Pacman::setLastPos(sf::Vector2f lastPos) {
-	this->lastPos = lastPos;
+    this->lastPos = lastPos;
 }
 
 void Pacman::setAnimation(bool animation) {
-	this->animation = animation;
+    this->animation = animation;
 }
 
 void Pacman::startAnimation() {
-	// Animate pacman
+    // Animate pacman
     if (this->getAnimation()){
         timer = this->clock.getElapsedTime();
         if(timer.asSeconds() > 0.04f)  {

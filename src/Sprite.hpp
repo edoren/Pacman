@@ -15,24 +15,23 @@
 
 class Sprite : public sf::Sprite {
 private:
-	sf::Vector2f speed;
-	sf::Vector2f position;
-	int direction;
+    sf::Vector2f speed;
+    int direction;
     int frame;
 
 public:
-	Sprite();
-	~Sprite();
+    Sprite();
+    ~Sprite();
 
-	sf::Vector2f getSpeed();
-	int getFrame();
-	int getDirection();
-	sf::Texture getSpriteTexture();
+    sf::Vector2f getSpeed();
+    int getFrame();
+    int getDirection();
+    sf::Texture getSpriteTexture();
 
 
-	void setSpeed(sf::Vector2f speed);
-	void setFrame(int frame);
-	void setDirection(int direction);
+    void setSpeed(sf::Vector2f speed);
+    void setFrame(int frame);
+    void setDirection(int direction);
 };
 
 
