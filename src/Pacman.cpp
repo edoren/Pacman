@@ -2,7 +2,7 @@
 
 // Constructor
 Pacman::Pacman() : lastPos() {
-	Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites2.png");
+	Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png");
 	this->setTexture(this->texture);
 	this->setTextureRect(sf::IntRect(43, 3, 14, 14));
 	this->setPosition(sf::Vector2f(95, 205));
