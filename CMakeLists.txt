@@ -8,7 +8,7 @@ project(Pacman)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 # compiler language
-add_definitions(-std=c++11)
+set (CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wall -O0")
 
 # add the subdirectories
 add_subdirectory(src)
