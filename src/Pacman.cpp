@@ -1,7 +1,7 @@
 #include "Pacman.hpp"
 
 // Constructor
-Pacman::Pacman() : timer(), clock() {
+Pacman::Pacman() : clock(), timer() {
     Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png");
     this->setTexture(this->texture);
     this->setTextureRect(sf::IntRect(43, 3, 14, 14));
@@ -11,7 +11,7 @@ Pacman::Pacman() : timer(), clock() {
     this->animation = true;
     this->keypressed = KEYBOARD_NULL;
     this->lastPos = this->getPosition();
-    
+
     this->setDirection(SPRITE_LEFT);
     this->setFrame(0);
     this->setSpeed(sf::Vector2f(-1,0));
