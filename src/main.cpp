@@ -14,6 +14,8 @@ int main()
     Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png");
     sf::Sprite background(BGtexture);
 
+    window.setFramerateLimit(60);
+
     // Load pacman
     Pacman pacman;
     
