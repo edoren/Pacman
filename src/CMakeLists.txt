@@ -1,19 +1,23 @@
+
+set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(HEADER_DIR ${PROJECT_SOURCE_DIR}/header)
+
 # Executable name
 set(EXECUTABLE_NAME pacman)
 
 # set pacman sources
 set(PACMAN_SRC
-	main.cpp
-	Sprite.cpp
-	Pacman.cpp
-	Collision.cpp
+	${SRC_DIR}/main.cpp
+	${SRC_DIR}/Sprite.cpp
+	${SRC_DIR}/Pacman.cpp
+	${SRC_DIR}/Collision.cpp
 )
 
 set(PACMAN_HEADERS
-	Sprite.hpp
-	Pacman.hpp
-	Collision.h
-	Input.hpp
+	${HEADER_DIR}/Sprite.hpp
+	${HEADER_DIR}/Pacman.hpp
+	${HEADER_DIR}/Collision.hpp
+	${HEADER_DIR}/Input.hpp
 )
 
 # create game executable
