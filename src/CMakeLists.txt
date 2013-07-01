@@ -1,6 +1,6 @@
 
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
-set(HEADER_DIR ${PROJECT_SOURCE_DIR}/header)
+set(HEADER_DIR ${PROJECT_SOURCE_DIR}/src/include)
 
 # Executable name
 set(EXECUTABLE_NAME pacman)
@@ -13,6 +13,7 @@ set(PACMAN_SRC
 	${SRC_DIR}/Collision.cpp
 )
 
+# set pacman headers
 set(PACMAN_HEADERS
 	${HEADER_DIR}/Sprite.hpp
 	${HEADER_DIR}/Pacman.hpp

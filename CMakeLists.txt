@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 # Build type
 if(CMAKE_BUILD_TYPE STREQUAL "")
- 	set(CMAKE_BUILD_TYPE Debug)
+ 	set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # SFML Root
@@ -24,7 +24,7 @@ if(APPLE)
 endif(APPLE)
 
 # add the Pacman header path
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/header)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 
 # add the subdirectories
 add_subdirectory(src)
