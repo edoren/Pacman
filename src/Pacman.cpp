@@ -99,3 +99,17 @@ void Pacman::inputMovement(const sf::Sprite background) {
         this->setAnimation(true);
     }
 }
+
+bool Pacman::backgroundCollision(const sf::Sprite background) {
+    // Backgound Collision
+    if(Collision::PixelPerfectTest(background, *this)){
+        this->setPosition(this->getLastPos());
+
+        this->setAnimation(false);
+        this->setSpeed(sf::Vector2f(0, 0));
+
+        // std::cout << "Collision!!, Position: (" << pacman.getPosition().x << ", " << pacman.getPosition().y << ")" << std::endl;
+        return true;
+    }
+    return false;
+}

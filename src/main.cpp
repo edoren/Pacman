@@ -46,15 +46,8 @@ int main()
         // Clear screen
         window.clear();
 
-         // Collition Module
-        if(Collision::PixelPerfectTest(background, pacman)){
-            pacman.setPosition(pacman.getLastPos());
-
-            pacman.setAnimation(false);
-            pacman.setSpeed(sf::Vector2f(0, 0));
-
-            // std::cout << "Collision!!, Position: (" << pacman.getPosition().x << ", " << pacman.getPosition().y << ")" << std::endl;
-        }
+        // Backgound Collision
+        pacman.backgroundCollision(background);
 
         // Animate pacman
         pacman.startAnimation();

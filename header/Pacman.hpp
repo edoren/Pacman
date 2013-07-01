@@ -33,6 +33,8 @@ public:
     void startAnimation();
     void inputMovement(const sf::Sprite background);
 
+    bool backgroundCollision(const sf::Sprite background);
+
 private:
     void keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection);
 
