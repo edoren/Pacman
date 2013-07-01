@@ -1,16 +1,16 @@
 # define cmake version
 cmake_minimum_required(VERSION 2.8)
 
+# Build type
+if(CMAKE_BUILD_TYPE STREQUAL "")
+ 	set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 # project name
 project(Pacman)
 
 # set CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
-
-# Build type
-if(CMAKE_BUILD_TYPE STREQUAL "")
- 	set(CMAKE_BUILD_TYPE Release)
-endif()
 
 # SFML Root
 if(WIN32)
