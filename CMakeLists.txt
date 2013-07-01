@@ -19,7 +19,9 @@ endif(WIN32)
 
 # compiler language
 # add_definitions("-Wall")
-# set (CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wall -O0")
+if(APPLE)
+  set (CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
+endif(APPLE)
 
 # add the subdirectories
 add_subdirectory(src)
