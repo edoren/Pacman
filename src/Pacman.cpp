@@ -72,44 +72,30 @@ void Pacman::startAnimation() {
     }
 }
 
+void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
+    this->setPosition(this->getPosition() + direction);
+    if(!Collision::PixelPerfectTest(background, *this)){
+        this->setSpeed(direction);
+        this->setDirection(spriteDirection);
+        this->keypressed = KEYBOARD_NULL;
+    }
+    this->setPosition(this->getPosition() + direction*-1.f);
+}
+
 void Pacman::inputMovement(const sf::Sprite background) {
     if(this->keypressed != KEYBOARD_NULL) {
-            if(this->keypressed == KEYBOARD_UP){
-                this->setPosition(this->getPosition() + sf::Vector2f(0,-1));
-                if(!Collision::PixelPerfectTest(background, *this)){
-                    this->setSpeed(sf::Vector2f(0, -1));
-                    this->setDirection(SPRITE_UP);
-                    this->keypressed = KEYBOARD_NULL;
-                }
-                this->setPosition(this->getPosition() + sf::Vector2f(0, 1));
-            }
-            if(this->keypressed == KEYBOARD_DOWN){
-                this->setPosition(this->getPosition() + sf::Vector2f(0,1));
-                if(!Collision::PixelPerfectTest(background, *this)){
-                    this->setSpeed(sf::Vector2f(0, 1));
-                    this->setDirection(SPRITE_DOWN);
-                    this->keypressed = KEYBOARD_NULL;
-                }
-                this->setPosition(this->getPosition() + sf::Vector2f(0, -1));
-            }
-            if(this->keypressed == KEYBOARD_LEFT){
-                this->setPosition(this->getPosition() + sf::Vector2f(-1, 0));
-                if(!Collision::PixelPerfectTest(background, *this)){
-                    this->setSpeed(sf::Vector2f(-1, 0));
-                    this->setDirection(SPRITE_LEFT);
-                    this->keypressed = KEYBOARD_NULL;
-                }
-                this->setPosition(this->getPosition() + sf::Vector2f(1, 0));
-            }
-            if(this->keypressed == KEYBOARD_RIGHT){
-                this->setPosition(this->getPosition() + sf::Vector2f(1, 0));
-                if(!Collision::PixelPerfectTest(background, *this)){
-                    this->setSpeed(sf::Vector2f(1, 0));
-                    this->setDirection(SPRITE_RIGHT);
-                    this->keypressed = KEYBOARD_NULL;
-                }
-                this->setPosition(this->getPosition() + sf::Vector2f(-1, 0));
-            }
-            this->setAnimation(true);
+        if(this->keypressed == KEYBOARD_UP){
+            Pacman::keyAction(sf::Vector2f(0,-1), background, SPRITE_UP);
         }
+        if(this->keypressed == KEYBOARD_DOWN){
+            Pacman::keyAction(sf::Vector2f(0, 1), background, SPRITE_DOWN);
+        }
+        if(this->keypressed == KEYBOARD_LEFT){
+            Pacman::keyAction(sf::Vector2f(-1, 0), background, SPRITE_LEFT);
+        }
+        if(this->keypressed == KEYBOARD_RIGHT){
+            Pacman::keyAction(sf::Vector2f(1, 0), background, SPRITE_RIGHT);
+        }
+        this->setAnimation(true);
+    }
 }
