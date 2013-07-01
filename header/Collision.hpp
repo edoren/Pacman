@@ -1,5 +1,5 @@
 /* 
- * File:   collision.h
+ * File:   collision.hpp
  * Authors: Nick Koirala (original version), ahnonay (SFML2 compatibility)
  *
  * Collision Detection and handling class

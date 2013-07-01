@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 // Collition module
-#include "Collision.h"
+#include "Collision.hpp"
 
 // Definitions for the SPRITE movement
 #define SPRITE_UP 2
