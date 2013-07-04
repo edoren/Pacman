@@ -54,7 +54,7 @@ void Pacman::startAnimation() {
     if (this->getAnimation()){
         timer = this->clock.getElapsedTime();
         if(timer.asSeconds() > 0.04f)  {
-            this->setTextureRect(sf::IntRect(20*this->getFrame()+3, 20*this->getDirection()+3, 14, 14));
+            this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
             if (this->getFrame() == 0 && this->getMouthState()){
                 this->setFrame(1);
             } else if(this->getFrame() == 0 && !this->getMouthState()) {
@@ -79,22 +79,24 @@ void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int 
         this->setDirection(spriteDirection);
         this->keypressed = KEYBOARD_NULL;
     }
-    this->setPosition(this->getPosition() + direction*-1.f);
+    this->setPosition(this->getPosition() + direction * -1.f);
 }
 
 void Pacman::inputMovement(const sf::Sprite background) {
     if(this->keypressed != KEYBOARD_NULL) {
-        if(this->keypressed == KEYBOARD_UP){
-            Pacman::keyAction(sf::Vector2f(0,-1), background, SPRITE_UP);
-        }
-        if(this->keypressed == KEYBOARD_DOWN){
-            Pacman::keyAction(sf::Vector2f(0, 1), background, SPRITE_DOWN);
-        }
-        if(this->keypressed == KEYBOARD_LEFT){
-            Pacman::keyAction(sf::Vector2f(-1, 0), background, SPRITE_LEFT);
-        }
-        if(this->keypressed == KEYBOARD_RIGHT){
-            Pacman::keyAction(sf::Vector2f(1, 0), background, SPRITE_RIGHT);
+        switch(this->keypressed) {
+            case KEYBOARD_UP: 
+                Pacman::keyAction(sf::Vector2f(0,-1), background, SPRITE_UP);
+                break;
+            case KEYBOARD_DOWN:
+                Pacman::keyAction(sf::Vector2f(0, 1), background, SPRITE_DOWN);
+                break;
+            case KEYBOARD_LEFT:
+                Pacman::keyAction(sf::Vector2f(-1, 0), background, SPRITE_LEFT);
+                break;
+            case KEYBOARD_RIGHT:
+                Pacman::keyAction(sf::Vector2f(1, 0), background, SPRITE_RIGHT);
+                break;
         }
         this->setAnimation(true);
     }

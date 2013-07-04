@@ -29,14 +29,19 @@ int main()
                 window.close();
             // Manage the pacman next movement
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Up) {
-                    pacman.setNextMovement(KEYBOARD_UP);
-                } else if (event.key.code == sf::Keyboard::Down){
-                    pacman.setNextMovement(KEYBOARD_DOWN);
-                } else if (event.key.code == sf::Keyboard::Left){
-                    pacman.setNextMovement(KEYBOARD_LEFT);
-                } else if (event.key.code == sf::Keyboard::Right){
-                    pacman.setNextMovement(KEYBOARD_RIGHT);
+                switch(event.key.code) {
+                    case sf::Keyboard::Up:
+                        pacman.setNextMovement(KEYBOARD_UP);
+                        break;
+                    case sf::Keyboard::Down:
+                        pacman.setNextMovement(KEYBOARD_DOWN);
+                        break;
+                    case sf::Keyboard::Left:
+                        pacman.setNextMovement(KEYBOARD_LEFT);
+                        break;
+                    case sf::Keyboard::Right:
+                        pacman.setNextMovement(KEYBOARD_RIGHT);
+                        break;
                 }
             }
         }
