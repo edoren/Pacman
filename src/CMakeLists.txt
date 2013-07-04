@@ -7,18 +7,18 @@ set(EXECUTABLE_NAME pacman)
 
 # set pacman sources
 set(PACMAN_SRC
-	${SRC_DIR}/main.cpp
-	${SRC_DIR}/Sprite.cpp
-	${SRC_DIR}/Pacman.cpp
-	${SRC_DIR}/Collision.cpp
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/Sprite.cpp
+    ${SRC_DIR}/Pacman.cpp
+    ${SRC_DIR}/Collision.cpp
 )
 
 # set pacman headers
 set(PACMAN_HEADERS
-	${HEADER_DIR}/Sprite.hpp
-	${HEADER_DIR}/Pacman.hpp
-	${HEADER_DIR}/Collision.hpp
-	${HEADER_DIR}/Input.hpp
+    ${HEADER_DIR}/Sprite.hpp
+    ${HEADER_DIR}/Pacman.hpp
+    ${HEADER_DIR}/Collision.hpp
+    ${HEADER_DIR}/Input.hpp
 )
 
 # create game executable
@@ -27,8 +27,8 @@ add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 # set(SFML_STATIC_LIBRARIES TRUE)
 find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
 if(SFML_FOUND)
-	# including directories
-  	include_directories(${SFML_INCLUDE_DIR})
-  	# linking libraries
-  	target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
+    # including directories
+    include_directories(${SFML_INCLUDE_DIR})
+    # linking libraries
+    target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif(SFML_FOUND)
