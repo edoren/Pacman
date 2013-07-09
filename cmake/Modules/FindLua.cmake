@@ -1,6 +1,7 @@
 # Locate Lua library
 # This module defines
 # LUA_EXECUTABLE, if found
+# LUAC_EXECUTABLE, if found
 # LUA_FOUND, if false, do not try to link to Lua
 # LUA_LIBRARIES
 # LUA_INCLUDE_DIR, where to find lua.h
@@ -31,11 +32,6 @@
 # standard syntax, e.g. FIND_PACKAGE(Lua 5.1)
 # Otherwise the module will search for any available Lua implementation
 
-# Always search for non-versioned lua first (recommended)
-SET(_POSSIBLE_LUA_INCLUDE include include/lua)
-SET(_POSSIBLE_LUA_EXECUTABLE lua)
-SET(_POSSIBLE_LUA_LIBRARY lua)
-
 # Determine possible naming suffixes (there is no standard for this)
 IF(Lua_FIND_VERSION_MAJOR AND Lua_FIND_VERSION_MINOR)
     SET(_POSSIBLE_SUFFIXES "${Lua_FIND_VERSION_MAJOR}${Lua_FIND_VERSION_MINOR}" "${Lua_FIND_VERSION_MAJOR}.${Lua_FIND_VERSION_MINOR}" "-${Lua_FIND_VERSION_MAJOR}.${Lua_FIND_VERSION_MINOR}")
@@ -46,13 +42,25 @@ ENDIF(Lua_FIND_VERSION_MAJOR AND Lua_FIND_VERSION_MINOR)
 # Set up possible search names and locations
 FOREACH(_SUFFIX ${_POSSIBLE_SUFFIXES})
     LIST(APPEND _POSSIBLE_LUA_EXECUTABLE "lua${_SUFFIX}")
+    LIST(APPEND _POSSIBLE_LUAC_EXECUTABLE "luac${_SUFFIX}")
     LIST(APPEND _POSSIBLE_LUA_INCLUDE "include/lua${_SUFFIX}")
     LIST(APPEND _POSSIBLE_LUA_LIBRARY "lua${_SUFFIX}")
 ENDFOREACH(_SUFFIX)
 
+# Always search for non-versioned lua last
+LIST(APPEND _POSSIBLE_LUA_EXECUTABLE "lua")
+LIST(APPEND _POSSIBLE_LUAC_EXECUTABLE "luac")
+LIST(APPEND _POSSIBLE_LUA_INCLUDE "include/lua")
+LIST(APPEND _POSSIBLE_LUA_LIBRARY "lua")
+
 # Find the lua executable
 FIND_PROGRAM(LUA_EXECUTABLE
   NAMES ${_POSSIBLE_LUA_EXECUTABLE}
+)
+
+# Find the luac executable
+FIND_PROGRAM(LUAC_EXECUTABLE
+  NAMES ${_POSSIBLE_LUAC_EXECUTABLE}
 )
 
 # Find the lua header

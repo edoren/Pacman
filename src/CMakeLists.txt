@@ -1,6 +1,12 @@
+# include some functional macros
+include(${PROJECT_SOURCE_DIR}/cmake/Macros.cmake)
 
+# set the Pacman source and header directories
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(HEADER_DIR ${PROJECT_SOURCE_DIR}/src/include)
+
+# set the lua compiled scripts directory
+set(LUA_OBJ_DIR ${PROJECT_SOURCE_DIR}/src/data)
 
 # Executable name
 set(EXECUTABLE_NAME pacman)
@@ -32,3 +38,5 @@ if(SFML_FOUND)
     # linking libraries
     target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif(SFML_FOUND)
+
+find_package(Lua 5.2 REQUIRED)
