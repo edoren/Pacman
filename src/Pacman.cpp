@@ -74,7 +74,7 @@ void Pacman::startAnimation() {
 
 void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
     this->setPosition(this->getPosition() + direction);
-    if(!Collision::PixelPerfectTest(background, *this)){
+    if(!Collision::PixelPerfectTestOneObj(background, *this)){
         this->setSpeed(direction);
         this->setDirection(spriteDirection);
         this->keypressed = KEYBOARD_NULL;
@@ -104,7 +104,7 @@ void Pacman::inputMovement(const sf::Sprite background) {
 
 bool Pacman::backgroundCollision(const sf::Sprite background) {
     // Backgound Collision
-    if(Collision::PixelPerfectTest(background, *this)){
+    if(Collision::PixelPerfectTestOneObj(background, *this)){
         this->setPosition(this->getLastPos());
 
         this->setAnimation(false);
