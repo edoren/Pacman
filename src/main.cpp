@@ -11,7 +11,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(224, 288), "Pacman");
     // Load background
     sf::Texture BGtexture;
-    Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png");
+    if (!Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png")) return EXIT_FAILURE;
     sf::Sprite background(BGtexture);
 
     window.setFramerateLimit(60);
