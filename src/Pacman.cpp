@@ -49,8 +49,8 @@ void Pacman::setNextMovement(int keypressed) {
     this->keypressed = keypressed;
 }
 
-void Pacman::startAnimation() {
-    // Animate pacman
+// Animate pacman
+void Pacman::updateAnimation() {
     if (this->getAnimation()){
         timer = this->clock.getElapsedTime();
         if(timer.asSeconds() > 0.04f)  {
@@ -72,6 +72,20 @@ void Pacman::startAnimation() {
     }
 }
 
+// Move pacman
+void Pacman::updatePos() {
+    // Get the last position
+    this->setLastPos(this->getPosition()); 
+    // Set the new position
+    this->setPosition(this->getPosition() + this->getSpeed());
+}
+
+// Update all the pacman states
+void Pacman::update() {
+    this->updateAnimation();
+    this->updatePos();
+}
+
 void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
     this->setPosition(this->getPosition() + direction);
     if(!Collision::PixelPerfectTestOneObj(background, *this)){
@@ -82,6 +96,7 @@ void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int 
     this->setPosition(this->getPosition() + direction * -1.f);
 }
 
+// Get the keyboard input
 void Pacman::inputMovement(const sf::Sprite background) {
     if(this->keypressed != KEYBOARD_NULL) {
         switch(this->keypressed) {
@@ -102,8 +117,8 @@ void Pacman::inputMovement(const sf::Sprite background) {
     }
 }
 
+// Backgound Collision
 bool Pacman::backgroundCollision(const sf::Sprite background) {
-    // Backgound Collision
     if(Collision::PixelPerfectTestOneObj(background, *this)){
         this->setPosition(this->getLastPos());
 

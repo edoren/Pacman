@@ -54,19 +54,13 @@ int main()
         // Backgound Collision
         pacman.backgroundCollision(background);
 
-        // Animate pacman
-        pacman.startAnimation();
-
         // Draw the background
         window.draw(background);
         // Draw pacman
         window.draw(pacman);
 
-        // Get the last position
-        pacman.setLastPos(pacman.getPosition()); 
-
-        // Move pacman
-        pacman.setPosition(pacman.getPosition() + pacman.getSpeed());
+        // Update pacman
+        pacman.update();
 
         window.display();
     }

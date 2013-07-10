@@ -30,12 +30,15 @@ public:
     void setLastPos(sf::Vector2f lastPos);
     void setNextMovement(int keypressed);
 
-    void startAnimation();
+    void update();
     void inputMovement(const sf::Sprite background);
 
     bool backgroundCollision(const sf::Sprite background);
 
 private:
+    void updateAnimation();
+    void updatePos();
+
     void keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection);
 
 };
