@@ -25,6 +25,7 @@ set(PACMAN_HEADERS
     ${HEADER_DIR}/Pacman.hpp
     ${HEADER_DIR}/Collision.hpp
     ${HEADER_DIR}/Input.hpp
+    ${HEADER_DIR}/Config.hpp
 )
 
 # create game executable

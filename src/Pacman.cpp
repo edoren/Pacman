@@ -76,6 +76,12 @@ void Pacman::updateAnimation() {
 void Pacman::updatePos() {
     // Get the last position
     this->setLastPos(this->getPosition()); 
+    // Check if pacman is out of position
+    if(this->getPosition().x <= -12) {
+        this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
+    } else if (this->getPosition().x >= WINDOW_WIDTH-1) {
+        this->setPosition(sf::Vector2f(-11, this->getPosition().y));
+    }
     // Set the new position
     this->setPosition(this->getPosition() + this->getSpeed());
 }

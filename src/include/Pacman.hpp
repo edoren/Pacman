@@ -3,6 +3,7 @@
 
 #include "Sprite.hpp"
 #include "Input.hpp"
+#include "Config.hpp"
 
 class Pacman : public Sprite {
 private:

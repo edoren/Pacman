@@ -3,18 +3,19 @@
 
 // Pacman module
 #include "Pacman.hpp"
-
+// Configuration module
+#include "Config.hpp"
 
 int main()
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(224, 288), "Pacman");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Pacman");
     // Load background
     sf::Texture BGtexture;
     if (!Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png")) return EXIT_FAILURE;
     sf::Sprite background(BGtexture);
 
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(FRAME_RATE);
 
     // Load pacman
     Pacman pacman;
