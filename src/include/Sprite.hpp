@@ -1,9 +1,10 @@
 #ifndef __SPRITE_H__
 #define __SPRITE_H__
 
+#include <cmath>
+#include <cassert>
 // Headers for SFML2 modules
 #include <SFML/Graphics.hpp>
-
 // Collition module
 #include "Collision.hpp"
 
@@ -16,7 +17,8 @@
 class Sprite : public sf::Sprite {
 private:
     sf::Vector2f speed;
-    int direction;
+    sf::Vector2f speedDirection; // Unitary vector
+    int spriteDirection;
     int frame;
 
 public:
@@ -24,14 +26,20 @@ public:
     ~Sprite();
 
     sf::Vector2f getSpeed();
+    sf::Vector2f setSpeedDirection();
     int getFrame();
     int getDirection();
     sf::Texture getSpriteTexture();
 
-
+    void setSpeed(float speed);
     void setSpeed(sf::Vector2f speed);
+    void setSpeedDirection(sf::Vector2f speedDirection);
     void setFrame(int frame);
-    void setDirection(int direction);
+    void setDirection(int spriteDirection);
+
+private:
+    float getVectMagnitude(sf::Vector2f vector);
+
 };
 
 

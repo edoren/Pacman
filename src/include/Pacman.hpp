@@ -11,6 +11,7 @@ private:
 
     bool mouth; // true: pacman open the mouth, false: pacman close the mouth
     bool animation;
+    bool enableMovement; // if true pacman moves
     
     int keypressed; // store the next movement of pacman
     sf::Vector2f lastPos;

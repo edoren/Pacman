@@ -9,6 +9,7 @@ Pacman::Pacman() : clock(), timer() {
 
     this->mouth = true;
     this->animation = true;
+    this->enableMovement = true;
     this->keypressed = KEYBOARD_NULL;
     this->lastPos = this->getPosition();
 
@@ -74,16 +75,18 @@ void Pacman::updateAnimation() {
 
 // Move pacman
 void Pacman::updatePos() {
-    // Get the last position
-    this->setLastPos(this->getPosition()); 
-    // Check if pacman is out of position
-    if(this->getPosition().x <= -12) {
-        this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
-    } else if (this->getPosition().x >= WINDOW_WIDTH-1) {
-        this->setPosition(sf::Vector2f(-11, this->getPosition().y));
+    if (enableMovement) {
+        // Get the last position
+        this->setLastPos(this->getPosition()); 
+        // Check if pacman is out of position
+        if(this->getPosition().x <= -12) {
+            this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
+        } else if (this->getPosition().x >= WINDOW_WIDTH-1) {
+            this->setPosition(sf::Vector2f(-11, this->getPosition().y));
+        }
+        // Set the new position
+        this->setPosition(this->getPosition() + this->getSpeed());
     }
-    // Set the new position
-    this->setPosition(this->getPosition() + this->getSpeed());
 }
 
 // Update all the pacman states
@@ -93,9 +96,10 @@ void Pacman::update() {
 }
 
 void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
+    this->enableMovement = true;
     this->setPosition(this->getPosition() + direction);
     if(!Collision::PixelPerfectTestOneObj(background, *this)){
-        this->setSpeed(direction);
+        this->setSpeedDirection(direction);
         this->setDirection(spriteDirection);
         this->keypressed = KEYBOARD_NULL;
     }
@@ -129,7 +133,7 @@ bool Pacman::backgroundCollision(const sf::Sprite background) {
         this->setPosition(this->getLastPos());
 
         this->setAnimation(false);
-        this->setSpeed(sf::Vector2f(0, 0));
+        this->enableMovement = false;
 
         // std::cout << "Collision!!, Position: (" << pacman.getPosition().x << ", " << pacman.getPosition().y << ")" << std::endl;
         return true;
