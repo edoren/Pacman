@@ -15,6 +15,10 @@
 #define SPRITE_LEFT 0
 
 class Sprite : public sf::Sprite {
+public:
+    sf::Clock frameClock;
+    sf::Time frameTimer;
+    
 private:
     sf::Vector2f speed;
     sf::Vector2f speedDirection; // Unitary vector

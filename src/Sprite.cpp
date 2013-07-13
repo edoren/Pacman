@@ -1,6 +1,6 @@
 #include "Sprite.hpp"
 
-Sprite::Sprite() : speed(), speedDirection(), spriteDirection(), frame() {}
+Sprite::Sprite() : speed(), speedDirection(), spriteDirection(), frame(), frameClock(), frameTimer() {}
 Sprite::~Sprite() {}
 
 sf::Vector2f Sprite::getSpeed() {

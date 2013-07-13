@@ -1,7 +1,7 @@
 #include "Pacman.hpp"
 
 // Constructor
-Pacman::Pacman() : clock(), timer() {
+Pacman::Pacman() {
     if (!Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png")) exit(EXIT_FAILURE);
     this->setTexture(this->texture);
     this->setTextureRect(sf::IntRect(43, 3, 14, 14));
@@ -53,8 +53,8 @@ void Pacman::setNextMovement(int keypressed) {
 // Animate pacman
 void Pacman::updateAnimation() {
     if (this->getAnimation()){
-        timer = this->clock.getElapsedTime();
-        if(timer.asSeconds() > 0.04f)  {
+        this->frameTimer = this->frameClock.getElapsedTime();
+        if(this->frameTimer.asSeconds() > 0.04f)  {
             this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
             if (this->getFrame() == 0 && this->getMouthState()){
                 this->setFrame(1);
@@ -68,7 +68,7 @@ void Pacman::updateAnimation() {
                 this->setMouthState(true);
                 this->setFrame(0);
             }
-            this->clock.restart();
+            this->frameClock.restart();
         }
     }
 }

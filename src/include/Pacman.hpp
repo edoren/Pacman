@@ -15,9 +15,6 @@ private:
     
     int keypressed; // store the next movement of pacman
     sf::Vector2f lastPos;
-    
-    sf::Clock clock;
-    sf::Time timer;
 
 public:
     Pacman();
