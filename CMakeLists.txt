@@ -20,8 +20,10 @@ endif(WIN32)
 # compiler language
 # add_definitions("-Wall")
 if(APPLE)
-    set (CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
-endif(APPLE)
+    set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
+else()
+    set(CMAKE_CXX_FLAGS "-std=c++0x")
+endif()
 
 # add the Pacman header path
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
