@@ -3,12 +3,9 @@
 
 #include "Sprite.hpp"
 #include "Input.hpp"
-#include "Config.hpp"
 
 class Pacman : public Sprite {
 private:
-    sf::Texture texture;
-
     bool mouth; // true: pacman open the mouth, false: pacman close the mouth
     bool animation;
     bool enableMovement; // if true pacman moves

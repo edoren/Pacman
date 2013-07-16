@@ -5,8 +5,14 @@
 #include <cassert>
 // Headers for SFML2 modules
 #include <SFML/Graphics.hpp>
-// Collition module
+// Collition and Config modules
 #include "Collision.hpp"
+#include "Config.hpp"
+
+#define VECTOR_RIGHT sf::Vector2f(1, 0)
+#define VECTOR_LEFT sf::Vector2f(-1, 0)
+#define VECTOR_UP sf::Vector2f(0, -1)
+#define VECTOR_DOWN sf::Vector2f(0, 1)
 
 // Definitions for the SPRITE movement
 #define SPRITE_UP 2
@@ -20,13 +26,15 @@ public:
     sf::Time frameTimer;
     
 private:
+    sf::Texture texture;
+
     sf::Vector2f speed;
     sf::Vector2f speedDirection; // Unitary vector
     int spriteDirection;
     int frame;
 
 public:
-    Sprite();
+    Sprite(std::string spriteImgFile);
     ~Sprite();
 
     sf::Vector2f getSpeed();

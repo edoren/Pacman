@@ -1,6 +1,10 @@
 #include "Sprite.hpp"
 
-Sprite::Sprite() : speed(), speedDirection(), spriteDirection(), frame(), frameClock(), frameTimer() {}
+Sprite::Sprite(std::string spriteImgFile) : speed(), speedDirection(), spriteDirection(), frame(), frameClock(), frameTimer() {
+    if (!Collision::CreateTextureAndBitmask(this->texture, spriteImgFile)) exit(EXIT_FAILURE);
+    this->setTexture(this->texture);
+}
+
 Sprite::~Sprite() {}
 
 sf::Vector2f Sprite::getSpeed() {
