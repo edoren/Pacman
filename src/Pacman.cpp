@@ -1,9 +1,7 @@
 #include "Pacman.hpp"
 
 // Constructor
-Pacman::Pacman() {
-    if (!Collision::CreateTextureAndBitmask(this->texture, "resources/pacmanSprites.png")) exit(EXIT_FAILURE);
-    this->setTexture(this->texture);
+Pacman::Pacman() : Sprite("resources/pacmanSprites.png") {
     this->setTextureRect(sf::IntRect(43, 3, 14, 14));
     this->setPosition(sf::Vector2f(95, 205));
 

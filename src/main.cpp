@@ -1,8 +1,9 @@
 // Standard headers
 #include <iostream>
 
-// Pacman module
+// Pacman and Ghost module
 #include "Pacman.hpp"
+#include "Ghost.hpp"
 // Configuration module
 #include "Config.hpp"
 
@@ -19,8 +20,10 @@ int main()
 
     // Load pacman
     Pacman pacman;
+    Ghost blinky(sf::Vector2f(105, 109), "resources/blinkySprites.png", SPRITE_LEFT);
     
     while (window.isOpen()) {
+// 
         // Process events
         sf::Event event;
         while (window.pollEvent(event))
@@ -55,13 +58,16 @@ int main()
         // Backgound Collision
         pacman.backgroundCollision(background);
 
+        // Update pacman
+        pacman.update();
+        blinky.update(background);
+        
         // Draw the background
         window.draw(background);
         // Draw pacman
         window.draw(pacman);
 
-        // Update pacman
-        pacman.update();
+        window.draw(blinky);
 
         window.display();
     }
