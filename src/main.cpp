@@ -20,6 +20,7 @@ int main()
 
     // Load pacman
     Pacman pacman;
+    // Load the enemies
     Ghost blinky(sf::Vector2f(105, 109), "resources/blinkySprites.png", SPRITE_LEFT);
     
     while (window.isOpen()) {
@@ -55,18 +56,16 @@ int main()
         // Clear screen
         window.clear();
 
-        // Backgound Collision
-        pacman.backgroundCollision(background);
-
         // Update pacman
-        pacman.update();
+        pacman.update(background);
+        // Update the enemies position
         blinky.update(background);
         
         // Draw the background
         window.draw(background);
         // Draw pacman
         window.draw(pacman);
-
+        // Draw the enemies
         window.draw(blinky);
 
         window.display();

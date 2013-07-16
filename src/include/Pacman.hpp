@@ -26,12 +26,12 @@ public:
     void setLastPos(sf::Vector2f lastPos);
     void setNextMovement(int keypressed);
 
-    void update();
+    void update(const sf::Sprite background);
     void inputMovement(const sf::Sprite background);
 
-    bool backgroundCollision(const sf::Sprite background);
-
 private:
+    bool backgroundCollision(const sf::Sprite background);
+    
     void updateAnimation();
     void updatePos();
 

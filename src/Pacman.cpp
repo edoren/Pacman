@@ -88,9 +88,10 @@ void Pacman::updatePos() {
 }
 
 // Update all the pacman states
-void Pacman::update() {
+void Pacman::update(const sf::Sprite background) {
     this->updateAnimation();
     this->updatePos();
+    this->backgroundCollision(background);
 }
 
 void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
