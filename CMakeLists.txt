@@ -13,9 +13,7 @@ project(Pacman)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 # SFML Root
-if(WIN32)
-    set(SFML_ROOT ${PROJECT_SOURCE_DIR}/SFML-2.0)
-endif(WIN32)
+set(SFML_ROOT ${PROJECT_SOURCE_DIR}/SFML-2)
 
 # compiler language
 # add_definitions("-Wall")
