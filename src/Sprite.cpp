@@ -3,6 +3,7 @@
 Sprite::Sprite(std::string spriteImgFile) : speed(), speedDirection(), spriteDirection(), frame(), frameClock(), frameTimer() {
     if (!Collision::CreateTextureAndBitmask(this->texture, spriteImgFile)) exit(EXIT_FAILURE);
     this->setTexture(this->texture);
+    this->setFrame(0);
 }
 
 Sprite::~Sprite() {}
@@ -40,7 +41,7 @@ void Sprite::setFrame(int frame){
     this->frame = frame;
 }
 
-void Sprite::setDirection(int spriteDirection) {
+void Sprite::setSpriteDirection(int spriteDirection) {
     this->spriteDirection = spriteDirection;
 }
 

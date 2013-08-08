@@ -17,12 +17,14 @@ int main()
     sf::Sprite background(BGtexture);
 
     window.setFramerateLimit(FRAME_RATE);
-
     // Load pacman
     Pacman pacman;
     // Load the enemies
-    Ghost blinky(sf::Vector2f(105, 109), "resources/blinkySprites.png", SPRITE_LEFT);
-    
+    Ghost blinky(sf::Vector2f(105, 109), "resources/blinkySprites.png", SCATTER_MOVE, HOUSE_MIDDLE);
+    Ghost clyde(sf::Vector2f(120, 130), "resources/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
+    Ghost pinky(sf::Vector2f(105, 130), "resources/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
+    Ghost inky(sf::Vector2f(90, 130), "resources/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
+
     while (window.isOpen()) {
 // 
         // Process events
@@ -60,6 +62,9 @@ int main()
         pacman.update(background);
         // Update the enemies position
         blinky.update(background);
+        inky.update(background);
+        clyde.update(background);
+        pinky.update(background);
         
         // Draw the background
         window.draw(background);
@@ -67,6 +72,9 @@ int main()
         window.draw(pacman);
         // Draw the enemies
         window.draw(blinky);
+        window.draw(inky);
+        window.draw(clyde);
+        window.draw(pinky);
 
         window.display();
     }

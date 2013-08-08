@@ -11,8 +11,7 @@ Pacman::Pacman() : Sprite("resources/pacmanSprites.png") {
     this->keypressed = KEYBOARD_NULL;
     this->lastPos = this->getPosition();
 
-    this->setDirection(SPRITE_LEFT);
-    this->setFrame(0);
+    this->setSpriteDirection(SPRITE_LEFT);
     this->setSpeed(sf::Vector2f(-1,0));
 }
 
@@ -96,13 +95,15 @@ void Pacman::update(const sf::Sprite background) {
 
 void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
     this->enableMovement = true;
-    this->setPosition(this->getPosition() + direction);
-    if(!Collision::PixelPerfectTestOneObj(background, *this)){
-        this->setSpeedDirection(direction);
-        this->setDirection(spriteDirection);
-        this->keypressed = KEYBOARD_NULL;
+    if(this->getPosition() != sf::Vector2f(105, 109)) {
+        this->setPosition(this->getPosition() + direction);
+        if(!Collision::PixelPerfectTestOneObj(background, *this)) {
+                this->setSpeedDirection(direction);
+                this->setSpriteDirection(spriteDirection);
+                this->keypressed = KEYBOARD_NULL;
+        }
+        this->setPosition(this->getPosition() + direction * -1.f);
     }
-    this->setPosition(this->getPosition() + direction * -1.f);
 }
 
 // Get the keyboard input
@@ -110,16 +111,16 @@ void Pacman::inputMovement(const sf::Sprite background) {
     if(this->keypressed != KEYBOARD_NULL) {
         switch(this->keypressed) {
             case KEYBOARD_UP: 
-                Pacman::keyAction(sf::Vector2f(0,-1), background, SPRITE_UP);
+                Pacman::keyAction(VECTOR_UP, background, SPRITE_UP);
                 break;
             case KEYBOARD_DOWN:
-                Pacman::keyAction(sf::Vector2f(0, 1), background, SPRITE_DOWN);
+                Pacman::keyAction(VECTOR_DOWN, background, SPRITE_DOWN);
                 break;
             case KEYBOARD_LEFT:
-                Pacman::keyAction(sf::Vector2f(-1, 0), background, SPRITE_LEFT);
+                Pacman::keyAction(VECTOR_LEFT, background, SPRITE_LEFT);
                 break;
             case KEYBOARD_RIGHT:
-                Pacman::keyAction(sf::Vector2f(1, 0), background, SPRITE_RIGHT);
+                Pacman::keyAction(VECTOR_RIGHT, background, SPRITE_RIGHT);
                 break;
         }
         this->setAnimation(true);

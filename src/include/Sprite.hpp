@@ -47,7 +47,7 @@ public:
     void setSpeed(sf::Vector2f speed);
     void setSpeedDirection(sf::Vector2f speedDirection);
     void setFrame(int frame);
-    void setDirection(int spriteDirection);
+    void setSpriteDirection(int spriteDirection);
 
 private:
     float getVectMagnitude(sf::Vector2f vector);

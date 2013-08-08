@@ -3,20 +3,29 @@
 
 #include "Sprite.hpp"
 
+#define CHASE_MOVE 0
+#define SCATTER_MOVE 1
+#define FRIGHTENED_MOVE 2
+#define HOUSE_MOVE 3
+
+#define HOUSE_MIDDLE 0
+#define HOUSE_LEFT 1
+#define HOUSE_RIGHT 2
+
 class Ghost : public Sprite {
 private:
-    sf::Texture texture;
-
     sf::Vector2f initialPos;
     std::string spriteImg;
     int movementState;
 
     sf::Vector2f lastPos;
 
-    std::vector<sf::Vector2f> test;
+    sf::Clock houseClock;
+    float timeInHouse;
+    int housePos;
 
 public:
-    Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int spriteDirection);
+    Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int movementState, int housePos);
 
     void update(const sf::Sprite background);
 
@@ -30,6 +39,7 @@ private:
 
     // Movement algorithms
     void randomMove(const sf::Sprite background);
+    void houseMove(const sf::Sprite background, float time);
 };
 
 #endif // __GHOST_H__
