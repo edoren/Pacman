@@ -29,6 +29,7 @@ Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, in
     }
     
     this->movementState = movementState;
+    this->enableMovement = true;
 
     this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
 }
@@ -47,26 +48,34 @@ void Ghost::updateAnimation() {
 }
 
 void Ghost::updatePos() {
-    this->lastPos = this->getPosition();
-    if(this->getPosition().x <= -12) {
-        this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
-    } else if (this->getPosition().x >= WINDOW_WIDTH-1) {
-        this->setPosition(sf::Vector2f(-11, this->getPosition().y));
+    if (this->enableMovement) {
+        this->lastPos = this->getPosition();
+        if(this->getPosition().x <= -12) {
+            this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
+        } else if (this->getPosition().x >= WINDOW_WIDTH-1) {
+            this->setPosition(sf::Vector2f(-11, this->getPosition().y));
+        }
+        this->setPosition(this->getPosition() + this->getSpeed());
     }
-    this->setPosition(this->getPosition() + this->getSpeed());
 }
 
 void Ghost::update(const sf::Sprite background) {
-    switch(this->movementState) {
-        case SCATTER_MOVE:
-            this->randomMove(background);
-            break;
-        case HOUSE_MOVE:
-            this->houseMove(background, 2.f);
-            break;
+    if(this->enableMovement) {
+        switch(this->movementState) {
+            case SCATTER_MOVE:
+                this->randomMove(background);
+                break;
+            case HOUSE_MOVE:
+                this->houseMove(background, 2.f);
+                break;
+        }
     }
     this->updateAnimation();
     this->updatePos();
+}
+
+void Ghost::stopMovement() {
+    this->enableMovement = false;
 }
 
 void Ghost::randomMove(const sf::Sprite background) {

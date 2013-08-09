@@ -7,16 +7,12 @@
 // Configuration module
 #include "Config.hpp"
 
-int main()
-{
-    // Create the main window
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Pacman");
+int start(sf::RenderWindow &window) {
     // Load background
     sf::Texture BGtexture;
     if (!Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png")) return EXIT_FAILURE;
     sf::Sprite background(BGtexture);
 
-    window.setFramerateLimit(FRAME_RATE);
     // Load pacman
     Pacman pacman;
     // Load the enemies
@@ -25,8 +21,12 @@ int main()
     Ghost pinky(sf::Vector2f(105, 130), "resources/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
     Ghost inky(sf::Vector2f(90, 130), "resources/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
 
+    bool lose = false;
+    sf::Clock* loseClock;
+
+    bool drawEnemies = true;
+
     while (window.isOpen()) {
-// 
         // Process events
         sf::Event event;
         while (window.pollEvent(event))
@@ -55,28 +55,63 @@ int main()
         // Move pacman in the next corner if setNextMovement(int key) is called
         pacman.inputMovement(background);
 
+        if(!lose) {
+            if(Collision::BoundingBoxTest(pacman, blinky) or Collision::BoundingBoxTest(pacman, inky) or Collision::BoundingBoxTest(pacman, pinky) or Collision::BoundingBoxTest(pacman, clyde)) {
+                lose = true;
+                blinky.stopMovement();
+                inky.stopMovement();
+                clyde.stopMovement();
+                pinky.stopMovement();
+                pacman.setFrame(0);
+                sf::Clock loseClk;
+                loseClock = &loseClk;
+            }
+        } else {
+            if(loseClock->getElapsedTime().asSeconds() > 0.4f) drawEnemies = false;
+            if(pacman.lose()) return EXIT_SUCCESS;
+        }
+
         // Clear screen
         window.clear();
 
         // Update pacman
         pacman.update(background);
         // Update the enemies position
-        blinky.update(background);
-        inky.update(background);
-        clyde.update(background);
-        pinky.update(background);
+        if(drawEnemies) {
+            blinky.update(background);
+            inky.update(background);
+            clyde.update(background);
+            pinky.update(background);
+        }
         
         // Draw the background
         window.draw(background);
         // Draw pacman
         window.draw(pacman);
         // Draw the enemies
-        window.draw(blinky);
-        window.draw(inky);
-        window.draw(clyde);
-        window.draw(pinky);
+
+        if(drawEnemies) {
+            window.draw(blinky);
+            window.draw(inky);
+            window.draw(clyde);
+            window.draw(pinky);
+        }
 
         window.display();
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int main()
+{
+    // Create the main window
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Pacman");
+    window.setFramerateLimit(FRAME_RATE);
+
+    while(window.isOpen()) {
+        start(window);
+        sf::sleep(sf::seconds(2.0f));
     }
 
     return EXIT_SUCCESS;

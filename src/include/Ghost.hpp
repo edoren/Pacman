@@ -17,6 +17,7 @@ private:
     sf::Vector2f initialPos;
     std::string spriteImg;
     int movementState;
+    bool enableMovement;
 
     sf::Vector2f lastPos;
 
@@ -28,7 +29,7 @@ public:
     Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int movementState, int housePos);
 
     void update(const sf::Sprite background);
-
+    void stopMovement();
 
 private:
     std::vector<sf::Vector2f> avaliablePaths(const sf::Sprite background);

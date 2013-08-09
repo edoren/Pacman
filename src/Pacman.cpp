@@ -2,6 +2,7 @@
 
 // Constructor
 Pacman::Pacman() : Sprite("resources/pacmanSprites.png") {
+    if (!Collision::CreateTextureAndBitmask(this->loseTexture, "resources/pacmanLose.png")) exit(EXIT_FAILURE);
     this->setTextureRect(sf::IntRect(43, 3, 14, 14));
     this->setPosition(sf::Vector2f(95, 205));
 
@@ -138,5 +139,22 @@ bool Pacman::backgroundCollision(const sf::Sprite background) {
         // std::cout << "Collision!!, Position: (" << pacman.getPosition().x << ", " << pacman.getPosition().y << ")" << std::endl;
         return true;
     }
+    return false;
+}
+
+bool Pacman::lose() {
+    if(this->getFrame() == 12) return true;
+
+    this->setAnimation(false);
+    this->enableMovement = false;
+
+    this->setTexture(loseTexture);
+
+    if(this->frameClock.getElapsedTime().asSeconds() > 0.1f)  {
+        this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 3, 14, 14));
+        this->setFrame(this->getFrame()+1);
+        this->frameClock.restart();
+    }
+
     return false;
 }
