@@ -42,4 +42,4 @@ if(SFML_FOUND)
     target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif(SFML_FOUND)
 
-find_package(Lua 5 REQUIRED)
+# find_package(Lua 5 REQUIRED)
