@@ -56,9 +56,8 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         {
             // Close window : exit
             if (event.type == sf::Event::Closed || 
-                (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) || 
-                (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)) || 
-                sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                (sf::Keyboard::isKeyPressed(sf::Keyboard::CONTROL) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) ||
+                (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)))
                 window.close();
             // Manage the pacman next movement
             if (event.type == sf::Event::KeyPressed) {
@@ -85,7 +84,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
 
         // Defines actions if lose the game.
         if(!lose) {
-            if(Collision::BoundingBoxTest(pacman, blinky) or Collision::BoundingBoxTest(pacman, inky) or Collision::BoundingBoxTest(pacman, pinky) or Collision::BoundingBoxTest(pacman, clyde)) {
+            if(Collision::PixelPerfectTestOneObj(pacman, blinky) or Collision::PixelPerfectTestOneObj(pacman, inky) or Collision::PixelPerfectTestOneObj(pacman, pinky) or Collision::BoundingBoxTest(pacman, clyde)) {
                 lose = true;
                 blinky.stopMovement();
                 inky.stopMovement();

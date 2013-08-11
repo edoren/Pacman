@@ -3,6 +3,12 @@
 
 #include <string>
 
+#if defined(_WIN32) || defined(__linux__)
+    #define CONTROL LControl
+#elif __APPLE__
+    #define CONTROL LSystem
+#endif
+
 // Configuration definitions
 #define WINDOW_WIDTH 224
 #define WINDOW_HEIGHT 288
