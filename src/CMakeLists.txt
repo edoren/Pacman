@@ -17,6 +17,7 @@ set(PACMAN_SRC
     ${SRC_DIR}/Sprite.cpp
     ${SRC_DIR}/Pacman.cpp
     ${SRC_DIR}/Ghost.cpp
+    ${SRC_DIR}/Sound.cpp
     ${SRC_DIR}/Collision.cpp
 )
 
@@ -25,6 +26,7 @@ set(PACMAN_HEADERS
     ${HEADER_DIR}/Sprite.hpp
     ${HEADER_DIR}/Pacman.hpp
     ${HEADER_DIR}/Ghost.hpp
+    ${HEADER_DIR}/Sound.hpp
     ${HEADER_DIR}/Collision.hpp
     ${HEADER_DIR}/Input.hpp
     ${HEADER_DIR}/Config.hpp
@@ -34,7 +36,7 @@ set(PACMAN_HEADERS
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 
 # set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
+find_package(SFML 2 COMPONENTS graphics audio window system REQUIRED)
 if(SFML_FOUND)
     # including directories
     include_directories(${SFML_INCLUDE_DIR})
