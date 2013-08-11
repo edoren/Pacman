@@ -12,10 +12,14 @@ private:
     sf::Sprite food1;
     sf::Sprite food2;
 
-public:
-    FoodMap();
+    sf::RenderWindow *window;
 
-    void drawFood(sf::RenderWindow &window);
+    void drawFoodinPos(sf::Vector2f pos, sf::Sprite food);
+
+public:
+    FoodMap(sf::RenderWindow &window);
+
+    void drawFood();
     bool eatFood(sf::Vector2f pacmanPos);
 };
 

@@ -39,7 +39,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         window.draw(background);
 
         // Draw the food
-        food.drawFood(window);
+        food.drawFood();
         // Draw pacman
         window.draw(pacman);
 
@@ -133,7 +133,7 @@ int main()
     window.setFramerateLimit(FRAME_RATE);
 
     Sounds sounds;
-    FoodMap food;
+    FoodMap food(window);
 
     sounds.intro.play();
 

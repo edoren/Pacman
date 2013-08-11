@@ -1,7 +1,7 @@
 #include "FoodMap.hpp"
 #include <iostream>
 
-FoodMap::FoodMap() {
+FoodMap::FoodMap(sf::RenderWindow &window) {
     foodMap = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -38,29 +38,32 @@ FoodMap::FoodMap() {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
-    foodTexture.loadFromFile("resources/food.png");
-    food1.setTexture(foodTexture);
-    food2.setTexture(foodTexture);
-    food1.setTextureRect(sf::IntRect(8, 0, 8, 8));
-    food2.setTextureRect(sf::IntRect(0, 0, 8, 8));
+    this->window = &window;
+    this->foodTexture.loadFromFile("resources/food.png");
+    this->food1.setTexture(foodTexture);
+    this->food2.setTexture(foodTexture);
+    this->food1.setTextureRect(sf::IntRect(8, 0, 8, 8));
+    this->food2.setTextureRect(sf::IntRect(0, 0, 8, 8));
 }
 
-void FoodMap::drawFood(sf::RenderWindow &window) {
+void FoodMap::drawFood() {
     for(int j = 0; j < this->foodMap.size(); j++) {
         for (int i = 0; i < this->foodMap[j].size(); i++) {
             switch(foodMap[j][i]) {
-                case 1: 
-                    // std::cout << "Test" << std::endl;
-                    food1.setPosition(sf::Vector2f(i * 8, j * 8));
-                    window.draw(food1);
+                case 1:
+                    this->drawFoodinPos(sf::Vector2f(i * 8, j * 8), food1);
                     break;
                 case 2: 
-                    food2.setPosition(sf::Vector2f(i * 8, j * 8));
-                    window.draw(food2);
+                    this->drawFoodinPos(sf::Vector2f(i * 8, j * 8), food2);
                     break;
             }
         }
     }
+}
+
+void FoodMap::drawFoodinPos(sf::Vector2f pos, sf::Sprite food) {
+    food.setPosition(pos);
+    this->window->draw(food);
 }
 
 bool FoodMap::eatFood(sf::Vector2f pacmanPos) {
