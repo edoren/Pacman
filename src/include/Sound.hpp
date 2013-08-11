@@ -2,6 +2,7 @@
 #define __SOUND_H__
 
 #include <SFML/Audio.hpp>
+#include "Config.hpp"
 
 class Sounds {
 private:

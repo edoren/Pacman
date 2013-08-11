@@ -1,7 +1,3 @@
-// Standard headers
-#include <iostream>
-#include <vector>
-
 // Pacman, Ghost and FoodMap module
 #include "Pacman.hpp"
 #include "Ghost.hpp"
@@ -11,22 +7,23 @@
 // Configuration module
 #include "Config.hpp"
 
+std::string pacmanPath;
 bool firstStart = true;
 sf::Clock timeOpen;
 
 int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
     // Load background
     sf::Texture BGtexture;
-    if (!Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png")) return EXIT_FAILURE;
+    if (!Collision::CreateTextureAndBitmask(BGtexture, pacmanPath + "resources/pacman-map.png")) exit(EXIT_FAILURE);
     sf::Sprite background(BGtexture);
 
     // Load pacman
     Pacman pacman;
     // Load the enemies
-    Ghost blinky(sf::Vector2f(105, 109), "resources/blinkySprites.png", SCATTER_MOVE, HOUSE_MIDDLE);
-    Ghost clyde(sf::Vector2f(121, 133), "resources/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
-    Ghost pinky(sf::Vector2f(105, 133), "resources/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
-    Ghost inky(sf::Vector2f(89, 133), "resources/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
+    Ghost blinky(sf::Vector2f(105, 109), pacmanPath + "resources/blinkySprites.png", SCATTER_MOVE, HOUSE_MIDDLE);
+    Ghost clyde(sf::Vector2f(121, 133), pacmanPath + "resources/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
+    Ghost pinky(sf::Vector2f(105, 133), pacmanPath + "resources/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
+    Ghost inky(sf::Vector2f(89, 133), pacmanPath + "resources/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
 
     bool lose = false;
     bool drawEnemies = true;
@@ -43,7 +40,6 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         // Draw pacman
         window.draw(pacman);
 
-
         // Draw the enemies
         if(drawEnemies && timeOpen.getElapsedTime().asSeconds() > 2.5f) {
             window.draw(blinky);
@@ -59,7 +55,10 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         while (window.pollEvent(event))
         {
             // Close window : exit
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed || 
+                (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) || 
+                (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)) || 
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                 window.close();
             // Manage the pacman next movement
             if (event.type == sf::Event::KeyPressed) {
@@ -126,9 +125,12 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
     return EXIT_SUCCESS;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     // Create the main window
+    pacmanPath = argv[0];
+    pacmanPath = pacmanPath.substr(0, pacmanPath.find("pacman"));
+
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Pacman");
     window.setFramerateLimit(FRAME_RATE);
 

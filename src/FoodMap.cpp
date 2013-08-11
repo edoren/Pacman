@@ -1,5 +1,4 @@
 #include "FoodMap.hpp"
-#include <iostream>
 
 FoodMap::FoodMap(sf::RenderWindow &window) {
     foodMap = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -39,7 +38,7 @@ FoodMap::FoodMap(sf::RenderWindow &window) {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
     this->window = &window;
-    this->foodTexture.loadFromFile("resources/food.png");
+    if(!this->foodTexture.loadFromFile(pacmanPath + "resources/food.png")) exit(EXIT_FAILURE);
     this->food1.setTexture(foodTexture);
     this->food2.setTexture(foodTexture);
     this->food1.setTextureRect(sf::IntRect(8, 0, 8, 8));
