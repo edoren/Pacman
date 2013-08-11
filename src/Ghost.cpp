@@ -10,21 +10,26 @@ Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, in
             this->setSpeed(VECTOR_LEFT);
             break;
         case HOUSE_MOVE:
-            this->setSpriteDirection(SPRITE_DOWN);
-            this->setSpeed(VECTOR_DOWN / 2.f);
+            if(housePos == HOUSE_MIDDLE) {
+                this->setSpriteDirection(SPRITE_DOWN);
+                this->setSpeed(VECTOR_DOWN / 2.f);
+            } else {
+                this->setSpriteDirection(SPRITE_UP);
+                this->setSpeed(VECTOR_UP / 2.f);
+            }
             break;
     }
 
     this->housePos = housePos;
     switch(housePos) {
         case HOUSE_MIDDLE:
-            this->timeInHouse = 1.f;
+            this->timeInHouse = 2.f;
             break;
         case HOUSE_LEFT:
-            this->timeInHouse = 3.f;
+            this->timeInHouse = 4.f;
             break;
         case HOUSE_RIGHT:
-            this->timeInHouse = 5.f;
+            this->timeInHouse = 6.f;
             break;
     }
     
@@ -76,6 +81,10 @@ void Ghost::update(const sf::Sprite background) {
 
 void Ghost::stopMovement() {
     this->enableMovement = false;
+}
+
+void Ghost::restartHouseClock() {
+    this->houseClock.restart();
 }
 
 void Ghost::randomMove(const sf::Sprite background) {

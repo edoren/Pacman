@@ -29,6 +29,7 @@ public:
     Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int movementState, int housePos);
 
     void update(const sf::Sprite background);
+    void restartHouseClock();
     void stopMovement();
 
 private:
