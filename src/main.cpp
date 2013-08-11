@@ -1,10 +1,12 @@
 // Standard headers
 #include <iostream>
+#include <vector>
 
-// Pacman and Ghost module
+// Pacman, Ghost and FoodMap module
 #include "Pacman.hpp"
 #include "Ghost.hpp"
-
+#include "FoodMap.hpp"
+// Sound Module
 #include "Sound.hpp"
 // Configuration module
 #include "Config.hpp"
@@ -12,7 +14,7 @@
 bool firstStart = true;
 sf::Clock timeOpen;
 
-int start(sf::RenderWindow &window, Sounds &sounds) {
+int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
     // Load background
     sf::Texture BGtexture;
     if (!Collision::CreateTextureAndBitmask(BGtexture, "resources/pacman-map.png")) return EXIT_FAILURE;
@@ -35,8 +37,12 @@ int start(sf::RenderWindow &window, Sounds &sounds) {
 
         // Draw the background
         window.draw(background);
+
+        // Draw the food
+        food.drawFood(window);
         // Draw pacman
         window.draw(pacman);
+
 
         // Draw the enemies
         if(drawEnemies && timeOpen.getElapsedTime().asSeconds() > 2.5f) {
@@ -76,6 +82,8 @@ int start(sf::RenderWindow &window, Sounds &sounds) {
         // Move pacman in the next corner if setNextMovement(int key) is called
         pacman.inputMovement(background);
 
+        if(food.eatFood(pacman.getPosition())) sounds.playChomp();
+
         // Defines actions if lose the game.
         if(!lose) {
             if(Collision::BoundingBoxTest(pacman, blinky) or Collision::BoundingBoxTest(pacman, inky) or Collision::BoundingBoxTest(pacman, pinky) or Collision::BoundingBoxTest(pacman, clyde)) {
@@ -86,7 +94,7 @@ int start(sf::RenderWindow &window, Sounds &sounds) {
                 pinky.stopMovement();
                 pacman.setFrame(0);
                 sounds.stopSounds();
-                sf::sleep(sf::seconds(0.4f));
+                sf::sleep(sf::seconds(0.6f));
                 drawEnemies = false;
                 sounds.lose.play();
             }
@@ -125,11 +133,12 @@ int main()
     window.setFramerateLimit(FRAME_RATE);
 
     Sounds sounds;
+    FoodMap food;
 
     sounds.intro.play();
 
     while(window.isOpen()) {
-        start(window, sounds);
+        start(window, sounds, food);
         sf::sleep(sf::seconds(2.0f));
         sounds.siren.play();
     }

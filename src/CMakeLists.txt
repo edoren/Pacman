@@ -17,6 +17,7 @@ set(PACMAN_SRC
     ${SRC_DIR}/Sprite.cpp
     ${SRC_DIR}/Pacman.cpp
     ${SRC_DIR}/Ghost.cpp
+    ${SRC_DIR}/FoodMap.cpp
     ${SRC_DIR}/Sound.cpp
     ${SRC_DIR}/Collision.cpp
 )
@@ -26,6 +27,7 @@ set(PACMAN_HEADERS
     ${HEADER_DIR}/Sprite.hpp
     ${HEADER_DIR}/Pacman.hpp
     ${HEADER_DIR}/Ghost.hpp
+    ${HEADER_DIR}/FoodMap.hpp
     ${HEADER_DIR}/Sound.hpp
     ${HEADER_DIR}/Collision.hpp
     ${HEADER_DIR}/Input.hpp

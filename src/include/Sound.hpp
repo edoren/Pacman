@@ -11,6 +11,10 @@ private:
         Sound(std::string soundFile);
     };
 
+    bool chomp;
+    Sound chomp1;
+    Sound chomp2;
+
 public:
     Sounds();
 
@@ -19,7 +23,7 @@ public:
     Sound siren;
 
     void stopSounds();
+    void playChomp();
 };
-
 
 #endif // __SOUND_H__
