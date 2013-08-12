@@ -84,7 +84,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
 
         // Defines actions if lose the game.
         if(!lose) {
-            if(Collision::PixelPerfectTestOneObj(pacman, blinky) or Collision::PixelPerfectTestOneObj(pacman, inky) or Collision::PixelPerfectTestOneObj(pacman, pinky) or Collision::BoundingBoxTest(pacman, clyde)) {
+            if(Collision::PixelPerfectTestOneObj(pacman, blinky) or Collision::PixelPerfectTestOneObj(pacman, inky) or Collision::PixelPerfectTestOneObj(pacman, pinky) or Collision::PixelPerfectTestOneObj(pacman, clyde)) {
                 lose = true;
                 blinky.stopMovement();
                 inky.stopMovement();

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 
 # Build type
 if(CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # project name
@@ -19,7 +19,7 @@ set(SFML_ROOT ${PROJECT_SOURCE_DIR}/SFML-2)
 # add_definitions("-Wall")
 if(APPLE)
     set(CMAKE_CXX_FLAGS "-std=c++0x -stdlib=libc++")
-else()
+elseif(MINGW OR UNIX)
     set(CMAKE_CXX_FLAGS "-std=c++0x")
 endif()
 
