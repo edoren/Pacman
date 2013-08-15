@@ -1,5 +1,5 @@
-#ifndef __INPUT_H__
-#define __INPUT_H__
+#ifndef INPUT_HPP
+#define INPUT_HPP
 
 
 // Keyboard definitions
@@ -10,4 +10,4 @@
 #define KEYBOARD_NULL 5
 
 
-#endif // __INPUT_H__
+#endif // INPUT_HPP

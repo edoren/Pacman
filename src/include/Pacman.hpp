@@ -1,5 +1,5 @@
-#ifndef __PACMAN_H__
-#define __PACMAN_H__
+#ifndef PACMAN_HPP
+#define PACMAN_HPP
 
 #include "Sprite.hpp"
 #include "Input.hpp"
@@ -10,7 +10,7 @@ private:
     bool animation;
     sf::Texture loseTexture;
     bool enableMovement; // if true pacman moves
-    
+
     int keypressed; // store the next movement of pacman
     sf::Vector2f lastPos;
 
@@ -22,7 +22,7 @@ public:
     void setMouthState(bool mouth);
     bool getAnimation();
     void setAnimation(bool animation);
-    
+
     sf::Vector2f getLastPos();
     void setLastPos(sf::Vector2f lastPos);
     void setNextMovement(int keypressed);
@@ -34,7 +34,7 @@ public:
 
 private:
     bool backgroundCollision(const sf::Sprite background);
-    
+
     void updateAnimation();
     void updatePos();
 
@@ -42,4 +42,4 @@ private:
 
 };
 
-#endif // __PACMAN_H__
+#endif // PACMAN_HPP

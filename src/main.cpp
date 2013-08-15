@@ -55,7 +55,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         while (window.pollEvent(event))
         {
             // Close window : exit
-            if (event.type == sf::Event::Closed || 
+            if (event.type == sf::Event::Closed ||
                 (sf::Keyboard::isKeyPressed(sf::Keyboard::CONTROL) && sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) ||
                 (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)))
                 window.close();
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 {
     // Create the main window
     pacmanPath = argv[0];
-    pacmanPath = pacmanPath.substr(0, pacmanPath.find("pacman"));
+    pacmanPath = pacmanPath.substr(0, pacmanPath.find_last_of(PATH_SEPARATOR)+1);
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Pacman");
     window.setFramerateLimit(FRAME_RATE);

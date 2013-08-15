@@ -1,5 +1,5 @@
-#ifndef __FOOD_MAP_H__
-#define __FOOD_MAP_H__
+#ifndef FOOD_MAP_HPP
+#define FOOD_MAP_HPP
 
 #include <vector>
 #include <SFML/Graphics.hpp>
@@ -24,4 +24,4 @@ public:
     bool eatFood(sf::Vector2f pacmanPos);
 };
 
-#endif // __FOOD_MAP_H__
+#endif // FOOD_MAP_HPP

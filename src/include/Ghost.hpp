@@ -1,5 +1,5 @@
-#define __GHOST_H__
-#ifdef __GHOST_H__
+#ifndef GHOST_HPP
+#define GHOST_HPP
 
 #include "Sprite.hpp"
 
@@ -44,4 +44,4 @@ private:
     void houseMove(const sf::Sprite background, float time);
 };
 
-#endif // __GHOST_H__
+#endif // GHOST_HPP

@@ -1,5 +1,5 @@
-#ifndef __SPRITE_H__
-#define __SPRITE_H__
+#ifndef SPRITE_HPP
+#define SPRITE_HPP
 
 #include <cmath>
 #include <cassert>
@@ -24,7 +24,7 @@ class Sprite : public sf::Sprite {
 public:
     sf::Clock frameClock;
     sf::Time frameTimer;
-    
+
 private:
     sf::Texture texture;
 
@@ -54,5 +54,4 @@ private:
 
 };
 
-
-#endif // __SPRITE_H__
+#endif // SPRITE_HPP

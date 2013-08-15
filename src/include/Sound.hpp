@@ -1,5 +1,5 @@
-#ifndef __SOUND_H__
-#define __SOUND_H__
+#ifndef SOUND_HPP
+#define SOUND_HPP
 
 #include <SFML/Audio.hpp>
 #include "Config.hpp"
@@ -27,4 +27,4 @@ public:
     void playChomp();
 };
 
-#endif // __SOUND_H__
+#endif // SOUND_HPP
