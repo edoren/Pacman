@@ -8,6 +8,7 @@
 class FoodMap {
 private:
     std::vector<std::vector<int>> foodMap;
+    std::vector<std::vector<int>> foodMapBackup;
 
     sf::Texture foodTexture;
     sf::Sprite food1;
@@ -22,6 +23,8 @@ public:
 
     void drawFood();
     bool eatFood(sf::Vector2f pacmanPos);
+    bool noFood();
+    void resetFood();
 };
 
 #endif // FOOD_MAP_HPP

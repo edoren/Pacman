@@ -37,6 +37,7 @@ FoodMap::FoodMap(sf::RenderWindow &window) {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+    this->foodMapBackup = this->foodMap;
     this->window = &window;
     if(!this->foodTexture.loadFromFile(pacmanPath + "resources/food.png")) exit(EXIT_FAILURE);
     this->food1.setTexture(foodTexture);
@@ -46,14 +47,14 @@ FoodMap::FoodMap(sf::RenderWindow &window) {
 }
 
 void FoodMap::drawFood() {
-    for(int j = 0; j < this->foodMap.size(); j++) {
-        for (int i = 0; i < this->foodMap[j].size(); i++) {
-            switch(foodMap[j][i]) {
+    for(int row = 0; row < this->foodMap.size(); ++row) {
+        for (int col = 0; col < this->foodMap[row].size(); ++col) {
+            switch(foodMap[row][col]) {
                 case 1:
-                    this->drawFoodinPos(sf::Vector2f(i * 8, j * 8), food1);
+                    this->drawFoodinPos(sf::Vector2f(col * 8, row * 8), food1);
                     break;
                 case 2: 
-                    this->drawFoodinPos(sf::Vector2f(i * 8, j * 8), food2);
+                    this->drawFoodinPos(sf::Vector2f(col * 8, row * 8), food2);
                     break;
             }
         }
@@ -74,4 +75,17 @@ bool FoodMap::eatFood(sf::Vector2f pacmanPos) {
         return true;
     }
     return false;
+}
+
+bool FoodMap::noFood() {
+    for (auto row : foodMap) {
+        for (auto col : row) {
+            if (col != 0) return false;
+        }
+    }
+    return true;
+}
+
+void FoodMap::resetFood() {
+    this->foodMap = this->foodMapBackup;
 }

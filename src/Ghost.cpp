@@ -5,7 +5,7 @@ Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, in
     this->lastPos = this->getPosition();
 
     switch(movementState) {
-        case CHASE_MOVE:
+        case SCATTER_MOVE:
             this->setSpriteDirection(SPRITE_LEFT);
             this->setSpeed(VECTOR_LEFT);
             break;

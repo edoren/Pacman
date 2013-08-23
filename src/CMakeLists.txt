@@ -38,7 +38,7 @@ set(PACMAN_HEADERS
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 
 # set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML 2 COMPONENTS graphics audio window system REQUIRED)
+find_package(SFML 2 COMPONENTS audio graphics window system REQUIRED)
 if(SFML_FOUND)
     # including directories
     include_directories(${SFML_INCLUDE_DIR})
