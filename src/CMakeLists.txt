@@ -40,10 +40,30 @@ add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 # set(SFML_STATIC_LIBRARIES TRUE)
 find_package(SFML 2 COMPONENTS audio graphics window system REQUIRED)
 if(SFML_FOUND)
-    # including directories
     include_directories(${SFML_INCLUDE_DIR})
-    # linking libraries
     target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif(SFML_FOUND)
+
+set(PYTHON_VERSION 3.3)
+
+# if python3 is installed using Homebrew
+if(APPLE)
+    foreach(SUFIX "0" "1" "2" "3")
+        set(POSIBLE_PYTHON_LIBRARY /usr/local/Cellar/python3/${PYTHON_VERSION}.${SUFIX}/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/config-${PYTHON_VERSION}m/libpython${PYTHON_VERSION}m.dylib)
+        set(POSIBLE_PYTHON_INCLUDE_DIR /usr/local/Cellar/python3/${PYTHON_VERSION}.${SUFIX}/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/include/python${PYTHON_VERSION}m)
+        if(EXISTS ${POSIBLE_PYTHON_LIBRARY})
+            set(PYTHON_LIBRARY ${POSIBLE_PYTHON_LIBRARY})
+        endif()
+        if(EXISTS ${POSIBLE_PYTHON_INCLUDE_DIR})
+            set(PYTHON_INCLUDE_DIR ${POSIBLE_PYTHON_INCLUDE_DIR})
+        endif()
+        MESSAGE(STATUS ${PYTHON_LIBRARY})
+        MESSAGE(STATUS ${PYTHON_INCLUDE_DIR})
+    endforeach()
+endif()
+
+find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+target_link_libraries(${EXECUTABLE_NAME} ${PYTHON_LIBRARIES})
 
 # find_package(Lua 5 REQUIRED)
