@@ -14,16 +14,16 @@ sf::Clock timeOpen;
 int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
     // Load background
     sf::Texture BGtexture;
-    if (!Collision::CreateTextureAndBitmask(BGtexture, pacmanPath + "resources/pacman-map.png")) exit(EXIT_FAILURE);
+    if (!Collision::CreateTextureAndBitmask(BGtexture, pacmanPath + "resources/images/pacman-map.png")) exit(EXIT_FAILURE);
     sf::Sprite background(BGtexture);
 
     // Load pacman
     Pacman pacman;
     // Load the enemies
-    Ghost blinky(sf::Vector2f(105, 109), pacmanPath + "resources/blinkySprites.png", SCATTER_MOVE, HOUSE_MIDDLE);
-    Ghost clyde(sf::Vector2f(121, 133), pacmanPath + "resources/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
-    Ghost pinky(sf::Vector2f(105, 133), pacmanPath + "resources/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
-    Ghost inky(sf::Vector2f(89, 133), pacmanPath + "resources/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
+    Ghost blinky(sf::Vector2f(105, 109), pacmanPath + "resources/images/blinkySprites.png", SCATTER_MOVE, HOUSE_MIDDLE);
+    Ghost clyde(sf::Vector2f(121, 133), pacmanPath + "resources/images/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
+    Ghost pinky(sf::Vector2f(105, 133), pacmanPath + "resources/images/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
+    Ghost inky(sf::Vector2f(89, 133), pacmanPath + "resources/images/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
 
     bool lose = false;
     bool drawEnemies = true;

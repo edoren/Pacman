@@ -65,9 +65,9 @@ FoodMap::FoodMap(sf::RenderWindow &window) {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
     this->foodMapBackup = this->foodMap;
     this->window = &window;
-    if(!this->numbersTexture.loadFromFile(pacmanPath + "resources/numbers.png")) exit(EXIT_FAILURE);
+    if(!this->numbersTexture.loadFromFile(pacmanPath + "resources/images/numbers.png")) exit(EXIT_FAILURE);
     this->numbers.setTexture(numbersTexture);
-    if(!this->foodTexture.loadFromFile(pacmanPath + "resources/food.png")) exit(EXIT_FAILURE);
+    if(!this->foodTexture.loadFromFile(pacmanPath + "resources/images/food.png")) exit(EXIT_FAILURE);
     this->food1.setTexture(foodTexture);
     this->food2.setTexture(foodTexture);
     this->food1.setTextureRect(sf::IntRect(8, 0, 8, 8));
