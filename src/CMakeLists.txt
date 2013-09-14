@@ -57,8 +57,6 @@ if(APPLE)
         if(EXISTS ${POSIBLE_PYTHON_INCLUDE_DIR})
             set(PYTHON_INCLUDE_DIR ${POSIBLE_PYTHON_INCLUDE_DIR})
         endif()
-        MESSAGE(STATUS ${PYTHON_LIBRARY})
-        MESSAGE(STATUS ${PYTHON_INCLUDE_DIR})
     endforeach()
 endif()
 
