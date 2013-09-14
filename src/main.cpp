@@ -34,9 +34,10 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
 
         // Draw the background
         window.draw(background);
-
         // Draw the food
         food.drawFood();
+        // Draw the score
+        food.drawScore();
         // Draw pacman
         window.draw(pacman);
 
