@@ -2,9 +2,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Build type
-if(CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE Release)
-endif()
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 # project name
 project(Pacman)
