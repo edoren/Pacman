@@ -90,13 +90,13 @@ void FoodMap::drawScore() {
 }
 
 void FoodMap::drawFood() {
-    for(int row = 0; row < this->foodMap.size(); ++row) {
-        for (int col = 0; col < this->foodMap[row].size(); ++col) {
+    for(unsigned int row = 0; row < this->foodMap.size(); ++row) {
+        for (unsigned int col = 0; col < this->foodMap[row].size(); ++col) {
             switch(foodMap[row][col]) {
                 case 1:
                     this->drawInPos(sf::Vector2f(col * 8, row * 8), food1);
                     break;
-                case 2: 
+                case 2:
                     this->drawInPos(sf::Vector2f(col * 8, row * 8), food2);
                     break;
             }
@@ -111,10 +111,12 @@ void FoodMap::drawInPos(sf::Vector2f pos, sf::Sprite food) {
 
 bool FoodMap::eatFood(sf::Vector2f pacmanPos) {
     pacmanPos += sf::Vector2f(7.f,7.f);
-    int posX = pacmanPos.x / 8;
-    int posY = pacmanPos.y / 8;
-    if(pacmanPos.x / 8.f == posX+0.5f && pacmanPos.y / 8.f == posY+0.5f && foodMap[posY][posX] != 0) {
-        // Call the function calculate(foodType) 
+    unsigned int posX = pacmanPos.x / 8;
+    unsigned int posY = pacmanPos.y / 8;
+    if(pacmanPos.x / 8.f == posX+0.5f && pacmanPos.y / 8.f == posY+0.5f &&
+       foodMap[posY][posX] != 0 && posY < foodMap.size() && posX < foodMap[posY].size())
+    {
+        // Call the function calculate(foodType)
         PyObject_CallFunctionObjArgs(Calculate, PyLong_FromLong(foodMap[posY][posX]), NULL);
         foodMap[posY][posX] = 0;
         return true;

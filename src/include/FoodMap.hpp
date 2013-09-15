@@ -1,6 +1,7 @@
 #ifndef FOOD_MAP_HPP
 #define FOOD_MAP_HPP
 
+#include <cmath>
 #include <Python.h>
 #include <vector>
 #include <SFML/Graphics.hpp>
