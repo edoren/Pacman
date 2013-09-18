@@ -6,8 +6,9 @@
 // Headers for SFML2 modules
 #include <SFML/Graphics.hpp>
 // Collition and Config modules
-#include "Collision.hpp"
 #include "Config.hpp"
+
+#define TILE_SIZE 8.f
 
 #define VECTOR_RIGHT sf::Vector2f(1, 0)
 #define VECTOR_LEFT sf::Vector2f(-1, 0)
@@ -41,6 +42,7 @@ public:
     sf::Vector2f setSpeedDirection();
     int getFrame();
     int getDirection();
+    sf::Vector2f getTilePos();
     sf::Texture getSpriteTexture();
 
     void setSpeed(float speed);

@@ -41,14 +41,18 @@ Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, in
 
 void Ghost::updateAnimation() {
     this->frameTimer = this->frameClock.getElapsedTime();
-        if(this->frameTimer.asSeconds() > 0.08f)  {
-            this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
-            if (this->getFrame() == 0){
-                this->setFrame(1);
-            } else if(this->getFrame() == 1) {
-                this->setFrame(0);
-            }
-        this->frameClock.restart();
+    if(movementState != FRIGHTENED_MOVE) {
+            if(this->frameTimer.asSeconds() > 0.08f)  {
+                this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
+                if (this->getFrame() == 0){
+                    this->setFrame(1);
+                } else if(this->getFrame() == 1) {
+                    this->setFrame(0);
+                }
+            this->frameClock.restart();
+        }
+    } else {
+        
     }
 }
 
@@ -64,16 +68,24 @@ void Ghost::updatePos() {
     }
 }
 
-void Ghost::update(const sf::Sprite background) {
-    if(this->enableMovement) {
-        switch(this->movementState) {
-            case SCATTER_MOVE:
-                this->randomMove(background);
-                break;
-            case HOUSE_MOVE:
-                this->houseMove(background, 2.f);
-                break;
+void Ghost::update(TileMap& map) {
+    if(map.isValidTilePos(this->getTilePos())) {
+        if(this->enableMovement) {
+            switch(this->movementState) {
+                case CHASE_MOVE:
+                    this->frightenedMove(map);
+                    break;
+                case SCATTER_MOVE:
+                    this->frightenedMove(map);
+                    break;
+                case FRIGHTENED_MOVE:
+                    this->frightenedMove(map);
+                    break;
+            }
         }
+    }
+    if (this->movementState == HOUSE_MOVE) {
+        this->houseMove(map, 2.f);
     }
     this->updateAnimation();
     this->updatePos();
@@ -87,8 +99,13 @@ void Ghost::restartHouseClock() {
     this->houseClock.restart();
 }
 
-void Ghost::randomMove(const sf::Sprite background) {
-    std::vector<sf::Vector2f> paths = this->avaliablePaths(background);
+void Ghost::setFrightened() {
+    movementState = FRIGHTENED_MOVE;
+    this->setFrame(0);
+}
+
+void Ghost::frightenedMove(TileMap& map) {
+    std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
     if(!paths.empty()) {
         int randnum = rand() % paths.size();
         if(paths[randnum] == VECTOR_UP) this->setSpriteDirection(SPRITE_UP);
@@ -99,23 +116,24 @@ void Ghost::randomMove(const sf::Sprite background) {
     }
 }
 
-void Ghost::houseMove(const sf::Sprite background, float time) {
+void Ghost::houseMove(TileMap& map, float time) {
+    sf::Vector2f tilePos = sf::Vector2f(std::ceil(getTilePos().x), getTilePos().y);
     if(this->houseClock.getElapsedTime().asSeconds() < this->timeInHouse) {
-        if(this->collisionInPoint(VECTOR_UP, background)) {
+        if(map.checkCollision(tilePos - sf::Vector2f(0, 3/8.f), SPRITE_UP)) {
             this->setSpeedDirection(VECTOR_DOWN);
             this->setSpriteDirection(SPRITE_DOWN);
         }
-        if(this->collisionInPoint(VECTOR_DOWN, background)) {
+        if(map.checkCollision(tilePos + sf::Vector2f(0, 3/8.f), SPRITE_DOWN)) {
             this->setSpeedDirection(VECTOR_UP);
             this->setSpriteDirection(SPRITE_UP);
         }
     } else {
         switch(this->housePos) {
             case HOUSE_MIDDLE:
-                if(this->getPosition().x == 105 and this->getPosition().y > 125) {
+                if(this->getPosition().x == 105 and this->getPosition().y > 109) {
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    this->setSpeed(VECTOR_UP);
+                    this->setSpeed(VECTOR_LEFT);
                     this->movementState = SCATTER_MOVE;
                 }
                 break;
@@ -123,11 +141,11 @@ void Ghost::houseMove(const sf::Sprite background, float time) {
                 if(this->getPosition().x < 105) {
                     this->setSpriteDirection(SPRITE_RIGHT);
                     this->setSpeedDirection(VECTOR_RIGHT);
-                } else if(this->getPosition().x == 105 and this->getPosition().y > 125) {
+                } else if(this->getPosition().x == 105 and this->getPosition().y > 109) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    this->setSpeed(VECTOR_UP);
+                    this->setSpeed(VECTOR_RIGHT);
                     this->movementState = SCATTER_MOVE;
                 }
                 break;
@@ -135,11 +153,11 @@ void Ghost::houseMove(const sf::Sprite background, float time) {
                 if(this->getPosition().x > 105) {
                     this->setSpriteDirection(SPRITE_LEFT);
                     this->setSpeedDirection(VECTOR_LEFT);
-                } else if(this->getPosition().x == 105 and this->getPosition().y > 125) {
+                } else if(this->getPosition().x == 105 and this->getPosition().y > 109) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    this->setSpeed(VECTOR_UP);
+                    this->setSpeed(VECTOR_RIGHT);
                     this->movementState = SCATTER_MOVE;
                 }
                 break;
@@ -147,22 +165,10 @@ void Ghost::houseMove(const sf::Sprite background, float time) {
     }
 }
 
-std::vector<sf::Vector2f> Ghost::avaliablePaths(const sf::Sprite background) {
-    std::vector<sf::Vector2f> avaliablePaths;
-    // Check for all the posibles paths in the actual position
-    if(!this->collisionInPoint(VECTOR_UP, background) and this->getSpeed() != VECTOR_DOWN) avaliablePaths.push_back(VECTOR_UP);
-    if(!this->collisionInPoint(VECTOR_DOWN, background) and this->getSpeed() != VECTOR_UP and this->getPosition() != sf::Vector2f(105, 109)) avaliablePaths.push_back(VECTOR_DOWN);
-    if(!this->collisionInPoint(VECTOR_LEFT, background) and this->getSpeed() != VECTOR_RIGHT) avaliablePaths.push_back(VECTOR_LEFT);
-    if(!this->collisionInPoint(VECTOR_RIGHT, background) and this->getSpeed() != VECTOR_LEFT) avaliablePaths.push_back(VECTOR_RIGHT);
+std::vector<sf::Vector2f> Ghost::avaliablePaths(TileMap& map) {
+    std::vector<sf::Vector2f> avaliablePaths = map.avaliablePaths(this->getTilePos());
+    auto iterator = std::find(avaliablePaths.begin(), avaliablePaths.end(), this->getSpeed() * -1.f);
+    if(iterator != avaliablePaths.end()) avaliablePaths.erase(iterator);
     return avaliablePaths;
 }
 
-bool Ghost::collisionInPoint(sf::Vector2f point, const sf::Sprite background) {
-    this->setPosition(this->getPosition() + point);
-    if(!Collision::PixelPerfectTestOneObj(background, *this)) {
-        this->setPosition(this->getPosition() - point);
-        return false;
-    }
-    this->setPosition(this->getPosition() - point);
-    return true;
-}

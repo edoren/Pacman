@@ -17,7 +17,7 @@ set(PACMAN_SRC
     ${SRC_DIR}/Sprite.cpp
     ${SRC_DIR}/Pacman.cpp
     ${SRC_DIR}/Ghost.cpp
-    ${SRC_DIR}/FoodMap.cpp
+    ${SRC_DIR}/TileMap.cpp
     ${SRC_DIR}/Sound.cpp
     ${SRC_DIR}/Collision.cpp
 )
@@ -27,7 +27,7 @@ set(PACMAN_HEADERS
     ${HEADER_DIR}/Sprite.hpp
     ${HEADER_DIR}/Pacman.hpp
     ${HEADER_DIR}/Ghost.hpp
-    ${HEADER_DIR}/FoodMap.hpp
+    ${HEADER_DIR}/TileMap.hpp
     ${HEADER_DIR}/Sound.hpp
     ${HEADER_DIR}/Collision.hpp
     ${HEADER_DIR}/Input.hpp
@@ -64,4 +64,6 @@ find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 target_link_libraries(${EXECUTABLE_NAME} ${PYTHON_LIBRARIES})
 
-# find_package(Lua 5 REQUIRED)
+# find_package(Lua 5.2 REQUIRED)
+# include_directories(${LUA_INCLUDE_DIR})
+# target_link_libraries(${EXECUTABLE_NAME} ${LUA_LIBRARIES})

@@ -1,7 +1,7 @@
 #include "Sprite.hpp"
 
 Sprite::Sprite(std::string spriteImgFile) : speed(), speedDirection(), spriteDirection(), frame(), frameClock(), frameTimer() {
-    if (!Collision::CreateTextureAndBitmask(this->texture, spriteImgFile)) exit(EXIT_FAILURE);
+    if (!this->texture.loadFromFile(spriteImgFile)) exit(EXIT_FAILURE);
     this->setTexture(this->texture);
     this->setFrame(0);
 }
@@ -18,6 +18,10 @@ int Sprite::getFrame() {
 
 int Sprite::getDirection() {
     return this->spriteDirection;
+}
+
+sf::Vector2f Sprite::getTilePos() {
+    return (this->getPosition() + sf::Vector2f(3, 3)) / TILE_SIZE;
 }
 
 void Sprite::setSpeed(sf::Vector2f speed) {

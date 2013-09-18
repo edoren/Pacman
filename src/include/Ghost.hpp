@@ -2,6 +2,8 @@
 #define GHOST_HPP
 
 #include "Sprite.hpp"
+#include "TileMap.hpp"
+#include "Collision.hpp"
 
 #define CHASE_MOVE 0
 #define SCATTER_MOVE 1
@@ -28,20 +30,22 @@ private:
 public:
     Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int movementState, int housePos);
 
-    void update(const sf::Sprite background);
+    void setFrightened();
+
+    void update(TileMap& map);
     void restartHouseClock();
     void stopMovement();
 
 private:
-    std::vector<sf::Vector2f> avaliablePaths(const sf::Sprite background);
-    bool collisionInPoint(sf::Vector2f point, const sf::Sprite background);
+    std::vector<sf::Vector2f> avaliablePaths(TileMap& map);
+    bool collisionInPoint(sf::Vector2f point, TileMap& map);
 
     void updateAnimation();
     void updatePos();
 
     // Movement algorithms
-    void randomMove(const sf::Sprite background);
-    void houseMove(const sf::Sprite background, float time);
+    void frightenedMove(TileMap& map);
+    void houseMove(TileMap& map, float time);
 };
 
 #endif // GHOST_HPP

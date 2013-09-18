@@ -1,7 +1,8 @@
 #ifndef PACMAN_HPP
 #define PACMAN_HPP
 
-#include "Sprite.hpp"
+#include "Collision.hpp"
+#include "TileMap.hpp"
 #include "Input.hpp"
 
 class Pacman : public Sprite {
@@ -12,34 +13,30 @@ private:
     bool enableMovement; // if true pacman moves
 
     int keypressed; // store the next movement of pacman
-    sf::Vector2f lastPos;
 
 public:
     Pacman();
     ~Pacman();
 
+    void setNextMovement(int keypressed);
+    void inputMovement(TileMap &map);
+
+    void update(TileMap &map);
+
+    bool lose();
+
+private:
     bool getMouthState();
     void setMouthState(bool mouth);
     bool getAnimation();
     void setAnimation(bool animation);
 
-    sf::Vector2f getLastPos();
-    void setLastPos(sf::Vector2f lastPos);
-    void setNextMovement(int keypressed);
-
-    void update(const sf::Sprite background);
-    void inputMovement(const sf::Sprite background);
-
-    bool lose();
-
-private:
-    bool backgroundCollision(const sf::Sprite background);
+    bool mapCollision(TileMap& map);
 
     void updateAnimation();
     void updatePos();
 
-    void keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection);
-
+    void keyAction(sf::Vector2f direction, TileMap& map, int spriteDirection);
 };
 
 #endif // PACMAN_HPP

@@ -1,7 +1,7 @@
 // Pacman, Ghost and FoodMap module
 #include "Pacman.hpp"
 #include "Ghost.hpp"
-#include "FoodMap.hpp"
+#include "TileMap.hpp"
 // Sound Module
 #include "Sound.hpp"
 // Configuration module
@@ -11,10 +11,10 @@ std::string pacmanPath;
 bool firstStart = true;
 sf::Clock timeOpen;
 
-int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
+int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
     // Load background
     sf::Texture BGtexture;
-    if (!Collision::CreateTextureAndBitmask(BGtexture, pacmanPath + "resources/images/pacman-map.png")) exit(EXIT_FAILURE);
+    if (!BGtexture.loadFromFile(pacmanPath + "resources/images/pacman-map.png")) exit(EXIT_FAILURE);
     sf::Sprite background(BGtexture);
 
     // Load pacman
@@ -35,9 +35,9 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
         // Draw the background
         window.draw(background);
         // Draw the food
-        food.drawFood();
+        map.drawFood();
         // Draw the score
-        food.drawScore();
+        map.drawScore();
         // Draw pacman
         window.draw(pacman);
 
@@ -79,13 +79,13 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
             }
         }
         // Move pacman in the next corner if setNextMovement(int key) is called
-        pacman.inputMovement(background);
+        pacman.inputMovement(map);
 
-        if(food.eatFood(pacman.getPosition())) sounds.playChomp();
+        if(map.eatFood(pacman.getTilePos())) sounds.playChomp();
 
         // Defines actions if lose the game.
         if(!lose) {
-            if(Collision::PixelPerfectTestOneObj(pacman, blinky) or Collision::PixelPerfectTestOneObj(pacman, inky) or Collision::PixelPerfectTestOneObj(pacman, pinky) or Collision::PixelPerfectTestOneObj(pacman, clyde)) {
+            if(Collision::AABBCollision(pacman, blinky) or Collision::AABBCollision(pacman, inky) or Collision::AABBCollision(pacman, pinky) or Collision::AABBCollision(pacman, clyde)) {
                 lose = true;
                 blinky.stopMovement();
                 inky.stopMovement();
@@ -111,12 +111,12 @@ int start(sf::RenderWindow &window, Sounds &sounds, FoodMap &food) {
                 sounds.siren.play();
                 firstStart = false;
             }
-            pacman.update(background);
+            pacman.update(map);
             // Update the enemies position
-            blinky.update(background);
-            inky.update(background);
-            clyde.update(background);
-            pinky.update(background);
+            blinky.update(map);
+            inky.update(map);
+            clyde.update(map);
+            pinky.update(map);
         }
     }
 
@@ -135,12 +135,12 @@ int main(int argc, char* argv[])
     window.setFramerateLimit(FRAME_RATE);
 
     Sounds sounds;
-    FoodMap food(window);
+    TileMap map(window);
 
     sounds.intro.play();
 
     while(window.isOpen()) {
-        start(window, sounds, food);
+        start(window, sounds, map);
         sf::sleep(sf::seconds(2.0f));
         sounds.siren.play();
     }

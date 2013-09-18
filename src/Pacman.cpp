@@ -2,7 +2,7 @@
 
 // Constructor
 Pacman::Pacman() : Sprite(pacmanPath + "resources/images/pacmanSprites.png") {
-    if (!Collision::CreateTextureAndBitmask(this->loseTexture, pacmanPath + "resources/images/pacmanLose.png")) exit(EXIT_FAILURE);
+    if (!this->loseTexture.loadFromFile(pacmanPath + "resources/images/pacmanLose.png")) exit(EXIT_FAILURE);
     this->setTextureRect(sf::IntRect(43, 3, 14, 14));
     this->setPosition(sf::Vector2f(105, 205));
 
@@ -10,7 +10,6 @@ Pacman::Pacman() : Sprite(pacmanPath + "resources/images/pacmanSprites.png") {
     this->animation = true;
     this->enableMovement = true;
     this->keypressed = KEYBOARD_NULL;
-    this->lastPos = this->getPosition();
 
     this->setSpriteDirection(SPRITE_LEFT);
     this->setSpeed(sf::Vector2f(-1,0));
@@ -18,11 +17,6 @@ Pacman::Pacman() : Sprite(pacmanPath + "resources/images/pacmanSprites.png") {
 
 //Destructor
 Pacman::~Pacman() {}
-
-
-sf::Vector2f Pacman::getLastPos() {
-    return this->lastPos;
-}
 
 bool Pacman::getAnimation() {
     return this->animation;
@@ -34,10 +28,6 @@ bool Pacman::getMouthState() {
 
 void Pacman::setMouthState(bool mouth) {
     this->mouth = mouth;
-}
-
-void Pacman::setLastPos(sf::Vector2f lastPos) {
-    this->lastPos = lastPos;
 }
 
 void Pacman::setAnimation(bool animation) {
@@ -74,8 +64,6 @@ void Pacman::updateAnimation() {
 // Move pacman
 void Pacman::updatePos() {
     if (enableMovement) {
-        // Get the last position
-        this->setLastPos(this->getPosition()); 
         // Check if pacman is out of position
         if(this->getPosition().x <= -12) {
             this->setPosition(sf::Vector2f(WINDOW_WIDTH-2, this->getPosition().y));
@@ -88,55 +76,49 @@ void Pacman::updatePos() {
 }
 
 // Update all the pacman states
-void Pacman::update(const sf::Sprite background) {
+void Pacman::update(TileMap& map) {
     this->updateAnimation();
     this->updatePos();
-    this->backgroundCollision(background);
+    this->mapCollision(map);
 }
 
-void Pacman::keyAction(sf::Vector2f direction, const sf::Sprite background, int spriteDirection) {
-    this->enableMovement = true;
-    if(this->getPosition() != sf::Vector2f(105, 109)) {
-        this->setPosition(this->getPosition() + direction);
-        if(!Collision::PixelPerfectTestOneObj(background, *this)) {
-                this->setSpeedDirection(direction);
-                this->setSpriteDirection(spriteDirection);
-                this->keypressed = KEYBOARD_NULL;
-        }
-        this->setPosition(this->getPosition() + direction * -1.f);
+void Pacman::keyAction(sf::Vector2f direction, TileMap &map, int spriteDirection) {
+    if (!map.checkCollision(this->getTilePos(), spriteDirection)) {
+        this->enableMovement = true;
+        this->setAnimation(true);
+        this->setSpeedDirection(direction);
+        this->setSpriteDirection(spriteDirection);
+        this->keypressed = KEYBOARD_NULL;
     }
 }
 
 // Get the keyboard input
-void Pacman::inputMovement(const sf::Sprite background) {
-    if(this->keypressed != KEYBOARD_NULL) {
-        switch(this->keypressed) {
-            case KEYBOARD_UP: 
-                Pacman::keyAction(VECTOR_UP, background, SPRITE_UP);
-                break;
-            case KEYBOARD_DOWN:
-                Pacman::keyAction(VECTOR_DOWN, background, SPRITE_DOWN);
-                break;
-            case KEYBOARD_LEFT:
-                Pacman::keyAction(VECTOR_LEFT, background, SPRITE_LEFT);
-                break;
-            case KEYBOARD_RIGHT:
-                Pacman::keyAction(VECTOR_RIGHT, background, SPRITE_RIGHT);
-                break;
+void Pacman::inputMovement(TileMap &map) {
+    if(map.isValidTilePos(this->getTilePos())) {
+        if(this->keypressed != KEYBOARD_NULL) {
+            switch(this->keypressed) {
+                case KEYBOARD_UP:
+                    Pacman::keyAction(VECTOR_UP, map, SPRITE_UP);
+                    break;
+                case KEYBOARD_DOWN:
+                    Pacman::keyAction(VECTOR_DOWN, map, SPRITE_DOWN);
+                    break;
+                case KEYBOARD_LEFT:
+                    Pacman::keyAction(VECTOR_LEFT, map, SPRITE_LEFT);
+                    break;
+                case KEYBOARD_RIGHT:
+                    Pacman::keyAction(VECTOR_RIGHT, map, SPRITE_RIGHT);
+                    break;
+            }
         }
-        this->setAnimation(true);
     }
 }
 
 // Backgound Collision
-bool Pacman::backgroundCollision(const sf::Sprite background) {
-    if(Collision::PixelPerfectTestOneObj(background, *this)){
-        this->setPosition(this->getLastPos());
-
+bool Pacman::mapCollision(TileMap &map) {
+    if(map.checkCollision(this->getTilePos(), this->getDirection())){
         this->setAnimation(false);
         this->enableMovement = false;
-
-        // std::cout << "Collision!!, Position: (" << pacman.getPosition().x << ", " << pacman.getPosition().y << ")" << std::endl;
         return true;
     }
     return false;
