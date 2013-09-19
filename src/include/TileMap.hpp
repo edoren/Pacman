@@ -9,11 +9,15 @@
 #include "Sprite.hpp"
 #include "Config.hpp"
 
+#define NOT_VALID 0
+#define VALID_IN_RANGE 1
+#define VALID_OUT_RANGE 2
+
 class TileMap {
 private:
-    std::vector<std::vector<char>> tileMap;
-    std::vector<std::vector<char>> foodMap;
-    std::vector<std::vector<char>> foodMapBackup;
+    std::vector<std::vector<int>> tileMap;
+    std::vector<std::vector<int>> foodMap;
+    std::vector<std::vector<int>> foodMapBackup;
 
     PyObject *scoreModule, *Calculate, *GetScore;
     std::string scriptsPath;
@@ -27,13 +31,14 @@ private:
     sf::RenderWindow *window;
 
     void drawInPos(sf::Vector2f pos, sf::Sprite food);
+    bool isInRange(sf::Vector2f tilePos);
 
 public:
     TileMap(sf::RenderWindow &window);
     ~TileMap();
 
     bool checkCollision(sf::Vector2f tilePos, int spriteDirection);
-    bool isValidTilePos(sf::Vector2f tilePos);
+    int isValidTilePos(sf::Vector2f tilePos);
     bool isIntersection(sf::Vector2f tilePos);
     std::vector<sf::Vector2f> avaliablePaths(sf::Vector2f tilePos);
 

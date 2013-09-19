@@ -69,7 +69,7 @@ void Ghost::updatePos() {
 }
 
 void Ghost::update(TileMap& map) {
-    if(map.isValidTilePos(this->getTilePos())) {
+    if(map.isValidTilePos(this->getTilePos()) == VALID_IN_RANGE) {
         if(this->enableMovement) {
             switch(this->movementState) {
                 case CHASE_MOVE:

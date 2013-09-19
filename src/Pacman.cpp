@@ -94,7 +94,7 @@ void Pacman::keyAction(sf::Vector2f direction, TileMap &map, int spriteDirection
 
 // Get the keyboard input
 void Pacman::inputMovement(TileMap &map) {
-    if(map.isValidTilePos(this->getTilePos())) {
+    if(map.isValidTilePos(this->getTilePos()) == VALID_IN_RANGE) {
         if(this->keypressed != KEYBOARD_NULL) {
             switch(this->keypressed) {
                 case KEYBOARD_UP:

@@ -147,30 +147,39 @@ void TileMap::drawInPos(sf::Vector2f pos, sf::Sprite sprite) {
     this->window->draw(sprite);
 }
 
-bool TileMap::isValidTilePos(sf::Vector2f tilePos) {
-    if( (tilePos.x - (int)tilePos.x) == 0 && (tilePos.y - (int)tilePos.y) == 0  &&
-         tilePos.x >= 0 && tilePos.x < 28 && tilePos.y >= 0 && tilePos.y < 36 ) return true;
+bool TileMap::isInRange(sf::Vector2f tilePos) {
+    if (tilePos.x >= 0 && tilePos.x < 28 && tilePos.y >= 0 && tilePos.y < 36) return true;
     else return false;
+}
+
+int TileMap::isValidTilePos(sf::Vector2f tilePos) {
+    if( (tilePos.x - (int)tilePos.x) == 0 && (tilePos.y - (int)tilePos.y) == 0 ) {
+        if(isInRange(tilePos)) return VALID_IN_RANGE;
+        else return VALID_OUT_RANGE;
+    }
+    else return NOT_VALID;
 }
 
 bool TileMap::checkCollision(sf::Vector2f tilePos, int spriteDirection) {
     if(isValidTilePos(tilePos)) {
+        sf::Vector2f tileInFront = tilePos;
         switch(spriteDirection) {
             case SPRITE_UP:
-                tilePos -= sf::Vector2f(0, 1);
+                tileInFront -= sf::Vector2f(0, 1);
                 break;
             case SPRITE_DOWN:
-                tilePos -= sf::Vector2f(0, -1);
+                tileInFront -= sf::Vector2f(0, -1);
                 break;
             case SPRITE_LEFT:
-                tilePos -= sf::Vector2f(1, 0);
+                tileInFront -= sf::Vector2f(1, 0);
                 break;
             case SPRITE_RIGHT:
-                tilePos -= sf::Vector2f(-1, 0);
+                tileInFront -= sf::Vector2f(-1, 0);
                 break;
         }
-        if(tileMap[tilePos.y][tilePos.x] == 0) return true;
-    }
+        if(!isInRange(tileInFront)) return false;
+        if(tileMap[tileInFront.y][tileInFront.x] == 0) return true;
+    } 
     return false;
 }
 

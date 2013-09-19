@@ -15,19 +15,9 @@
 # in locations other than lua/
 
 #=============================================================================
-# Copyright 2007-2009 Kitware, Inc.
-# Modified to support Lua 5.2 by LuaDist 2012
-#
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file Copyright.txt for details.
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
+
 #=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-# License text for the above reference.)
-#
+
 # The required version of Lua can be specified using the
 # standard syntax, e.g. FIND_PACKAGE(Lua 5.1)
 # Otherwise the module will search for any available Lua implementation
