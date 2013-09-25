@@ -27,8 +27,6 @@ public:
     sf::Time frameTimer;
 
 private:
-    sf::Texture texture;
-
     sf::Vector2f speed;
     sf::Vector2f speedDirection; // Unitary vector
     int spriteDirection;
@@ -38,8 +36,9 @@ public:
     Sprite(std::string spriteImgFile);
     ~Sprite();
 
+    sf::Texture texture;
     sf::Vector2f getSpeed();
-    sf::Vector2f setSpeedDirection();
+    sf::Vector2f getSpeedDirection();
     int getFrame();
     int getDirection();
     sf::Vector2f getTilePos();
@@ -50,6 +49,8 @@ public:
     void setSpeedDirection(sf::Vector2f speedDirection);
     void setFrame(int frame);
     void setSpriteDirection(int spriteDirection);
+
+    void invertSpriteDirection();
 
 private:
     float getVectMagnitude(sf::Vector2f vector);

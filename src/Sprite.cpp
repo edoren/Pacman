@@ -12,6 +12,11 @@ sf::Vector2f Sprite::getSpeed() {
     return this->speed;
 }
 
+sf::Vector2f Sprite::getSpeedDirection() {
+    float magnitude = getVectMagnitude(this->speed);
+    return sf::Vector2f(this->speed.x / magnitude, this->speed.y / magnitude);
+}
+
 int Sprite::getFrame() {
     return this->frame;
 }
@@ -47,6 +52,23 @@ void Sprite::setFrame(int frame){
 
 void Sprite::setSpriteDirection(int spriteDirection) {
     this->spriteDirection = spriteDirection;
+}
+
+void Sprite::invertSpriteDirection() {
+    switch(spriteDirection) {
+        case SPRITE_UP:
+            spriteDirection = SPRITE_DOWN;
+            break;
+        case SPRITE_DOWN:
+            spriteDirection = SPRITE_UP;
+            break;
+        case SPRITE_RIGHT:
+            spriteDirection = SPRITE_LEFT;
+            break;
+        case SPRITE_LEFT:
+            spriteDirection = SPRITE_RIGHT;
+            break;
+    }
 }
 
 float Sprite::getVectMagnitude(sf::Vector2f vector) {

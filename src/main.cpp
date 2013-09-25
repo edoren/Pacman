@@ -11,6 +11,21 @@ std::string pacmanPath;
 bool firstStart = true;
 sf::Clock timeOpen;
 
+bool CollisionWithGhosts(Pacman *pacman, std::vector<Ghost*> ghosts) {
+    for(auto ghost : ghosts) {
+        if(Collision::AABBCollision(*pacman, *ghost)) {
+            if(ghost->getMovState() != FRIGHTENED_MOVE) {
+                for(auto eachghost : ghosts) eachghost->stopMovement();
+                pacman->setFrame(0);  
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
 int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
     // Load background
     sf::Texture BGtexture;
@@ -24,6 +39,8 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
     Ghost clyde(sf::Vector2f(121, 133), pacmanPath + "resources/images/clydeSprites.png", HOUSE_MOVE, HOUSE_RIGHT);
     Ghost pinky(sf::Vector2f(105, 133), pacmanPath + "resources/images/pinkySprites.png", HOUSE_MOVE, HOUSE_MIDDLE);
     Ghost inky(sf::Vector2f(89, 133), pacmanPath + "resources/images/inkySprites.png", HOUSE_MOVE, HOUSE_LEFT);
+
+    std::vector<Ghost*> ghosts = {&blinky, &clyde, &pinky, &inky};
 
     bool lose = false;
     bool drawEnemies = true;
@@ -43,10 +60,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
 
         // Draw the enemies
         if(drawEnemies && timeOpen.getElapsedTime().asSeconds() > 2.5f) {
-            window.draw(blinky);
-            window.draw(inky);
-            window.draw(clyde);
-            window.draw(pinky);
+            for(auto ghost : ghosts) window.draw(*ghost);
         }
 
         window.display();
@@ -81,42 +95,40 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
         // Move pacman in the next corner if setNextMovement(int key) is called
         pacman.inputMovement(map);
 
-        if(map.eatFood(pacman.getTilePos())) sounds.playChomp();
+        if(int food = map.eatFood(pacman.getTilePos())) {
+            sounds.playChomp();
+            if(food == 2) {
+                sounds.intermission.play();
+                for(auto ghost : ghosts) ghost->setFrightened();
+            }
+        }
 
         // Defines actions if lose the game.
-        if(!lose) {
-            if(Collision::AABBCollision(pacman, blinky) or Collision::AABBCollision(pacman, inky) or Collision::AABBCollision(pacman, pinky) or Collision::AABBCollision(pacman, clyde)) {
+        if(lose) {
+            if(pacman.lose()) return EXIT_SUCCESS;
+        } else {
+            if(CollisionWithGhosts(&pacman, ghosts)) {
                 lose = true;
-                blinky.stopMovement();
-                inky.stopMovement();
-                clyde.stopMovement();
-                pinky.stopMovement();
-                pacman.setFrame(0);
                 sounds.stopSounds();
                 sf::sleep(sf::seconds(0.6f));
                 drawEnemies = false;
                 sounds.lose.play();
             }
-        } else {
-            if(pacman.lose()) return EXIT_SUCCESS;
         }
 
         // Update pacman
-        if(timeOpen.getElapsedTime().asSeconds() > 5.f) {
+        if(sounds.intro.getStatus() != sf::SoundSource::Playing) {
+            if(sounds.intermission.getStatus() != sf::SoundSource::Playing) {
+                if(sounds.siren.getStatus() != sf::SoundSource::Playing && !lose) sounds.siren.play();
+            } else sounds.siren.stop();
+
             if(firstStart) {
-                blinky.restartHouseClock();
-                inky.restartHouseClock();
-                clyde.restartHouseClock();
-                pinky.restartHouseClock();
-                sounds.siren.play();
+                for(auto ghost : ghosts) ghost->restartHouseClock();
                 firstStart = false;
             }
             pacman.update(map);
             // Update the enemies position
-            blinky.update(map);
-            inky.update(map);
-            clyde.update(map);
-            pinky.update(map);
+            for(auto ghost : ghosts) ghost->update(map);
         }
     }
 
@@ -142,7 +154,6 @@ int main(int argc, char* argv[])
     while(window.isOpen()) {
         start(window, sounds, map);
         sf::sleep(sf::seconds(2.0f));
-        sounds.siren.play();
     }
 
     return EXIT_SUCCESS;

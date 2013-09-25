@@ -201,18 +201,19 @@ std::vector<sf::Vector2f> TileMap::avaliablePaths(sf::Vector2f tilePos) {
     return avaliablePaths;
 }
 
-bool TileMap::eatFood(sf::Vector2f pacmanTilePos) {
+int TileMap::eatFood(sf::Vector2f pacmanTilePos) {
     if (isValidTilePos(pacmanTilePos)) {
         int posX = pacmanTilePos.x;
         int posY = pacmanTilePos.y;
         if( foodMap[posY][posX] != 0 && posY < foodMap.size() && posX < foodMap[posY].size()) {
             // Call the function calculate(foodType)
             PyObject_CallFunctionObjArgs(Calculate, PyLong_FromLong(foodMap[posY][posX]), NULL);
+            int food = foodMap[posY][posX];
             foodMap[posY][posX] = 0;
-            return true;
+            return food;
         }
     }
-    return false;
+    return 0;
 }
 
 bool TileMap::noFood() {

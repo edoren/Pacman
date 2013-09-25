@@ -44,7 +44,7 @@ public:
 
     void drawScore();
     void drawFood();
-    bool eatFood(sf::Vector2f pacmanTilePos);
+    int eatFood(sf::Vector2f pacmanTilePos);
     bool noFood();
     void resetFood();
 };

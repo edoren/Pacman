@@ -22,6 +22,7 @@ public:
     Sound intro;
     Sound lose;
     Sound siren;
+    Sound intermission;
 
     void stopSounds();
     void playChomp();

@@ -16,6 +16,8 @@
 
 class Ghost : public Sprite {
 private:
+    sf::Texture frightenedTexture;
+
     sf::Vector2f initialPos;
     std::string spriteImg;
     int movementState;
@@ -23,14 +25,22 @@ private:
 
     sf::Vector2f lastPos;
 
+    sf::Clock frightenedClock;
+    int frightenedFrame;
+    sf::Clock *scatterClock;
     sf::Clock houseClock;
     float timeInHouse;
     int housePos;
+    int movAfterHouse;
 
 public:
     Ghost(sf::Vector2f initialPos, std::string spriteImgFile, int movementState, int housePos);
 
+    int getMovState();
+
     void setFrightened();
+    void setScatter();
+    void setChase();
 
     void update(TileMap& map);
     void restartHouseClock();
