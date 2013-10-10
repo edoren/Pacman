@@ -2,6 +2,7 @@
 #define CONFIG_HPP
 
 #include <string>
+#include <iostream>
 
 #ifdef _WIN32
     #define CONTROL LControl
