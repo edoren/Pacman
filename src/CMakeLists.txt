@@ -20,6 +20,7 @@ set(PACMAN_SRC
     ${SRC_DIR}/TileMap.cpp
     ${SRC_DIR}/Sound.cpp
     ${SRC_DIR}/Collision.cpp
+    ${SRC_DIR}/LuaScripting.cpp
 )
 
 # set pacman headers
@@ -32,6 +33,7 @@ set(PACMAN_HEADERS
     ${HEADER_DIR}/Collision.hpp
     ${HEADER_DIR}/Input.hpp
     ${HEADER_DIR}/Config.hpp
+    ${HEADER_DIR}/LuaScripting.hpp
 )
 
 # create game executable
@@ -64,6 +66,6 @@ find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 target_link_libraries(${EXECUTABLE_NAME} ${PYTHON_LIBRARIES})
 
-# find_package(Lua 5.2 REQUIRED)
-# include_directories(${LUA_INCLUDE_DIR})
-# target_link_libraries(${EXECUTABLE_NAME} ${LUA_LIBRARIES})
+find_package(Lua 5.2 REQUIRED)
+include_directories(${LUA_INCLUDE_DIR})
+target_link_libraries(${EXECUTABLE_NAME} ${LUA_LIBRARIES} dl)

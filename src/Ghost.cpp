@@ -1,6 +1,9 @@
 #include "Ghost.hpp"
 
-Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, int housePos) : Sprite(imgFile), houseClock() {
+std::vector<Ghost*> ghosts;
+lua_State* luaInterpreter;
+
+Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, int housePos, int AIlevel) : Sprite(imgFile), houseClock(), scatterClock() {
     if (!frightenedTexture.loadFromFile(pacmanPath + "resources/images/frightenedGhost.png")) exit(EXIT_FAILURE);
 
     this->setPosition(initialPos);
@@ -36,6 +39,7 @@ Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, in
             break;
     }
     
+    this->AIlevel = AIlevel;
     this->frightenedFrame = 0;
     this->movementState = movementState;
     this->enableMovement = true;
@@ -83,6 +87,13 @@ void Ghost::updateAnimation() {
     }
 }
 
+void Ghost::setSpriteDirectionSpeed(sf::Vector2f speed) {
+    if(speed == VECTOR_UP) this->setSpriteDirection(SPRITE_UP);
+    if(speed == VECTOR_DOWN) this->setSpriteDirection(SPRITE_DOWN);
+    if(speed == VECTOR_LEFT) this->setSpriteDirection(SPRITE_LEFT);
+    if(speed == VECTOR_RIGHT) this->setSpriteDirection(SPRITE_RIGHT);
+}
+
 void Ghost::updatePos() {
     if (this->enableMovement) {
         this->lastPos = this->getPosition();
@@ -95,17 +106,17 @@ void Ghost::updatePos() {
     }
 }
 
-void Ghost::update(TileMap& map) {
+void Ghost::update(TileMap& map, sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection) {
     this->updateAnimation();
 
     if(map.isValidTilePos(this->getTilePos()) == VALID_IN_RANGE) {
         if(this->enableMovement) {
             switch(this->movementState) {
                 case CHASE_MOVE:
-                    this->frightenedMove(map);
+                    this->chaseMove(map, pacmanTilePos, pacmanDirection);
                     break;
                 case SCATTER_MOVE:
-                    this->frightenedMove(map);
+                    this->scatterMove(map);
                     break;
                 case FRIGHTENED_MOVE:
                     this->frightenedMove(map);
@@ -139,6 +150,16 @@ void Ghost::setChase() {
     this->frameClock.restart();
 }
 
+void Ghost::setScatter() {
+    this->scatterClock.restart();
+    this->setTexture(this->texture);
+    if(movementState == FRIGHTENED_MOVE) {
+        this->setSpeed(this->getSpeed() * -2.f);
+        this->movAfterHouse = SCATTER_MOVE;
+    }
+    this->movementState = SCATTER_MOVE;
+}
+
 void Ghost::setFrightened() {
     this->setTexture(frightenedTexture);
     if(movementState != FRIGHTENED_MOVE && movementState != HOUSE_MOVE) this->setSpeed(this->getSpeed() / -2.f);
@@ -154,16 +175,79 @@ void Ghost::setFrightened() {
     this->frameClock.restart();
 }
 
+void Ghost::chaseMove(TileMap& map, sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection) {
+    std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
+    if(map.getTileValue(this->getTilePos()) == 2 or map.getTileValue(this->getTilePos()) == 3) {
+        if(map.getTileValue(this->getTilePos()) == 3) {
+            auto iterator = std::find(paths.begin(), paths.end(), VECTOR_UP);
+            if(iterator != paths.end()) paths.erase(iterator);
+        }
+    } else {
+        this->setSpeedDirection(paths[0]);
+        this->setSpriteDirectionSpeed(paths[0]);
+        return;
+    }
+    if(paths.size() > 1) {
+        sf::Vector2f direction = call_direction_chase(pacmanTilePos, pacmanDirection, paths);
+        this->setSpeedDirection(direction);
+        this->setSpriteDirectionSpeed(direction);
+    }
+}
+
+sf::Vector2f Ghost::call_direction_chase(sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection, std::vector<sf::Vector2f> paths) {
+    lua_getglobal(luaInterpreter, "direction_chase");
+    sfLua::lua_pushVector2(luaInterpreter, pacmanTilePos);
+    sfLua::lua_pushVector2(luaInterpreter, pacmanDirection);
+    sfLua::lua_pushVector2(luaInterpreter, this->getTilePos());
+    lua_pushinteger(luaInterpreter, this->AIlevel);
+    sfLua::lua_pushVector2(luaInterpreter, ghosts[0]->getTilePos());
+    lua_getglobal(luaInterpreter, "make_table");
+    for(auto path : paths) {
+        sfLua::lua_pushVector2(luaInterpreter, path);
+    }
+    lua_pcall(luaInterpreter, paths.size(), 1, 0);
+    lua_pcall(luaInterpreter, 6, 1, 0);
+    sf::Vector2f direction = sfLua::lua_toVector2f(luaInterpreter, -1);
+    lua_pop(luaInterpreter, -1);
+    return direction;
+}
+
+void Ghost::scatterMove(TileMap& map) {
+    std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
+    if(scatterClock.getElapsedTime().asSeconds() >= 10.f)
+        this->movementState = CHASE_MOVE;
+    if(map.getTileValue(this->getTilePos()) != 2 and map.getTileValue(this->getTilePos()) != 3) {
+        this->setSpeedDirection(paths[0]);
+        this->setSpriteDirectionSpeed(paths[0]);
+        return;
+    }
+    if(paths.size() > 1) {
+        sf::Vector2f direction = call_direction_scatter(paths);
+        this->setSpeedDirection(direction);
+        this->setSpriteDirectionSpeed(direction);
+    }
+}
+
+sf::Vector2f Ghost::call_direction_scatter(std::vector<sf::Vector2f> paths) {
+    lua_getglobal(luaInterpreter, "direction_scatter");
+    sfLua::lua_pushVector2(luaInterpreter, this->getTilePos());
+    lua_pushinteger(luaInterpreter, this->AIlevel);
+    lua_getglobal(luaInterpreter, "make_table");
+    for(auto path : paths) {
+        sfLua::lua_pushVector2(luaInterpreter, path);
+    }
+    lua_pcall(luaInterpreter, paths.size(), 1, 0);
+    lua_pcall(luaInterpreter, 3, 1, 0);
+    sf::Vector2f direction = sfLua::lua_toVector2f(luaInterpreter, -1);
+    lua_pop(luaInterpreter, -1);
+    return direction;
+}
+
+
 void Ghost::frightenedMove(TileMap& map) {
     std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
     if(!paths.empty()) {
         int randnum = rand() % paths.size();
-        if(movementState != FRIGHTENED_MOVE) {
-            if(paths[randnum] == VECTOR_UP) this->setSpriteDirection(SPRITE_UP);
-            if(paths[randnum] == VECTOR_DOWN) this->setSpriteDirection(SPRITE_DOWN);
-            if(paths[randnum] == VECTOR_LEFT) this->setSpriteDirection(SPRITE_LEFT);
-            if(paths[randnum] == VECTOR_RIGHT) this->setSpriteDirection(SPRITE_RIGHT);
-        }
         this->setSpeedDirection(paths[randnum]);
     }
 }
@@ -185,9 +269,14 @@ void Ghost::houseMove(TileMap& map, float time) {
                 if(this->getPosition().x == 105 and this->getPosition().y > 109) {
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    if(this->movAfterHouse == FRIGHTENED_MOVE) this->setSpeed(VECTOR_LEFT / 2.f);
-                    else this->setSpeed(VECTOR_LEFT);
-                           this->movementState = this->movAfterHouse;
+                    if(this->movAfterHouse == FRIGHTENED_MOVE){
+                        this->setSpeed(VECTOR_LEFT / 2.f);
+                        this->movementState = FRIGHTENED_MOVE;
+                    } else {
+                        this->setSpeed(VECTOR_LEFT);
+                        this->setScatter();
+                    }
+                    
                 }
                 break;
             case HOUSE_LEFT:
@@ -198,9 +287,13 @@ void Ghost::houseMove(TileMap& map, float time) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    if(this->movAfterHouse == FRIGHTENED_MOVE) this->setSpeed(VECTOR_RIGHT / 2.f);
-                    else this->setSpeed(VECTOR_RIGHT);
-                           this->movementState = this->movAfterHouse;
+                    if(this->movAfterHouse == FRIGHTENED_MOVE) {
+                        this->setSpeed(VECTOR_RIGHT / 2.f);
+                        this->movementState = FRIGHTENED_MOVE;
+                    } else { 
+                        this->setSpeed(VECTOR_RIGHT);
+                        this->setScatter();
+                    }
                 }
                 break;
             case HOUSE_RIGHT:
@@ -211,9 +304,14 @@ void Ghost::houseMove(TileMap& map, float time) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    if(this->movAfterHouse == FRIGHTENED_MOVE) this->setSpeed(VECTOR_RIGHT / 2.f);
-                    else this->setSpeed(VECTOR_RIGHT);
-                           this->movementState = this->movAfterHouse;
+                    if(this->movAfterHouse == FRIGHTENED_MOVE){
+                        this->setSpeed(VECTOR_RIGHT / 2.f);
+                        this->movementState = FRIGHTENED_MOVE;
+                    } else {
+                        this->setSpeed(VECTOR_RIGHT);
+                        this->setScatter();
+                    }
+                    
                 }
                 break;
         }

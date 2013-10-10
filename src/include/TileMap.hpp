@@ -39,6 +39,7 @@ public:
 
     bool checkCollision(sf::Vector2f tilePos, int spriteDirection);
     int isValidTilePos(sf::Vector2f tilePos);
+    int getTileValue(sf::Vector2f tilePos);
     bool isIntersection(sf::Vector2f tilePos);
     std::vector<sf::Vector2f> avaliablePaths(sf::Vector2f tilePos);
 

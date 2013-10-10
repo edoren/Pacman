@@ -160,6 +160,13 @@ int TileMap::isValidTilePos(sf::Vector2f tilePos) {
     else return NOT_VALID;
 }
 
+int TileMap::getTileValue(sf::Vector2f tilePos) {
+    if(isValidTilePos(tilePos) == VALID_IN_RANGE) {
+        return tileMap[tilePos.y][tilePos.x];
+    }
+    return 0;
+}
+
 bool TileMap::checkCollision(sf::Vector2f tilePos, int spriteDirection) {
     if(isValidTilePos(tilePos)) {
         sf::Vector2f tileInFront = tilePos;
