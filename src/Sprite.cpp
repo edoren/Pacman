@@ -4,6 +4,8 @@ Sprite::Sprite(std::string spriteImgFile) : speed(), speedDirection(), spriteDir
     if (!this->texture.loadFromFile(spriteImgFile)) exit(EXIT_FAILURE);
     this->setTexture(this->texture);
     this->setFrame(0);
+    this->enableMovement = true;
+    this->animation = true;
 }
 
 Sprite::~Sprite() {}

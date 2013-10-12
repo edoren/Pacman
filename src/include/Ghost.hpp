@@ -24,7 +24,6 @@ private:
     sf::Vector2f initialPos;
     std::string spriteImg;
     int movementState;
-    bool enableMovement;
 
     sf::Vector2f lastPos;
 

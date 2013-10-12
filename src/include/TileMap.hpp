@@ -14,12 +14,16 @@
 #define VALID_OUT_RANGE 2
 
 class TileMap {
+public:
+    bool draw_food;
+    sf::Clock *winClock;
+
 private:
     std::vector<std::vector<int>> tileMap;
     std::vector<std::vector<int>> foodMap;
     std::vector<std::vector<int>> foodMapBackup;
 
-    PyObject *scoreModule, *Calculate, *GetScore;
+    PyObject *scoreModule, *Calculate, *GetScore, *SetScore;
     std::string scriptsPath;
 
     sf::Texture BGtexture;
@@ -51,6 +55,12 @@ public:
     int eatFood(sf::Vector2f pacmanTilePos);
     bool noFood();
     void resetFood();
+
+    bool win();
+    bool win_status;
+    float win_lastTime;
+
+    void restart();
 };
 
 #endif // TILE_MAP_HPP

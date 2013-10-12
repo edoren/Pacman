@@ -15,6 +15,9 @@
     #define PATH_SEPARATOR '/'
 #endif
 
+#define PACMAN_WINS true
+#define PACMAN_LOSE false
+
 // Configuration definitions
 #define WINDOW_WIDTH 224
 #define WINDOW_HEIGHT 288

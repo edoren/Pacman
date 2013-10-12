@@ -5,12 +5,10 @@
 #include "TileMap.hpp"
 #include "Input.hpp"
 
-class Pacman : public Sprite {
+class Pacman : public Sprite {    
 private:
     bool mouth; // true: pacman open the mouth, false: pacman close the mouth
-    bool animation;
     sf::Texture loseTexture;
-    bool enableMovement; // if true pacman moves
 
     int keypressed; // store the next movement of pacman
 
@@ -26,11 +24,6 @@ public:
     bool lose();
 
 private:
-    bool getMouthState();
-    void setMouthState(bool mouth);
-    bool getAnimation();
-    void setAnimation(bool animation);
-
     bool mapCollision(TileMap& map);
 
     void updateAnimation();

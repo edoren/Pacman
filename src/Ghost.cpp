@@ -53,36 +53,38 @@ int Ghost::getMovState() {
 }
 
 void Ghost::updateAnimation() {
-    this->frameTimer = this->frameClock.getElapsedTime();
-    if(movementState != FRIGHTENED_MOVE and movAfterHouse != FRIGHTENED_MOVE) {
-        if(this->frameTimer.asSeconds() > 0.08f) {
-            this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
-            if (this->getFrame() == 0) this->setFrame(1);
-            else this->setFrame(0);
-            this->frameClock.restart();
-        }
-    } else {
-        if(this->frightenedClock.getElapsedTime().asSeconds() < 3.5f) {
+    if(this->animation) {
+        this->frameTimer = this->frameClock.getElapsedTime();
+        if(movementState != FRIGHTENED_MOVE and movAfterHouse != FRIGHTENED_MOVE) {
             if(this->frameTimer.asSeconds() > 0.08f) {
-                this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 3, 14, 14));
+                this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
                 if (this->getFrame() == 0) this->setFrame(1);
                 else this->setFrame(0);
                 this->frameClock.restart();
             }
-        } else if((this->frightenedClock.getElapsedTime().asSeconds() >= 3.5f and this->frightenedClock.getElapsedTime().asSeconds() < 5.f)) {
-            if(this->frameTimer.asSeconds() > 0.08f) {
-                this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->frightenedFrame + 3, 14, 14));
-                if (this->getFrame() == 0) this->setFrame(1);
-                else {
-                    this->setFrame(0);
-                    if(this->frightenedFrame == 0) this->frightenedFrame = 1;
-                    else this->frightenedFrame = 0;
-                }
-                this->frameClock.restart();
-            }
         } else {
-            this->setPosition((int)this->getPosition().x, (int)this->getPosition().y);
-            this->setChase();
+            if(this->frightenedClock.getElapsedTime().asSeconds() < 3.5f) {
+                if(this->frameTimer.asSeconds() > 0.08f) {
+                    this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 3, 14, 14));
+                    if (this->getFrame() == 0) this->setFrame(1);
+                    else this->setFrame(0);
+                    this->frameClock.restart();
+                }
+            } else if((this->frightenedClock.getElapsedTime().asSeconds() >= 3.5f and this->frightenedClock.getElapsedTime().asSeconds() < 5.f)) {
+                if(this->frameTimer.asSeconds() > 0.08f) {
+                    this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->frightenedFrame + 3, 14, 14));
+                    if (this->getFrame() == 0) this->setFrame(1);
+                    else {
+                        this->setFrame(0);
+                        if(this->frightenedFrame == 0) this->frightenedFrame = 1;
+                        else this->frightenedFrame = 0;
+                    }
+                    this->frameClock.restart();
+                }
+            } else {
+                this->setPosition((int)this->getPosition().x, (int)this->getPosition().y);
+                this->setChase();
+            }
         }
     }
 }

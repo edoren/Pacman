@@ -7,8 +7,6 @@ Pacman::Pacman() : Sprite(pacmanPath + "resources/images/pacmanSprites.png") {
     this->setPosition(sf::Vector2f(105, 205));
 
     this->mouth = true;
-    this->animation = true;
-    this->enableMovement = true;
     this->keypressed = KEYBOARD_NULL;
 
     this->setSpriteDirection(SPRITE_LEFT);
@@ -18,42 +16,26 @@ Pacman::Pacman() : Sprite(pacmanPath + "resources/images/pacmanSprites.png") {
 //Destructor
 Pacman::~Pacman() {}
 
-bool Pacman::getAnimation() {
-    return this->animation;
-}
-
-bool Pacman::getMouthState() {
-    return this->mouth;
-}
-
-void Pacman::setMouthState(bool mouth) {
-    this->mouth = mouth;
-}
-
-void Pacman::setAnimation(bool animation) {
-    this->animation = animation;
-}
-
 void Pacman::setNextMovement(int keypressed) {
     this->keypressed = keypressed;
 }
 
 // Animate pacman
 void Pacman::updateAnimation() {
-    if (this->getAnimation()){
+    if (this->animation){
         this->frameTimer = this->frameClock.getElapsedTime();
         if(this->frameTimer.asSeconds() > 0.04f)  {
             this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
-            if (this->getFrame() == 0 && this->getMouthState()){
+            if (this->getFrame() == 0 && this->mouth){
                 this->setFrame(1);
-            } else if(this->getFrame() == 0 && !this->getMouthState()) {
+            } else if(this->getFrame() == 0 && !this->mouth) {
                 this->setFrame(2);
             } else if(this->getFrame() == 1) {
-                this->setMouthState(false);
+                this->mouth = false;
                 this->setFrame(0);
             } else {
                 this->setTextureRect(sf::IntRect(43, 3, 14, 14));
-                this->setMouthState(true);
+                this->mouth = true;
                 this->setFrame(0);
             }
             this->frameClock.restart();
@@ -85,7 +67,7 @@ void Pacman::update(TileMap& map) {
 void Pacman::keyAction(sf::Vector2f direction, TileMap &map, int spriteDirection) {
     if (!map.checkCollision(this->getTilePos(), spriteDirection)) {
         this->enableMovement = true;
-        this->setAnimation(true);
+        this->animation = true;
         this->setSpeedDirection(direction);
         this->setSpriteDirection(spriteDirection);
         this->keypressed = KEYBOARD_NULL;
@@ -117,7 +99,7 @@ void Pacman::inputMovement(TileMap &map) {
 // Backgound Collision
 bool Pacman::mapCollision(TileMap &map) {
     if(map.checkCollision(this->getTilePos(), this->getDirection())){
-        this->setAnimation(false);
+        this->animation = false;
         this->enableMovement = false;
         return true;
     }
@@ -127,7 +109,7 @@ bool Pacman::mapCollision(TileMap &map) {
 bool Pacman::lose() {
     if(this->getFrame() == 12) return true;
 
-    this->setAnimation(false);
+    this->animation = false;
     this->enableMovement = false;
 
     this->setTexture(loseTexture);

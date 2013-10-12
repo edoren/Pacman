@@ -25,6 +25,8 @@ class Sprite : public sf::Sprite {
 public:
     sf::Clock frameClock;
     sf::Time frameTimer;
+    bool enableMovement;
+    bool animation;
 
 private:
     sf::Vector2f speed;

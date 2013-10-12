@@ -37,6 +37,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
 
     ghosts = {&blinky, &clyde, &pinky, &inky};
 
+    bool win = false;
     bool lose = false;
     bool drawEnemies = true;
 
@@ -70,20 +71,22 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
                 (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)))
                 window.close();
             // Manage the pacman next movement
-            if (event.type == sf::Event::KeyPressed) {
-                switch(event.key.code) {
-                    case sf::Keyboard::Up:
-                        pacman.setNextMovement(KEYBOARD_UP);
-                        break;
-                    case sf::Keyboard::Down:
-                        pacman.setNextMovement(KEYBOARD_DOWN);
-                        break;
-                    case sf::Keyboard::Left:
-                        pacman.setNextMovement(KEYBOARD_LEFT);
-                        break;
-                    case sf::Keyboard::Right:
-                        pacman.setNextMovement(KEYBOARD_RIGHT);
-                        break;
+            if(!win && timeOpen.getElapsedTime().asSeconds() >= 5.f) {
+                if (event.type == sf::Event::KeyPressed) {
+                    switch(event.key.code) {
+                        case sf::Keyboard::Up:
+                            pacman.setNextMovement(KEYBOARD_UP);
+                            break;
+                        case sf::Keyboard::Down:
+                            pacman.setNextMovement(KEYBOARD_DOWN);
+                            break;
+                        case sf::Keyboard::Left:
+                            pacman.setNextMovement(KEYBOARD_LEFT);
+                            break;
+                        case sf::Keyboard::Right:
+                            pacman.setNextMovement(KEYBOARD_RIGHT);
+                            break;
+                    }
                 }
             }
         }
@@ -98,9 +101,27 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
             }
         }
 
+        // Defines actions if win the game.
+        if(win) {
+            if(map.win()) return PACMAN_WINS;
+        } else {
+            if(map.noFood()) {
+                win = true;
+                sounds.stopSounds();
+                for(auto ghost : ghosts) {
+                    ghost->enableMovement = false;
+                    ghost->animation = false;
+                }
+                pacman.enableMovement = false;
+                pacman.animation = false;
+                map.winClock = new sf::Clock();
+                map.draw_food = false;
+            }
+        }
+
         // Defines actions if lose the game.
-        if(lose) {
-            if(pacman.lose()) return EXIT_SUCCESS;
+        if(lose && !win) {
+            if(pacman.lose()) return PACMAN_LOSE;
         } else {
             if(CollisionWithGhosts(&pacman, ghosts)) {
                 lose = true;
@@ -112,15 +133,15 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
         }
 
         // Update pacman
-        if(sounds.intro.getStatus() != sf::SoundSource::Playing) {
+        if(sounds.intro.getStatus() != sf::SoundSource::Playing && timeOpen.getElapsedTime().asSeconds() >= 5.f) {
             if(sounds.intermission.getStatus() != sf::SoundSource::Playing) {
-                if(sounds.siren.getStatus() != sf::SoundSource::Playing && !lose) sounds.siren.play();
+                if(!lose && !win && sounds.siren.getStatus() != sf::SoundSource::Playing) sounds.siren.play();
             } else sounds.siren.stop();
 
-            if(firstStart) {
-                for(auto ghost : ghosts) ghost->restartHouseClock();
-                firstStart = false;
-            }
+            // if(firstStart) {
+            //     for(auto ghost : ghosts) ghost->restartHouseClock();
+            //     firstStart = false;
+            // }
             pacman.update(map);
             // Update the enemies position
             for(auto ghost : ghosts) ghost->update(map, pacman.getTilePos(), pacman.getSpeedDirection());
@@ -129,7 +150,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
 
     sounds.stopSounds();
 
-    return EXIT_SUCCESS;
+    return PACMAN_LOSE;
 }
 
 int main(int argc, char* argv[])
@@ -167,8 +188,15 @@ int main(int argc, char* argv[])
     sounds.intro.play();
 
     while(window.isOpen()) {
-        start(window, sounds, map);
-        sf::sleep(sf::seconds(2.0f));
+        int result = start(window, sounds, map);
+        if(result == PACMAN_WINS) {
+            window.clear();
+            map.restart();
+            sf::sleep(sf::seconds(0.5f));
+            timeOpen.restart();
+        } else {
+            sf::sleep(sf::seconds(2.0f));
+        }
     }
 
     lua_close(luaInterpreter);

@@ -23,6 +23,9 @@ TileMap::TileMap(sf::RenderWindow &window) {
     // Load the function calculate(foodType)
     Calculate = PyObject_GetAttrString(scoreModule, "calculate");
     CheckPyError(Calculate);
+    // Load the function calculate(foodType)
+    SetScore = PyObject_GetAttrString(scoreModule, "setScore");
+    CheckPyError(Calculate);
     // Load the function getScore()
     GetScore = PyObject_GetAttrString(scoreModule, "getScore");
     CheckPyError(GetScore);
@@ -101,11 +104,15 @@ TileMap::TileMap(sf::RenderWindow &window) {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
+    this->draw_food = true;
+    this->win_status = true;
+    this->win_lastTime = 0.f;
+
     this->foodMapBackup = this->foodMap;
     this->window = &window;
     if (!this->BGtexture.loadFromFile(pacmanPath + "resources/images/map.png")) exit(EXIT_FAILURE);
     this->background.setTexture(BGtexture);
-    this->background.setTextureRect(sf::IntRect(224, 0, 224, 288));
+    this->background.setTextureRect(sf::IntRect(0, 0, 224, 288));
     if(!this->numbersTexture.loadFromFile(pacmanPath + "resources/images/numbers.png")) exit(EXIT_FAILURE);
     this->numbers.setTexture(numbersTexture);
     if(!this->foodTexture.loadFromFile(pacmanPath + "resources/images/food.png")) exit(EXIT_FAILURE);
@@ -125,7 +132,8 @@ void TileMap::drawBackground() {
 
 void TileMap::drawScore() {
     // Get the value that return GetScore and convert it to char*
-    std::string score = PyUnicode_AsUTF8(PyObject_CallFunctionObjArgs(GetScore, NULL));
+    std::string score = std::to_string(PyLong_AsLong(PyObject_GetAttrString(scoreModule, "score")));
+    // std::string score = PyUnicode_AsUTF8(PyObject_CallFunctionObjArgs(GetScore, NULL));
     int cont = 1;
     for(auto num : score) {
         num = num - '0';
@@ -135,15 +143,17 @@ void TileMap::drawScore() {
 }
 
 void TileMap::drawFood() {
-    for(unsigned int row = 0; row < this->foodMap.size(); ++row) {
-        for (unsigned int col = 0; col < this->foodMap[row].size(); ++col) {
-            switch(foodMap[row][col]) {
-                case 1:
-                    this->drawInPos(sf::Vector2f(col * 8, row * 8), food1);
-                    break;
-                case 2:
-                    this->drawInPos(sf::Vector2f(col * 8, row * 8), food2);
-                    break;
+    if(this->draw_food) {
+        for(unsigned int row = 0; row < this->foodMap.size(); ++row) {
+            for (unsigned int col = 0; col < this->foodMap[row].size(); ++col) {
+                switch(foodMap[row][col]) {
+                    case 1:
+                        this->drawInPos(sf::Vector2f(col * 8, row * 8), food1);
+                        break;
+                    case 2:
+                        this->drawInPos(sf::Vector2f(col * 8, row * 8), food2);
+                        break;
+                }
             }
         }
     }
@@ -241,4 +251,30 @@ bool TileMap::noFood() {
 
 void TileMap::resetFood() {
     this->foodMap = this->foodMapBackup;
+}
+
+bool TileMap::win() {
+    if(this->winClock->getElapsedTime().asSeconds() >= (this->win_lastTime + 0.14f)){
+        if(this->win_status)
+            this->background.setTextureRect(sf::IntRect(224, 0, 224, 288));
+        else
+            this->background.setTextureRect(sf::IntRect(0, 0, 224, 288));
+        this->win_status = !this->win_status;
+        this->win_lastTime = this->winClock->getElapsedTime().asSeconds();
+    }
+    if(this->winClock->getElapsedTime().asSeconds() >= 1.3f) {
+        delete winClock;
+        return true;
+    }
+    return false;
+}
+
+void TileMap::restart() {
+    this->resetFood();
+    this->draw_food = true;
+    this->win_status = true;
+    this->win_lastTime = 0.f;
+    // PyObject_CallFunctionObjArgs(SetScore, PyLong_FromLong(0), NULL);
+    PyObject_SetAttrString(scoreModule, "score", PyLong_FromLong(0));
+    this->background.setTextureRect(sf::IntRect(0, 0, 224, 288));
 }

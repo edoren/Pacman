@@ -7,5 +7,9 @@ def calculate(food):
     else:
         score += 5
 
+def setScore(_score):
+    global score
+    score = _score
+
 def getScore():
     return str(score)
