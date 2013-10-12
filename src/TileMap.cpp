@@ -103,6 +103,9 @@ TileMap::TileMap(sf::RenderWindow &window) {
 
     this->foodMapBackup = this->foodMap;
     this->window = &window;
+    if (!this->BGtexture.loadFromFile(pacmanPath + "resources/images/map.png")) exit(EXIT_FAILURE);
+    this->background.setTexture(BGtexture);
+    this->background.setTextureRect(sf::IntRect(224, 0, 224, 288));
     if(!this->numbersTexture.loadFromFile(pacmanPath + "resources/images/numbers.png")) exit(EXIT_FAILURE);
     this->numbers.setTexture(numbersTexture);
     if(!this->foodTexture.loadFromFile(pacmanPath + "resources/images/food.png")) exit(EXIT_FAILURE);
@@ -114,6 +117,10 @@ TileMap::TileMap(sf::RenderWindow &window) {
 
 TileMap::~TileMap() {
     Py_Finalize();
+}
+
+void TileMap::drawBackground() {
+    this->window->draw(this->background);
 }
 
 void TileMap::drawScore() {

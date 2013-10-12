@@ -22,6 +22,8 @@ private:
     PyObject *scoreModule, *Calculate, *GetScore;
     std::string scriptsPath;
 
+    sf::Texture BGtexture;
+    sf::Sprite background;
     sf::Texture numbersTexture;
     sf::Sprite numbers;
     sf::Texture foodTexture;
@@ -43,6 +45,7 @@ public:
     bool isIntersection(sf::Vector2f tilePos);
     std::vector<sf::Vector2f> avaliablePaths(sf::Vector2f tilePos);
 
+    void drawBackground();
     void drawScore();
     void drawFood();
     int eatFood(sf::Vector2f pacmanTilePos);

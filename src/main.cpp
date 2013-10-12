@@ -27,11 +27,6 @@ bool CollisionWithGhosts(Pacman *pacman, std::vector<Ghost*> ghosts) {
 }
 
 int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
-    // Load background
-    sf::Texture BGtexture;
-    if (!BGtexture.loadFromFile(pacmanPath + "resources/images/pacman-map.png")) exit(EXIT_FAILURE);
-    sf::Sprite background(BGtexture);
-
     // Load pacman
     Pacman pacman;
     // Load the enemies
@@ -50,7 +45,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
         window.clear();
 
         // Draw the background
-        window.draw(background);
+        map.drawBackground();
         // Draw the food
         map.drawFood();
         // Draw the score
