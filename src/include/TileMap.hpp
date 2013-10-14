@@ -34,6 +34,8 @@ private:
     sf::Sprite food1;
     sf::Sprite food2;
 
+    int foodAmount;
+
     sf::RenderWindow *window;
 
     void drawInPos(sf::Vector2f pos, sf::Sprite food);
@@ -54,6 +56,7 @@ public:
     void drawFood();
     int eatFood(sf::Vector2f pacmanTilePos);
     bool noFood();
+    int getFoodAmount();
     void resetFood();
 
     bool win();

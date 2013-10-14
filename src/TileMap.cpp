@@ -104,6 +104,11 @@ TileMap::TileMap(sf::RenderWindow &window) {
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
+    foodAmount = 0;
+    for(auto row : foodMap)
+        for(auto food : row)
+            if(food != 0) foodAmount += 1;
+
     this->draw_food = true;
     this->win_status = true;
     this->win_lastTime = 0.f;
@@ -227,9 +232,10 @@ std::vector<sf::Vector2f> TileMap::avaliablePaths(sf::Vector2f tilePos) {
 
 int TileMap::eatFood(sf::Vector2f pacmanTilePos) {
     if (isValidTilePos(pacmanTilePos)) {
-        int posX = pacmanTilePos.x;
-        int posY = pacmanTilePos.y;
-        if( foodMap[posY][posX] != 0 && posY < foodMap.size() && posX < foodMap[posY].size()) {
+        unsigned int posX = pacmanTilePos.x;
+        unsigned int posY = pacmanTilePos.y;
+        if(foodMap[posY][posX] != 0 && posY < foodMap.size() && posX < foodMap[posY].size()) {
+            foodAmount -= 1;
             // Call the function calculate(foodType)
             PyObject_CallFunctionObjArgs(Calculate, PyLong_FromLong(foodMap[posY][posX]), NULL);
             int food = foodMap[posY][posX];
@@ -249,8 +255,15 @@ bool TileMap::noFood() {
     return true;
 }
 
+int TileMap::getFoodAmount() {
+    return foodAmount;
+}
+
 void TileMap::resetFood() {
     this->foodMap = this->foodMapBackup;
+    for(auto row : foodMap)
+        for(auto food : row)
+            if(food != 0) foodAmount += 1;
 }
 
 bool TileMap::win() {
