@@ -47,6 +47,8 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
 
         // Draw the background
         map.drawBackground();
+        // Draw the lifes
+        map.drawLifes();
         // Draw the food
         map.drawFood();
         // Draw the score
@@ -138,10 +140,10 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
                 if(!lose && !win && sounds.siren.getStatus() != sf::SoundSource::Playing) sounds.siren.play();
             } else sounds.siren.stop();
 
-            // if(firstStart) {
-            //     for(auto ghost : ghosts) ghost->restartHouseClock();
-            //     firstStart = false;
-            // }
+            if(firstStart) {
+                for(auto ghost : ghosts) ghost->restartHouseClock();
+                firstStart = false;
+            }
             pacman.update(map);
             // Update the enemies position
             for(auto ghost : ghosts) ghost->update(map, pacman.getTilePos(), pacman.getSpeedDirection());
@@ -183,18 +185,25 @@ int main(int argc, char* argv[])
     window.setFramerateLimit(FRAME_RATE);
 
     Sounds sounds;
-    TileMap map(window);
+    TileMap *map = new TileMap(window);
 
     sounds.intro.play();
 
     while(window.isOpen()) {
-        int result = start(window, sounds, map);
+        int result = start(window, sounds, *map);
         if(result == PACMAN_WINS) {
             window.clear();
-            map.restart();
+            map->restart();
             sf::sleep(sf::seconds(0.5f));
             timeOpen.restart();
         } else {
+            if(!map->reduceLifes()) {
+                window.clear();
+                delete map;
+                firstStart = true;
+                timeOpen.restart();
+                map = new TileMap(window);
+            }
             sf::sleep(sf::seconds(2.0f));
         }
     }

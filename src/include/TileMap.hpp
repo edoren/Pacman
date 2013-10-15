@@ -30,10 +30,13 @@ private:
     sf::Sprite background;
     sf::Texture numbersTexture;
     sf::Sprite numbers;
+    sf::Texture mapObjects;
+    sf::Sprite lifeSprite;
     sf::Texture foodTexture;
     sf::Sprite food1;
     sf::Sprite food2;
 
+    int lifes;
     int foodAmount;
 
     sf::RenderWindow *window;
@@ -52,12 +55,15 @@ public:
     std::vector<sf::Vector2f> avaliablePaths(sf::Vector2f tilePos);
 
     void drawBackground();
+    void drawLifes();
     void drawScore();
     void drawFood();
     int eatFood(sf::Vector2f pacmanTilePos);
     bool noFood();
     int getFoodAmount();
     void resetFood();
+
+    bool reduceLifes();
 
     bool win();
     bool win_status;
