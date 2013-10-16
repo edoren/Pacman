@@ -243,8 +243,8 @@ std::vector<sf::Vector2f> TileMap::avaliablePaths(sf::Vector2f tilePos) {
 
 int TileMap::eatFood(sf::Vector2f pacmanTilePos) {
     if (isValidTilePos(pacmanTilePos)) {
-        unsigned int posX = pacmanTilePos.x;
-        unsigned int posY = pacmanTilePos.y;
+        int posX = pacmanTilePos.x;
+        int posY = pacmanTilePos.y;
         if(foodMap[posY][posX] != 0 && posY < foodMap.size() && posX < foodMap[posY].size()) {
             foodAmount -= 1;
             // Call the function calculate(foodType)
