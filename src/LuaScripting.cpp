@@ -9,6 +9,8 @@ namespace sfLua {
         lua_setfield(L, -2, "x");
         lua_pushnumber(L, vector.y);
         lua_setfield(L, -2, "y");
+        lua_getglobal(L, "VectorMT"); // Gets Vector Metatable
+        lua_setmetatable(L, -2);
     }
 
     template void lua_pushVector2<float>(lua_State*, sf::Vector2<float>);
