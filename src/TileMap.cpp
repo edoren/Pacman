@@ -136,6 +136,10 @@ TileMap::~TileMap() {
     Py_Finalize();
 }
 
+std::vector<std::vector<int>>& TileMap::getTileMap(){
+    return tileMap;
+}
+
 void TileMap::drawBackground() {
     this->window->draw(this->background);
 }
@@ -307,4 +311,23 @@ void TileMap::restart() {
     // PyObject_CallFunctionObjArgs(SetScore, PyLong_FromLong(0), NULL);
     // PyObject_SetAttrString(scoreModule, "score", PyLong_FromLong(0));
     this->background.setTextureRect(sf::IntRect(0, 0, 224, 288));
+}
+
+void sfLua::lua_pushTileMap(lua_State *L, TileMap &map) {
+    lua_getglobal(luaInterpreter, "make_table");
+    for (int y = 0; y < map.getTileMap().size(); ++y) {
+        lua_getglobal(luaInterpreter, "make_table");
+        for (int x = 0; x < map.getTileMap()[y].size(); ++x) {
+            lua_createtable(L, 0, 2);
+            lua_pushnumber(L, map.getTileMap()[y][x]);
+            lua_setfield(L, -2, "value");
+            sfLua::lua_pushVector2(luaInterpreter, sf::Vector2f(x+1, y+1));
+            lua_setfield(L, -2, "pos");
+            lua_getglobal(L, "TileMT"); // Gets Tile Metatable
+            lua_setmetatable(L, -2);
+            lua_checkstack(luaInterpreter, 10);
+        }
+        lua_pcall(luaInterpreter, map.getTileMap()[y].size(), 1, 0);
+    }
+    lua_pcall(luaInterpreter, map.getTileMap().size(), 1, 0);
 }

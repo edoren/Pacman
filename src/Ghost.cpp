@@ -5,6 +5,7 @@ lua_State* luaInterpreter;
 
 Ghost::Ghost(sf::Vector2f initialPos, std::string imgFile, int movementState, int housePos, int AIlevel) : Sprite(imgFile), houseClock(), scatterClock() {
     if (!frightenedTexture.loadFromFile(pacmanPath + "resources/images/frightenedGhost.png")) exit(EXIT_FAILURE);
+    if (!eyesTexture.loadFromFile(pacmanPath + "resources/images/eyes.png")) exit(EXIT_FAILURE);
 
     this->setPosition(initialPos);
     this->lastPos = this->getPosition();
@@ -55,14 +56,16 @@ int Ghost::getMovState() {
 void Ghost::updateAnimation() {
     if(this->animation) {
         this->frameTimer = this->frameClock.getElapsedTime();
-        if(movementState != FRIGHTENED_MOVE and movAfterHouse != FRIGHTENED_MOVE) {
+        if(movementState != FRIGHTENED_MOVE && movAfterHouse != FRIGHTENED_MOVE && movementState != TO_HOUSE) {
             if(this->frameTimer.asSeconds() > 0.08f) {
                 this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->getDirection() + 3, 14, 14));
                 if (this->getFrame() == 0) this->setFrame(1);
                 else this->setFrame(0);
                 this->frameClock.restart();
             }
-        } else {
+        } else if(movementState == TO_HOUSE) {
+            this->setTextureRect(sf::IntRect(3, 20 * this->getDirection() + 3, 14, 14));
+        } else if(movementState == FRIGHTENED_MOVE || movAfterHouse == FRIGHTENED_MOVE) {
             if(this->frightenedClock.getElapsedTime().asSeconds() < 3.5f) {
                 if(this->frameTimer.asSeconds() > 0.08f) {
                     this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 3, 14, 14));
@@ -70,7 +73,7 @@ void Ghost::updateAnimation() {
                     else this->setFrame(0);
                     this->frameClock.restart();
                 }
-            } else if((this->frightenedClock.getElapsedTime().asSeconds() >= 3.5f and this->frightenedClock.getElapsedTime().asSeconds() < 5.f)) {
+            } else if((this->frightenedClock.getElapsedTime().asSeconds() >= 3.5f && this->frightenedClock.getElapsedTime().asSeconds() <  6.f)) {
                 if(this->frameTimer.asSeconds() > 0.08f) {
                     this->setTextureRect(sf::IntRect(20 * this->getFrame() + 3, 20 * this->frightenedFrame + 3, 14, 14));
                     if (this->getFrame() == 0) this->setFrame(1);
@@ -81,10 +84,7 @@ void Ghost::updateAnimation() {
                     }
                     this->frameClock.restart();
                 }
-            } else {
-                this->setPosition((int)this->getPosition().x, (int)this->getPosition().y);
-                this->setChase();
-            }
+            } 
         }
     }
 }
@@ -128,6 +128,8 @@ void Ghost::update(TileMap& map, sf::Vector2f pacmanTilePos, sf::Vector2f pacman
     }
     if (this->movementState == HOUSE_MOVE) {
         this->houseMove(map, 2.f);
+    } else if (this->movementState == TO_HOUSE) {
+        this->toHouseMove(map);
     }
     this->updatePos();
 }
@@ -143,7 +145,8 @@ void Ghost::restartHouseClock() {
 void Ghost::setChase() {
     this->setTexture(this->texture);
     if(movementState == FRIGHTENED_MOVE) {
-        this->setSpeed(this->getSpeed() * -2.f);
+        this->invertSpriteDirection();
+        this->setSpeed(this->getSpeed() * 2.f);
         this->movAfterHouse = SCATTER_MOVE;
     }
     this->movementState = CHASE_MOVE;
@@ -164,10 +167,12 @@ void Ghost::setScatter() {
 
 void Ghost::setFrightened() {
     this->setTexture(frightenedTexture);
-    if(movementState != FRIGHTENED_MOVE && movementState != HOUSE_MOVE) this->setSpeed(this->getSpeed() / -2.f);
-    if(movementState != HOUSE_MOVE) {
-        this->movementState = FRIGHTENED_MOVE;
+    if(movementState != FRIGHTENED_MOVE && movementState != HOUSE_MOVE) {
+        this->setSpeed(this->getSpeed() / -2.f);
         this->invertSpriteDirection();
+    }
+    if(movementState != HOUSE_MOVE) {
+        this->movementState = FRIGHTENED_MOVE;\
     } else {
         this->movAfterHouse = FRIGHTENED_MOVE;
     }
@@ -177,9 +182,52 @@ void Ghost::setFrightened() {
     this->frameClock.restart();
 }
 
+void Ghost::setHouseMove() {
+    this->setTexture(this->texture);
+    this->houseClock.restart();
+    this->movementState = HOUSE_MOVE;
+    this->movAfterHouse = CHASE_MOVE;
+    if(housePos == HOUSE_MIDDLE) {
+        this->setSpriteDirection(SPRITE_DOWN);
+        this->setSpeed(VECTOR_DOWN / 2.f);
+    } else {
+        this->setSpriteDirection(SPRITE_UP);
+        this->setSpeed(VECTOR_UP / 2.f);
+    }
+    this->setFrame(0);
+    this->frameClock.restart();
+}
+
+void Ghost::backToHouse(TileMap &map) {
+    sf::Vector2f actualPos;
+    sf::Vector2i intPos = sf::Vector2i((int)this->getPosition().x + 3, (int)this->getPosition().y + 3);
+    this->setPosition(sf::Vector2f(intPos.x-3, intPos.y-3));
+    if(intPos.x % 2 == 1 || intPos.y % 2 == 1)
+        this->setPosition(this->getPosition() - this->getSpeedDirection());
+    if(this->getSpeedDirection() == VECTOR_DOWN || this->getSpeedDirection() == VECTOR_RIGHT)
+        actualPos = sf::Vector2f(ceilf(this->getTilePos().x), ceilf(this->getTilePos().y));
+    else
+        actualPos = sf::Vector2f(floorf(this->getTilePos().x), floorf(this->getTilePos().y));
+    
+    if(this->movementState == HOUSE_MOVE && this->movAfterHouse == FRIGHTENED_MOVE){
+        this->shortestDirection = {};
+        this->setSpeed(this->getSpeed() * -1.f);
+    } else {
+        if(this->getPosition().x <= 112)
+            this->shortestDirection = this->call_Astar(actualPos, sf::Vector2f(14, 14), map);
+        else
+            this->shortestDirection = this->call_Astar(actualPos, sf::Vector2f(13, 14), map);
+    }
+    this->movementState = TO_HOUSE;
+    this->setTexture(eyesTexture);
+    this->setFrame(0);
+    this->invertSpriteDirection();
+    this->setSpeed(2); // Increses the Ghost velocity
+}
+
 void Ghost::chaseMove(TileMap& map, sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection) {
     std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
-    if(map.getTileValue(this->getTilePos()) == 2 or map.getTileValue(this->getTilePos()) == 3) {
+    if(map.getTileValue(this->getTilePos()) == 2 || map.getTileValue(this->getTilePos()) == 3) {
         if(map.getTileValue(this->getTilePos()) == 3) {
             auto iterator = std::find(paths.begin(), paths.end(), VECTOR_UP);
             if(iterator != paths.end()) paths.erase(iterator);
@@ -216,9 +264,9 @@ sf::Vector2f Ghost::call_direction_chase(sf::Vector2f pacmanTilePos, sf::Vector2
 
 void Ghost::scatterMove(TileMap& map) {
     std::vector<sf::Vector2f> paths = this->avaliablePaths(map);
-    if(scatterClock.getElapsedTime().asSeconds() >= 10.f)
+    if(scatterClock.getElapsedTime().asSeconds() >= 7.f)
         this->movementState = CHASE_MOVE;
-    if(map.getTileValue(this->getTilePos()) != 2 and map.getTileValue(this->getTilePos()) != 3) {
+    if(map.getTileValue(this->getTilePos()) != 2 && map.getTileValue(this->getTilePos()) != 3) {
         this->setSpeedDirection(paths[0]);
         this->setSpriteDirectionSpeed(paths[0]);
         return;
@@ -252,10 +300,16 @@ void Ghost::frightenedMove(TileMap& map) {
         int randnum = rand() % paths.size();
         this->setSpeedDirection(paths[randnum]);
     }
+    if(frightenedClock.getElapsedTime().asSeconds() >= 6.f) {
+        if(this->movementState != HOUSE_MOVE) {
+            this->setPosition((int)this->getPosition().x, (int)this->getPosition().y);
+            this->setChase();
+        }
+    }
 }
 
 void Ghost::houseMove(TileMap& map, float time) {
-    sf::Vector2f tilePos = sf::Vector2f(std::ceil(getTilePos().x), getTilePos().y);
+    sf::Vector2f tilePos = sf::Vector2f(ceilf(getTilePos().x), getTilePos().y);
     if(this->houseClock.getElapsedTime().asSeconds() < this->timeInHouse) {
         if(map.checkCollision(tilePos - sf::Vector2f(0, 3/8.f), SPRITE_UP)) {
             this->setSpeedDirection(VECTOR_DOWN);
@@ -268,33 +322,38 @@ void Ghost::houseMove(TileMap& map, float time) {
     } else {
         switch(this->housePos) {
             case HOUSE_MIDDLE:
-                if(this->getPosition().x == 105 and this->getPosition().y > 109) {
+                if(this->getPosition().x == 105 && this->getPosition().y > 109) {
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
                     if(this->movAfterHouse == FRIGHTENED_MOVE){
-                        this->setSpeed(VECTOR_LEFT / 2.f);
                         this->movementState = FRIGHTENED_MOVE;
+                        this->setSpeed(VECTOR_LEFT / 2.f);
                     } else {
                         this->setSpeed(VECTOR_LEFT);
-                        this->setScatter();
+                        if(this->movAfterHouse == CHASE_MOVE)
+                            this->setChase();
+                        else
+                            this->setScatter();
                     }
-                    
                 }
                 break;
             case HOUSE_LEFT:
                 if(this->getPosition().x < 105) {
                     this->setSpriteDirection(SPRITE_RIGHT);
                     this->setSpeedDirection(VECTOR_RIGHT);
-                } else if(this->getPosition().x == 105 and this->getPosition().y > 109) {
+                } else if(this->getPosition().x == 105 && this->getPosition().y > 109) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
-                    if(this->movAfterHouse == FRIGHTENED_MOVE) {
-                        this->setSpeed(VECTOR_RIGHT / 2.f);
+                    if(this->movAfterHouse == FRIGHTENED_MOVE){
                         this->movementState = FRIGHTENED_MOVE;
+                        this->setSpeed(VECTOR_RIGHT / 2.f);
                     } else { 
                         this->setSpeed(VECTOR_RIGHT);
-                        this->setScatter();
+                        if(this->movAfterHouse == CHASE_MOVE)
+                            this->setChase();
+                        else
+                            this->setScatter();
                     }
                 }
                 break;
@@ -302,20 +361,59 @@ void Ghost::houseMove(TileMap& map, float time) {
                 if(this->getPosition().x > 105) {
                     this->setSpriteDirection(SPRITE_LEFT);
                     this->setSpeedDirection(VECTOR_LEFT);
-                } else if(this->getPosition().x == 105 and this->getPosition().y > 109) {
+                } else if(this->getPosition().x == 105 && this->getPosition().y > 109) {
                     this->setSpriteDirection(SPRITE_UP);
                     this->setSpeedDirection(VECTOR_UP);
                 } else {
                     if(this->movAfterHouse == FRIGHTENED_MOVE){
-                        this->setSpeed(VECTOR_RIGHT / 2.f);
                         this->movementState = FRIGHTENED_MOVE;
+                        this->setSpeed(VECTOR_RIGHT / 2.f);
                     } else {
                         this->setSpeed(VECTOR_RIGHT);
-                        this->setScatter();
+                        if(this->movAfterHouse == CHASE_MOVE)
+                            this->setChase();
+                        else
+                            this->setScatter();
                     }
-                    
                 }
                 break;
+        }
+    }
+}
+
+void Ghost::toHouseMove(TileMap& map) {
+    if(this->getPosition() == sf::Vector2f(105, 109)) {
+        this->setSpeedDirection(VECTOR_DOWN);
+    } else if(this->getPosition() == sf::Vector2f(105, 133)) {
+        switch(housePos) {
+            case HOUSE_LEFT:
+                this->setSpeedDirection(VECTOR_LEFT);
+                break;
+            case HOUSE_RIGHT:
+                this->setSpeedDirection(VECTOR_RIGHT);
+                break;
+            case HOUSE_MIDDLE:
+                this->setHouseMove();
+                break;
+        }
+    } else {
+        switch(housePos) {
+            case HOUSE_LEFT:
+                if(this->getPosition() == sf::Vector2f(89, 133))
+                    this->setHouseMove();
+                break;
+            case HOUSE_RIGHT:
+                if(this->getPosition() == sf::Vector2f(121, 133))
+                    this->setHouseMove();
+                break;
+        }
+    }
+
+    if(map.isValidTilePos(this->getTilePos()) == VALID_IN_RANGE) {
+        if(shortestDirection.size() > 1) {
+            this->setSpeedDirection(shortestDirection.front());
+            this->setSpriteDirectionSpeed(shortestDirection.front());
+            shortestDirection.pop_front();       
         }
     }
 }
@@ -327,3 +425,22 @@ std::vector<sf::Vector2f> Ghost::avaliablePaths(TileMap& map) {
     return avaliablePaths;
 }
 
+std::list<sf::Vector2f> Ghost::call_Astar(sf::Vector2f actualTPos, sf::Vector2f objetiveTPos, TileMap& map) {
+    std::list<sf::Vector2f> directions;
+    lua_getglobal(luaInterpreter, "Astar");
+    sfLua::lua_pushVector2(luaInterpreter, actualTPos + sf::Vector2f(1, 1));
+    sfLua::lua_pushVector2(luaInterpreter, objetiveTPos + sf::Vector2f(1, 1));
+    sfLua::lua_pushTileMap(luaInterpreter, map);
+    if (lua_pcall(luaInterpreter, 3, 1, 0) != LUA_OK) {
+        std::string error = lua_tostring(luaInterpreter, -1);
+        std::cout << error << std::endl;        
+    }
+    if (!lua_isnil(luaInterpreter, -1))
+        for (int i = 1; i <= lua_rawlen(luaInterpreter, -1); ++i) {
+            lua_rawgeti(luaInterpreter, -1, i);
+            directions.push_back(sfLua::lua_toVector2f(luaInterpreter, -1));
+            lua_pop(luaInterpreter, 1);
+        }
+    return directions;
+
+}

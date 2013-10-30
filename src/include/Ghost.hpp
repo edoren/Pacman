@@ -4,22 +4,22 @@
 #include "Sprite.hpp"
 #include "TileMap.hpp"
 #include "Collision.hpp"
-#include "LuaScripting.hpp"
+#include <list>
 
 #define CHASE_MOVE 0
 #define SCATTER_MOVE 1
 #define FRIGHTENED_MOVE 2
 #define HOUSE_MOVE 3
+#define TO_HOUSE 4
 
 #define HOUSE_MIDDLE 0
 #define HOUSE_LEFT 1
 #define HOUSE_RIGHT 2
 
-extern lua_State* luaInterpreter;
-
 class Ghost : public Sprite {
 private:
     sf::Texture frightenedTexture;
+    sf::Texture eyesTexture;
 
     sf::Vector2f initialPos;
     std::string spriteImg;
@@ -36,6 +36,7 @@ private:
     int housePos;
     int movAfterHouse;
 
+    std::list<sf::Vector2f> shortestDirection;
     int AIlevel;
 
 public:
@@ -46,6 +47,9 @@ public:
     void setFrightened();
     void setScatter();
     void setChase();
+    void setHouseMove();
+
+    void backToHouse(TileMap &map);
 
     void update(TileMap& map, sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection);
     void restartHouseClock();
@@ -64,10 +68,12 @@ private:
     void scatterMove(TileMap& map);
     void frightenedMove(TileMap& map);
     void houseMove(TileMap& map, float time);
+    void toHouseMove(TileMap& map);
 
     // Lua calls
     sf::Vector2f call_direction_chase(sf::Vector2f pacmanTilePos, sf::Vector2f pacmanDirection, std::vector<sf::Vector2f> paths);
     sf::Vector2f call_direction_scatter(std::vector<sf::Vector2f> paths);
+    std::list<sf::Vector2f> call_Astar(sf::Vector2f actualPos, sf::Vector2f objetivePos, TileMap& map);
 };
 
 extern std::vector<Ghost*> ghosts;

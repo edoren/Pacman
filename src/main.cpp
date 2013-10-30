@@ -11,14 +11,17 @@ std::string pacmanPath;
 bool firstStart = true;
 sf::Clock timeOpen;
 
-bool CollisionWithGhosts(Pacman *pacman, std::vector<Ghost*> ghosts) {
+bool CollisionWithGhosts(Pacman *pacman, std::vector<Ghost*> ghosts, TileMap& map) {
     for(auto ghost : ghosts) {
         if(Collision::AABBCollision(*pacman, *ghost)) {
             if(ghost->getMovState() != FRIGHTENED_MOVE) {
-                for(auto eachghost : ghosts) eachghost->stopMovement();
-                pacman->setFrame(0);  
-                return true;
+                if(ghost->getMovState() != TO_HOUSE) {
+                    for(auto eachghost : ghosts) eachghost->stopMovement();
+                    pacman->setFrame(0);  
+                    return true;
+                }
             } else {
+                ghost->backToHouse(map);
                 return false;
             }
         }
@@ -125,7 +128,7 @@ int start(sf::RenderWindow &window, Sounds &sounds, TileMap &map) {
         if(lose && !win) {
             if(pacman.lose()) return PACMAN_LOSE;
         } else {
-            if(CollisionWithGhosts(&pacman, ghosts)) {
+            if(CollisionWithGhosts(&pacman, ghosts, map)) {
                 lose = true;
                 sounds.stopSounds();
                 sf::sleep(sf::seconds(0.6f));

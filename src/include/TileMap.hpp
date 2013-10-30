@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <Python.h>
+#include <LuaScripting.hpp>
 #include <vector>
 #include <SFML/Graphics.hpp>
 
@@ -12,6 +13,8 @@
 #define NOT_VALID 0
 #define VALID_IN_RANGE 1
 #define VALID_OUT_RANGE 2
+
+extern lua_State* luaInterpreter;
 
 class TileMap {
 public:
@@ -48,6 +51,8 @@ public:
     TileMap(sf::RenderWindow &window);
     ~TileMap();
 
+    std::vector<std::vector<int>>& getTileMap();
+
     bool checkCollision(sf::Vector2f tilePos, int spriteDirection);
     int isValidTilePos(sf::Vector2f tilePos);
     int getTileValue(sf::Vector2f tilePos);
@@ -71,5 +76,9 @@ public:
 
     void restart();
 };
+
+namespace sfLua {
+    void lua_pushTileMap(lua_State *L, TileMap& map);
+}
 
 #endif // TILE_MAP_HPP
