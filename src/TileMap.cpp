@@ -146,8 +146,8 @@ void TileMap::drawBackground() {
 
 void TileMap::drawScore() {
     // Get the value that return GetScore and convert it to char*
-    std::string score = std::to_string(PyLong_AsLong(PyObject_GetAttrString(scoreModule, "score")));
-    // std::string score = PyUnicode_AsUTF8(PyObject_CallFunctionObjArgs(GetScore, NULL));
+    // std::string score = std::to_string(PyLong_AsLong(PyObject_GetAttrString(scoreModule, "score")));
+    std::string score = PyUnicode_AsUTF8(PyObject_CallFunctionObjArgs(GetScore, NULL));
     int cont = 1;
     for(auto num : score) {
         num = num - '0';
