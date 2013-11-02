@@ -11,6 +11,9 @@ set(LUA_OBJ_DIR ${PROJECT_SOURCE_DIR}/src/data)
 # Executable name
 set(EXECUTABLE_NAME pacman)
 
+# Python Version
+set(PYTHON_VERSION 3.3)
+
 # set pacman sources
 set(PACMAN_SRC
     ${SRC_DIR}/main.cpp
@@ -84,8 +87,6 @@ if(SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
     target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 endif(SFML_FOUND)
-
-set(PYTHON_VERSION 3.3)
 
 find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
