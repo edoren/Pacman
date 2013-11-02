@@ -78,6 +78,7 @@ if(OS_MACOSX)
     set(LUA_LIBS_PATH ${PROJECT_SOURCE_DIR}/extlibs/libs-osx/lib)
 endif()
 
+# Finding and link libraries
 if(OS_WINDOWS)
     find_package(SFML 2.1 COMPONENTS main audio graphics window system REQUIRED)
 else()
@@ -95,3 +96,7 @@ target_link_libraries(${EXECUTABLE_NAME} ${PYTHON_LIBRARIES})
 find_package(Lua 5.2 REQUIRED)
 include_directories(${LUA_INCLUDE_DIR})
 target_link_libraries(${EXECUTABLE_NAME} ${LUA_LIBRARIES})
+
+if(OS_LINUX)
+    target_link_libraries(${EXECUTABLE_NAME} dl)    
+endif()
