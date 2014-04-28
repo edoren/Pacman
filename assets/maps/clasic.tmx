@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="28" height="36" tilewidth="8" tileheight="8">
+ <properties>
+  <property name="Hola" value="Casa"/>
+ </properties>
+ <tileset firstgid="1" name="MapTiles" tilewidth="8" tileheight="8">
+  <image source="tileset.png" width="72" height="32"/>
+  <tile id="17">
+   <properties>
+    <property name="food" value="2"/>
+   </properties>
+  </tile>
+  <tile id="26">
+   <properties>
+    <property name="food" value="1"/>
+   </properties>
+  </tile>
+  <tile id="35">
+   <properties>
+    <property name="algo" value=""/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="37" source="meta-tiles.tsx"/>
+ <layer name="PacmanMap" width="28" height="36">
+  <data encoding="base64" compression="zlib">
+   eJztltFuwjAMRQsdgzE2QMBYK2Dd4P+/EVcK0sW6bp2UAdp4OC8mtcO1HbuXZVnvwcWYC1UkI+El4buZsE+4YyGUCd/9QLyB8Bl4Ija0YzzrDPOH8Qq4R0ls2u45o20YLxfWgT6xabvnjLZhvGvgyZ+VSytn3vyx/495wt9XwkfEea+eVt3H2lHPqfCtwLpfEl2sflgou/b7btwDe4TpZtXnKjuvfW8dYbyYd6S4YLyvoMlEOATegm0XEa8iMN2a7rsn53PDd0yvtsXzoGsI6xP71xNP9zvz7c3f1tCnZhORv3utT8/76YnH9glPX3veAe33P+0TJ73wDewy3/HtbZpHqVp5NK/jDVu0Sp3vTPNn4bVBq67zXWs+Jnp6tO0y31l94ryOne9L4qdtX7Lw1GfTd7fYP9m+9FtY+9Jf4gi1CSs1
+  </data>
+ </layer>
+ <layer name="FoodMap" width="28" height="36">
+  <data encoding="base64" compression="zlib">
+   eJztVkEKACAI6w1d+/8/u0c1ZmYYG3jR1swKLUXIjkaaB2+Wwyo3Zs3MVwP0KojfPB97D1Zj8kE43e+2HvPuWf8YR/mysHClJz3pSc+D+/s88WJ+Oa0Vqjmakbz67Y4bpRfd35m/lpUXYYI/OlJbGc8=
+  </data>
+ </layer>
+ <layer name="MetaTiles" width="28" height="36" opacity="0.13">
+  <data encoding="base64" compression="zlib">
+   eJztlEkOgDAMA/MZ+v8nckeAxnW6QQ++ZJETx0qJiLKxNA4RGX13MzzNptTQvq/x9YCzv6PXCD7F92r8mqc3d/yi6NObL8N/7v3detL/thflU7SqyVGPttpv1vv9wZ9Z9VQv+idr9M7+Z6P5XK2I5nR2xy/qT2nBp/pQjTv/YNW+HqCzbXCcUOKUYw==
+  </data>
+ </layer>
+</map>
