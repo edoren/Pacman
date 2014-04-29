@@ -40,7 +40,7 @@ AnimatorJson::~AnimatorJson() {
 // Public members             //
 ////////////////////////////////
 
-int AnimatorJson::load_json_string(const char* json_string, sf::Texture* texture) {
+int AnimatorJson::loadJsonString(const char* json_string, sf::Texture* texture) {
     json_t *data;
     json_error_t error;
 
@@ -51,16 +51,16 @@ int AnimatorJson::load_json_string(const char* json_string, sf::Texture* texture
         return 0;
     }
 
-    int status = this->load_json_type(data, texture);
+    int status = this->loadJsonType(data, texture);
 
     return status;
 }
 
-int AnimatorJson::load_json_string(const std::string& json_string, sf::Texture* texture) {
-    return this->load_json_string(json_string.c_str(), texture);
+int AnimatorJson::loadJsonString(const std::string& json_string, sf::Texture* texture) {
+    return this->loadJsonString(json_string.c_str(), texture);
 }
 
-int AnimatorJson::load_json_file(const char* json_file, sf::Texture* texture) {
+int AnimatorJson::loadJsonFile(const char* json_file, sf::Texture* texture) {
     json_t *data;
     json_error_t error;
 
@@ -74,20 +74,20 @@ int AnimatorJson::load_json_file(const char* json_file, sf::Texture* texture) {
         return 0;
     }
 
-    int status = this->load_json_type(data, texture);
+    int status = this->loadJsonType(data, texture);
 
     return status;
 }
 
-int AnimatorJson::load_json_file(const std::string& json_file, sf::Texture* texture) {
-    return this->load_json_file(json_file.c_str(), texture);
+int AnimatorJson::loadJsonFile(const std::string& json_file, sf::Texture* texture) {
+    return this->loadJsonFile(json_file.c_str(), texture);
 }
 
-int AnimatorJson::set_animation(const std::string& animation_name) {
-    return this->set_animation(animation_name.c_str());
+int AnimatorJson::setAnimation(const std::string& animation_name) {
+    return this->setAnimation(animation_name.c_str());
 }
 
-int AnimatorJson::set_animation(const char* animation_name) {
+int AnimatorJson::setAnimation(const char* animation_name) {
     if (!root_) {
         fprintf(stderr, "error: first load the json data.\n");
         return 0;
@@ -100,12 +100,12 @@ int AnimatorJson::set_animation(const char* animation_name) {
         return 0;
     }
 
-    this->set_frame(0);
+    this->setFrame(0);
 
     return 1;
 }
 
-void AnimatorJson::set_frame(int index) {
+void AnimatorJson::setFrame(int index) {
     json_t *frame, *frame_data;
 
     int frame_width, frame_height;
@@ -132,18 +132,18 @@ void AnimatorJson::set_frame(int index) {
     clock_.restart();
 }
 
-void AnimatorJson::update_animation() {
+void AnimatorJson::updateAnimation() {
     if (!animation_) return;
     if (clock_.getElapsedTime().asMilliseconds() >= frame_duration_) {
-        this->set_frame((frame_index_ + 1) % json_array_size(animation_));
+        this->setFrame((frame_index_ + 1) % json_array_size(animation_));
     }
 }
 
-void AnimatorJson::pause_animation() {
+void AnimatorJson::pauseAnimation() {
     clock_.pause();
 }
 
-void AnimatorJson::resume_animation() {
+void AnimatorJson::resumeAnimation() {
     clock_.resume();
 }
 
@@ -151,7 +151,7 @@ void AnimatorJson::resume_animation() {
 // Private members            //
 ////////////////////////////////
 
-int AnimatorJson::load_json_type(json_t *data, sf::Texture* texture) {
+int AnimatorJson::loadJsonType(json_t *data, sf::Texture* texture) {
     root_ = data;
 
     // Delete local texture before assign a new one

@@ -18,9 +18,6 @@ class GameState {
     virtual void frameEnded(GameEngine* game) = 0;
 
     virtual void draw(GameEngine* game) = 0;
-    // void changeState(GameState* state);
-    // void pushState(GameState* state);
-    // void popState();
 
     virtual ~GameState();
 

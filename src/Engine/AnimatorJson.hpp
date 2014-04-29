@@ -18,21 +18,21 @@ class AnimatorJson : public sf::Sprite {
     AnimatorJson();
     virtual ~AnimatorJson();
     
-    int load_json_string(const char* json_string, sf::Texture* texture = nullptr);
-    int load_json_string(const std::string& json_string, sf::Texture* texture = nullptr);
+    int loadJsonString(const char* json_string, sf::Texture* texture = nullptr);
+    int loadJsonString(const std::string& json_string, sf::Texture* texture = nullptr);
 
-    int load_json_file(const char* json_file, sf::Texture* texture = nullptr);
-    int load_json_file(const std::string& json_file, sf::Texture* texture = nullptr);
+    int loadJsonFile(const char* json_file, sf::Texture* texture = nullptr);
+    int loadJsonFile(const std::string& json_file, sf::Texture* texture = nullptr);
 
-    int set_animation(const char* animation_name);
-    int set_animation(const std::string& animation_name);
+    int setAnimation(const char* animation_name);
+    int setAnimation(const std::string& animation_name);
 
-    void set_frame(int index);
+    void setFrame(int index);
 
-    void update_animation();
+    void updateAnimation();
 
-    void pause_animation();
-    void resume_animation();
+    void pauseAnimation();
+    void resumeAnimation();
 
  private:
     ////////////////////////////////
@@ -53,7 +53,7 @@ class AnimatorJson : public sf::Sprite {
     // Private members            //
     ////////////////////////////////
 
-    int load_json_type(json_t *data, sf::Texture* texture = nullptr);
+    int loadJsonType(json_t *data, sf::Texture* texture = nullptr);
 };
 
 #endif  // ANIMATOR_JSON_HPP

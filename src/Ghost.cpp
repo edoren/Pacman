@@ -6,7 +6,7 @@ Ghost::Ghost(Name name, sf::Texture* ghost_texture) :
         name_(name),
         state_(Normal) {
     ghost_texture_ = ghost_texture;
-    this->load_json_file("assets/sprites/ghosts/ghosts.json", ghost_texture_);
+    this->loadJsonFile("assets/sprites/ghosts/ghosts.json", ghost_texture_);
 
     switch (name_) {
         case Blinky:
@@ -37,7 +37,7 @@ void Ghost::setState(Ghost::State state) {
     this->changeAnimation(state);
 }
 
-void Ghost::update_pos() {
+void Ghost::updatePos() {
     switch (direction_) {
         case Left:
             this->move(sf::Vector2f(-speed_, 0));
@@ -63,7 +63,7 @@ void Ghost::changeAnimation(Ghost::State state) {
             animation_name = name_string_.c_str();
             break;
         case Frightened:
-            this->set_animation("frightened");
+            this->setAnimation("frightened");
             return;
             break;
         case OnlyEyes:
@@ -80,16 +80,16 @@ void Ghost::changeAnimation(Ghost::State state) {
 
     switch (direction_) {
         case Left:
-            this->set_animation(left);
+            this->setAnimation(left);
             break;
         case Right:
-            this->set_animation(right);
+            this->setAnimation(right);
             break;
         case Up:
-            this->set_animation(up);
+            this->setAnimation(up);
             break;
         case Down:
-            this->set_animation(down);
+            this->setAnimation(down);
             break;
     }
 }

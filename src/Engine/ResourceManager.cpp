@@ -8,6 +8,11 @@ ResourceManager::~ResourceManager() {
         delete iter->second;
     }
 
+    //  Delete the sound buffers
+    for (auto iter = sound_buffers_.begin(); iter != sound_buffers_.end(); iter++) {
+        delete iter->second;
+    }
+
     //  Delete the fonts
     for (auto iter = fonts_.begin(); iter != fonts_.end(); iter++) {
         delete iter->second;
@@ -50,6 +55,45 @@ void ResourceManager::freeTexture(const std::string& file) {
         fprintf(stderr, "Can't find the texture %s.\n", file.c_str());
     }
 }
+
+
+//////////////////////////////////////
+//  Sound Buffers
+//////////////////////////////////////
+
+sf::SoundBuffer* ResourceManager::loadSoundBuffer(const std::string& file) {
+    if (sound_buffers_.find(file) != sound_buffers_.end())
+        return sound_buffers_[file];
+
+    sf::SoundBuffer *sound_buffer = new sf::SoundBuffer();
+    if (sound_buffer->loadFromFile(file)) {
+        sound_buffers_[file] = sound_buffer;
+    } else {
+        fprintf(stderr, "Cant load the sound_buffer %s.\n", file.c_str());
+    }
+
+    return sound_buffer;   
+}
+
+sf::SoundBuffer* ResourceManager::getSoundBuffer(const std::string& file) {
+    if (sound_buffers_.find(file) != sound_buffers_.end())
+        return sound_buffers_[file];
+    else {
+        fprintf(stderr, "Can't find the sound buffer %s.\n", file.c_str());
+        return nullptr;
+    }
+}
+
+void ResourceManager::freeSoundBuffer(const std::string& file) {
+    auto iter = sound_buffers_.find(file);
+    if (iter != sound_buffers_.end()) {
+        delete iter->second;
+        sound_buffers_.erase(iter);
+    } else {
+        fprintf(stderr, "Can't find the sound buffer %s.\n", file.c_str());
+    }
+}
+
 
 //////////////////////////////////////
 //  Fonts

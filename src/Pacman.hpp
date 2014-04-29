@@ -22,7 +22,7 @@ class Pacman : public AnimatorJson {
  public:
     void setDirection(Pacman::Direction direction);
 
-    void update_pos();
+    void updatePos();
 
 };
 

@@ -43,7 +43,7 @@ class Ghost : public AnimatorJson {
  public:
     void setDirection(Ghost::Direction direction);
     void setState(Ghost::State state);
-    void update_pos();
+    void updatePos();
 
  private:
     void changeAnimation(Ghost::State state);

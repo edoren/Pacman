@@ -1,7 +1,7 @@
 #include "Pacman.hpp"
 
 Pacman::Pacman(sf::Texture* pacman_texture) : is_alive_(true) {
-    this->load_json_file("assets/sprites/pacman/pacman.json", pacman_texture);
+    this->loadJsonFile("assets/sprites/pacman/pacman.json", pacman_texture);
     this->setDirection(Left);
 }
 
@@ -11,21 +11,21 @@ void Pacman::setDirection(Pacman::Direction direction) {
     direction_ = direction;
     switch(direction_) {
         case Left:
-            this->set_animation("left");
+            this->setAnimation("left");
             break;
         case Right:
-            this->set_animation("right");
+            this->setAnimation("right");
             break;
         case Up:
-            this->set_animation("up");
+            this->setAnimation("up");
             break;
         case Down:
-            this->set_animation("down");
+            this->setAnimation("down");
             break;
     }
 }
 
-void Pacman::update_pos() {
+void Pacman::updatePos() {
     switch(direction_) {
         case Left:
             this->move(sf::Vector2f(-1.f, 0));

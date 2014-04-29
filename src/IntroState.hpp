@@ -29,8 +29,6 @@ class IntroState : public GameState {
  private:
     static IntroState IntroState_;
 
-    sf::Texture* sfml_texture_;
-
     sf::RectangleShape* background_;
     sf::Sprite* sfml_logo_;
 

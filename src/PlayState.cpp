@@ -58,10 +58,10 @@ void PlayState::handleEvents(GameEngine* game) {
 }
 
 void PlayState::frameStarted(GameEngine* game) {
-    pacman_->update_animation();
-    pacman_->update_pos();
-    blinky_->update_animation();
-    blinky_->update_pos();
+    pacman_->updateAnimation();
+    pacman_->updatePos();
+    blinky_->updateAnimation();
+    blinky_->updatePos();
 }
 
 void PlayState::frameEnded(GameEngine* game) {

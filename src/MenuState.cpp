@@ -56,7 +56,7 @@ void MenuState::init(ResourceManager* resources) {
     // Initialize the animation  //
     ///////////////////////////////
 
-    sf::Vector2f start_pos(224 + 14 + 5, 245);  // x = window size + sprite size + offset
+    sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
     sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
 
     // Pacman and Ghosts texture is always loaded while the game is open
@@ -136,18 +136,18 @@ void MenuState::handleEvents(GameEngine* game) {
 }
 
 void MenuState::frameStarted(GameEngine* game) {
-    pacman_->update_animation();
-    pacman_->update_pos();
+    pacman_->updateAnimation();
+    pacman_->updatePos();
 
-    blinky_->update_animation();
-    pinky_->update_animation();
-    inky_->update_animation();
-    clyde_->update_animation();
+    blinky_->updateAnimation();
+    pinky_->updateAnimation();
+    inky_->updateAnimation();
+    clyde_->updateAnimation();
 
-    blinky_->update_pos();
-    pinky_->update_pos();
-    inky_->update_pos();
-    clyde_->update_pos();
+    blinky_->updatePos();
+    pinky_->updatePos();
+    inky_->updatePos();
+    clyde_->updatePos();
 }
 
 void MenuState::frameEnded(GameEngine* game) {
@@ -172,7 +172,8 @@ void MenuState::frameEnded(GameEngine* game) {
         pinky_->setPosition(start_pos + distance * 2.f);
         inky_->setPosition(start_pos + distance * 3.f);
         clyde_->setPosition(start_pos + distance * 4.f);
-    } else if (pacman_->getPosition().x >= (224 + 14 * 4.f + 6 * 3.f + 500.f)) {
+
+    } else if (pacman_->getPosition().x >= (224 + 14 * 4.f + 6 * 3.f + 300.f)) {
         sf::Vector2f start_pos(224 + 14 + 5, 245);  // x = window size + sprite size + offset
         sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
 
