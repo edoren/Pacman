@@ -4,7 +4,58 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 # Executable name
 set(EXECUTABLE_NAME pacman)
 
-# A
+# Finding the libraries
+if(WIN32)
+    find_package(SFML 2.1 COMPONENTS main audio graphics window system)
+else()
+    find_package(SFML 2.1 COMPONENTS audio graphics window system)
+endif()
+if(SFML_FOUND)
+    include_directories(${SFML_INCLUDE_DIR})
+else()
+    message("Building SFML from source.")
+    set(SFML_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/SFML)
+
+    set(SFML_FOUND true)
+    set(SFML_INCLUDE_DIR ${SFML_DIRECTORY}/include)
+
+    add_subdirectory(${SFML_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/SFML EXCLUDE_FROM_ALL)
+    if(WIN32)
+        set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
+    else()
+        set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
+    endif()
+
+    include_directories(${SFML_INCLUDE_DIR})    
+endif()
+
+find_package(Jansson)
+if(JANSSON_FOUND)
+    include_directories(${JANSSON_INCLUDE_DIRS})
+else()
+    message("Building Jansson from source.")
+    set(JANSSON_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/jansson)
+
+    add_subdirectory(${JANSSON_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/jansson EXCLUDE_FROM_ALL)
+
+    include_directories(${PROJECT_BINARY_DIR}/extlibs/jansson/include)
+    set(JANSSON_LIBRARIES jansson)
+endif()
+
+find_package(STP)
+if(STP_FOUND)
+    include_directories(${STP_INCLUDE_DIRS})
+else()
+    message("Building STP from source.")
+    set(STP_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/STP)
+
+    add_subdirectory(${STP_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/STP EXCLUDE_FROM_ALL)
+
+    include_directories(${STP_DIRECTORY}/include)
+    set(STP_LIBRARIES STP)
+endif()
+
+# Pacman includes
 include_directories(${SRC_DIR})
 
 # set pacman sources
@@ -39,25 +90,18 @@ set(PACMAN_HEADERS
 # create game executable
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 
-# Project propeties for IDEs
-set_target_properties(pacman PROPERTIES 
-                        PROJECT_LABEL "PACMAN"
-                        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+get_property(prop TARGET ${STP_LIBRARIES} PROPERTY LOCATION)
+message(STATUS ${prop})
 
-
-# Finding and link libraries
-if(OS_WINDOWS)
-    find_package(SFML 2.1 COMPONENTS main audio graphics window system REQUIRED)
-else()
-    find_package(SFML 2.1 COMPONENTS audio graphics window system REQUIRED)
-endif()
-if(SFML_FOUND)
-    include_directories(${SFML_INCLUDE_DIR})
-    target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
-endif(SFML_FOUND)
-
-target_link_libraries(${EXECUTABLE_NAME} STP jansson)
+target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} ${JANSSON_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} ${STP_LIBRARIES})
 
 if(OS_LINUX)
     target_link_libraries(${EXECUTABLE_NAME} dl)
 endif()
+
+# Project propeties for IDEs
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
+                      PROJECT_LABEL "PACMAN"
+                      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})

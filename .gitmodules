@@ -1,0 +1,10 @@
+[submodule "extlibs/STP"]
+	path = extlibs/STP
+	url = git@github.com:edoren/STP.git
+[submodule "extlibs/SFML"]
+	path = extlibs/SFML
+	url = git@github.com:LaurentGomila/SFML.git
+[submodule "extlibs/jansson"]
+	path = extlibs/jansson
+	url = git@github.com:akheron/jansson.git
+	branch = 2.6
