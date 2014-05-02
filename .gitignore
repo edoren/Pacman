@@ -26,6 +26,7 @@ install_manifest.txt
 *.exe
 *.out
 *.app
+pacman
 
 # MacOSX
 .DS_Store
