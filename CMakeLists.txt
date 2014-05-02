@@ -17,12 +17,5 @@ endif()
 # set CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
-# compiler language
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "-std=c++11")
-endif()
-
 # add the subdirectories
 add_subdirectory(src)

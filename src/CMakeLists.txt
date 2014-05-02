@@ -26,7 +26,7 @@ else()
         set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
     endif()
 
-    include_directories(${SFML_INCLUDE_DIR})    
+    include_directories(${SFML_INCLUDE_DIR})
 endif()
 
 find_package(Jansson)
@@ -87,6 +87,13 @@ set(PACMAN_HEADERS
     ${SRC_DIR}/Ghost.hpp
 )
 
+# compiler language
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "-std=c++11")
+endif()
+
 # create game executable
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 
@@ -102,6 +109,6 @@ if(OS_LINUX)
 endif()
 
 # Project propeties for IDEs
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES 
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
                       PROJECT_LABEL "PACMAN"
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
