@@ -26,6 +26,14 @@ else()
         set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
     endif()
 
+    foreach(SFML_LIB ${SFML_LIBRARIES})
+        get_property(SFML_LIB_LOCATION TARGET ${SFML_LIB} PROPERTY LOCATION)
+        get_property(name TARGET ${SFML_LIB} PROPERTY NAME)
+        add_custom_target(copy-${name} ALL
+                          COMMAND ${CMAKE_COMMAND} -E copy ${SFML_LIB_LOCATION} ${CMAKE_SOURCE_DIR}
+                          DEPENDS ${EXECUTABLE_NAME})
+    endforeach()
+
     include_directories(${SFML_INCLUDE_DIR})
 endif()
 
@@ -40,6 +48,11 @@ else()
 
     include_directories(${PROJECT_BINARY_DIR}/extlibs/jansson/include)
     set(JANSSON_LIBRARIES jansson)
+
+    get_property(JANSSON_LIB_LOCATION TARGET ${JANSSON_LIBRARIES} PROPERTY LOCATION)
+    add_custom_target(copy-jansson ALL
+                      COMMAND ${CMAKE_COMMAND} -E copy ${JANSSON_LIB_LOCATION} ${CMAKE_SOURCE_DIR}
+                      DEPENDS ${EXECUTABLE_NAME})
 endif()
 
 find_package(STP)
@@ -53,6 +66,11 @@ else()
 
     include_directories(${STP_DIRECTORY}/include)
     set(STP_LIBRARIES STP)
+
+    get_property(STP_LIB_LOCATION TARGET ${STP_LIBRARIES} PROPERTY LOCATION)
+    add_custom_target(copy-stp ALL
+                      COMMAND ${CMAKE_COMMAND} -E copy ${STP_LIB_LOCATION} ${CMAKE_SOURCE_DIR}
+                      DEPENDS ${EXECUTABLE_NAME})
 endif()
 
 # Pacman includes
@@ -96,9 +114,6 @@ endif()
 
 # create game executable
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
-
-get_property(prop TARGET ${STP_LIBRARIES} PROPERTY LOCATION)
-message(STATUS ${prop})
 
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 target_link_libraries(${EXECUTABLE_NAME} ${JANSSON_LIBRARIES})
