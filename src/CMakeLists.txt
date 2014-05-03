@@ -39,7 +39,7 @@ endif()
 
 find_package(Jansson)
 if(JANSSON_FOUND)
-    include_directories(${JANSSON_INCLUDE_DIRS})
+    include_directories(${JANSSON_INCLUDE_DIR})
 else()
     message("Building Jansson from source.")
     set(JANSSON_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/jansson)
@@ -47,9 +47,9 @@ else()
     add_subdirectory(${JANSSON_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/jansson EXCLUDE_FROM_ALL)
 
     include_directories(${PROJECT_BINARY_DIR}/extlibs/jansson/include)
-    set(JANSSON_LIBRARIES jansson)
+    set(JANSSON_LIBRARY jansson)
 
-    get_property(JANSSON_LIB_LOCATION TARGET ${JANSSON_LIBRARIES} PROPERTY LOCATION)
+    get_property(JANSSON_LIB_LOCATION TARGET ${JANSSON_LIBRARY} PROPERTY LOCATION)
     add_custom_target(copy-jansson ALL
                       COMMAND ${CMAKE_COMMAND} -E copy ${JANSSON_LIB_LOCATION} ${CMAKE_SOURCE_DIR}
                       DEPENDS ${EXECUTABLE_NAME})
@@ -57,7 +57,7 @@ endif()
 
 find_package(STP)
 if(STP_FOUND)
-    include_directories(${STP_INCLUDE_DIRS})
+    include_directories(${STP_INCLUDE_DIR})
 else()
     message("Building STP from source.")
     set(STP_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/STP)
@@ -65,9 +65,9 @@ else()
     add_subdirectory(${STP_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/STP EXCLUDE_FROM_ALL)
 
     include_directories(${STP_DIRECTORY}/include)
-    set(STP_LIBRARIES STP)
+    set(STP_LIBRARY STP)
 
-    get_property(STP_LIB_LOCATION TARGET ${STP_LIBRARIES} PROPERTY LOCATION)
+    get_property(STP_LIB_LOCATION TARGET ${STP_LIBRARY} PROPERTY LOCATION)
     add_custom_target(copy-stp ALL
                       COMMAND ${CMAKE_COMMAND} -E copy ${STP_LIB_LOCATION} ${CMAKE_SOURCE_DIR}
                       DEPENDS ${EXECUTABLE_NAME})
@@ -116,12 +116,8 @@ endif()
 add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
 
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
-target_link_libraries(${EXECUTABLE_NAME} ${JANSSON_LIBRARIES})
-target_link_libraries(${EXECUTABLE_NAME} ${STP_LIBRARIES})
-
-if(OS_LINUX)
-    target_link_libraries(${EXECUTABLE_NAME} dl)
-endif()
+target_link_libraries(${EXECUTABLE_NAME} ${JANSSON_LIBRARY})
+target_link_libraries(${EXECUTABLE_NAME} ${STP_LIBRARY})
 
 # Project propeties for IDEs
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
