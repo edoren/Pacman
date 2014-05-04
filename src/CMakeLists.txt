@@ -113,7 +113,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # create game executable
-add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
+if(WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    add_executable(${EXECUTABLE_NAME} WIN32 ${PACMAN_SRC} ${PACMAN_HEADERS})
+else()
+    add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})
+endif()
 
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 target_link_libraries(${EXECUTABLE_NAME} ${JANSSON_LIBRARY})
