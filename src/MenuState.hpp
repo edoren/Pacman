@@ -47,6 +47,8 @@ class MenuState : public GameState {
     std::vector<std::pair<GameState*, sf::Text>>* options_;
 
     void updateAnimation();
+    void setAnimationLeft(sf::Vector2f& left_pos);
+    void setAnimationRight(sf::Vector2f& right_pos);
 };
 
 #endif  // MENU_STATE_HPP

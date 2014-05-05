@@ -33,6 +33,7 @@ class AnimatorJson : public sf::Sprite {
 
     void pauseAnimation();
     void resumeAnimation();
+    void restartAnimation();
 
  private:
     ////////////////////////////////

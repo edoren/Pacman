@@ -56,32 +56,19 @@ void MenuState::init(ResourceManager* resources) {
     // Initialize the animation  //
     ///////////////////////////////
 
-    sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
-    sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
-
-    // Pacman and Ghosts texture is always loaded while the game is open
+    // Pacman and Ghosts texture are always loaded while the game is open
     sf::Texture* pacman_texture = resources->loadTexture("assets/sprites/pacman/pacman.png");
     sf::Texture* ghosts_texture = resources->loadTexture("assets/sprites/ghosts/ghosts.png");
 
     pacman_ = new Pacman(pacman_texture);
 
-    pacman_->setPosition(start_pos);
-    pacman_->setDirection(Pacman::Direction::Left);
-
     blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture);
     pinky_ = new Ghost(Ghost::Name::Pinky, ghosts_texture);
     inky_ = new Ghost(Ghost::Name::Inky, ghosts_texture);
     clyde_ = new Ghost(Ghost::Name::Clyde, ghosts_texture);
-
-    blinky_->setDirection(Ghost::Direction::Left);
-    pinky_->setDirection(Ghost::Direction::Left);
-    inky_->setDirection(Ghost::Direction::Left);
-    clyde_->setDirection(Ghost::Direction::Left);
-
-    blinky_->setPosition(start_pos + distance * 1.f);
-    pinky_->setPosition(start_pos + distance * 2.f);
-    inky_->setPosition(start_pos + distance * 3.f);
-    clyde_->setPosition(start_pos + distance * 4.f);
+    
+    sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
+    this->setAnimationRight(start_pos);
 };
 
 void MenuState::exit(ResourceManager* resources) {
@@ -100,6 +87,16 @@ void MenuState::exit(ResourceManager* resources) {
 };
 
 void MenuState::pause() {
+    // Restart and reset the animation position
+    pacman_->restartAnimation();
+
+    blinky_->restartAnimation();
+    pinky_->restartAnimation();
+    inky_->restartAnimation();
+    clyde_->restartAnimation();
+
+    sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
+    this->setAnimationRight(start_pos);
 }; 
 
 void MenuState::resume() {
@@ -152,48 +149,11 @@ void MenuState::frameStarted(GameEngine* game) {
 
 void MenuState::frameEnded(GameEngine* game) {
     if (pacman_->getPosition().x <= -(14 * 4.f + 6 * 3.f + 200.f)) {
-        sf::Vector2f start_pos(-(14 * 4.f + 6 * 3.f + 20), 245);  // x = -(sprite size * 4 + sprite distance * 3 + offset)
-        sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
-
-        pacman_->setPosition(start_pos);
-        pacman_->setDirection(Pacman::Direction::Right);
-
-        blinky_->setDirection(Ghost::Direction::Right);
-        pinky_->setDirection(Ghost::Direction::Right);
-        inky_->setDirection(Ghost::Direction::Right);
-        clyde_->setDirection(Ghost::Direction::Right);
-
-        blinky_->setState(Ghost::State::Frightened);
-        pinky_->setState(Ghost::State::Frightened);
-        inky_->setState(Ghost::State::Frightened);
-        clyde_->setState(Ghost::State::Frightened);
-
-        blinky_->setPosition(start_pos + distance * 1.f);
-        pinky_->setPosition(start_pos + distance * 2.f);
-        inky_->setPosition(start_pos + distance * 3.f);
-        clyde_->setPosition(start_pos + distance * 4.f);
-
+        sf::Vector2f pos(-(14 * 4.f + 6 * 3.f + 20), 245);  // x = -(sprite size * 4 + sprite distance * 3 + offset)
+        this->setAnimationLeft(pos);
     } else if (pacman_->getPosition().x >= (224 + 14 * 4.f + 6 * 3.f + 300.f)) {
-        sf::Vector2f start_pos(224 + 14 + 5, 245);  // x = window size + sprite size + offset
-        sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
-
-        pacman_->setPosition(start_pos);
-        pacman_->setDirection(Pacman::Direction::Left);
-
-        blinky_->setDirection(Ghost::Direction::Left);
-        pinky_->setDirection(Ghost::Direction::Left);
-        inky_->setDirection(Ghost::Direction::Left);
-        clyde_->setDirection(Ghost::Direction::Left);
-
-        blinky_->setState(Ghost::State::Normal);
-        pinky_->setState(Ghost::State::Normal);
-        inky_->setState(Ghost::State::Normal);
-        clyde_->setState(Ghost::State::Normal);
-
-        blinky_->setPosition(start_pos + distance * 1.f);
-        pinky_->setPosition(start_pos + distance * 2.f);
-        inky_->setPosition(start_pos + distance * 3.f);
-        clyde_->setPosition(start_pos + distance * 4.f);
+        sf::Vector2f pos(224 + 14 + 5, 245);  // x = window size + sprite size + offset
+        this->setAnimationRight(pos);
     }
 }
 
@@ -212,3 +172,47 @@ void MenuState::draw(GameEngine* game) {
     window->draw(*inky_);
     window->draw(*clyde_);
 }
+
+void MenuState::setAnimationLeft(sf::Vector2f& left_pos) {
+    sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
+
+    pacman_->setPosition(left_pos);
+    pacman_->setDirection(Pacman::Direction::Right);
+
+    blinky_->setDirection(Ghost::Direction::Right);
+    pinky_->setDirection(Ghost::Direction::Right);
+    inky_->setDirection(Ghost::Direction::Right);
+    clyde_->setDirection(Ghost::Direction::Right);
+
+    blinky_->setState(Ghost::State::Frightened);
+    pinky_->setState(Ghost::State::Frightened);
+    inky_->setState(Ghost::State::Frightened);
+    clyde_->setState(Ghost::State::Frightened);
+
+    blinky_->setPosition(left_pos + distance * 1.f);
+    pinky_->setPosition(left_pos + distance * 2.f);
+    inky_->setPosition(left_pos + distance * 3.f);
+    clyde_->setPosition(left_pos + distance * 4.f);
+}
+
+void MenuState::setAnimationRight(sf::Vector2f& right_pos) {
+    sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
+
+    pacman_->setPosition(right_pos);
+    pacman_->setDirection(Pacman::Direction::Left);
+
+    blinky_->setDirection(Ghost::Direction::Left);
+    pinky_->setDirection(Ghost::Direction::Left);
+    inky_->setDirection(Ghost::Direction::Left);
+    clyde_->setDirection(Ghost::Direction::Left);
+
+    blinky_->setState(Ghost::State::Normal);
+    pinky_->setState(Ghost::State::Normal);
+    inky_->setState(Ghost::State::Normal);
+    clyde_->setState(Ghost::State::Normal);
+
+    blinky_->setPosition(right_pos + distance * 1.f);
+    pinky_->setPosition(right_pos + distance * 2.f);
+    inky_->setPosition(right_pos + distance * 3.f);
+    clyde_->setPosition(right_pos + distance * 4.f);
+}        

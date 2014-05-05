@@ -147,6 +147,12 @@ void AnimatorJson::resumeAnimation() {
     clock_.resume();
 }
 
+void AnimatorJson::restartAnimation() {
+    clock_.restart();
+    if (json_array_size(animation_) > 0)
+        this->setFrame(0);
+}
+
 ////////////////////////////////
 // Private members            //
 ////////////////////////////////
