@@ -7,14 +7,21 @@
 
 int main(int argc, char* argv[])
 {
-    // pacmanPath = argv[0];
-    // pacmanPath = pacmanPath.substr(0, pacmanPath.find_last_of(PATH_SEPARATOR)+1);
+    std::string working_dir(argv[0]);
 
-    // Create the main window
+    #ifdef _WIN32
+        #include <windows.h>
+        char buffer[MAX_PATH];
+        GetModuleFileName(NULL, buffer, sizeof(buffer));
+        working_dir = buffer;
+    #else
+        working_dir = working_dir.substr(0, working_dir.find_last_of('/') + 1);
+    #endif
+
     sf::RenderWindow window(sf::VideoMode(224, 288), "Pacman");
     window.setFramerateLimit(60);
 
-    GameEngine game(&window);
+    GameEngine game(&window, working_dir);
 
     // load the game
     game.changeState(IntroState::Instance());

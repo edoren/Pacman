@@ -28,7 +28,7 @@ class Ghost : public AnimatorJson {
         Pinky
     };
 
-    Ghost(Name name, sf::Texture* ghost_texture);
+    Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_dir);
     ~Ghost();
 
  private:

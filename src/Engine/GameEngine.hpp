@@ -11,7 +11,7 @@ class GameState;
 
 class GameEngine {
  public:
-    GameEngine(sf::RenderWindow* window);
+    GameEngine(sf::RenderWindow* window, const std::string& working_dir = "./");
 
     void init();
     void cleanup();

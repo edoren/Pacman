@@ -1,9 +1,12 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/GameState.hpp"
 
-GameEngine::GameEngine(sf::RenderWindow* window) : 
-        running_(true),
-        window_(window) {}
+GameEngine::GameEngine(sf::RenderWindow* window, const std::string& working_dir)
+      : running_(true),
+        window_(window),
+        resources_(working_dir) {
+
+}
 
 void GameEngine::init() {}
 

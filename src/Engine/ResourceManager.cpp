@@ -1,6 +1,8 @@
 #include "Engine/ResourceManager.hpp"
 
-ResourceManager::ResourceManager() {}
+ResourceManager::ResourceManager(const std::string& working_dir)
+       : working_dir_(working_dir) {
+}
 
 ResourceManager::~ResourceManager() {
     //  Delete the textures
@@ -28,7 +30,7 @@ sf::Texture* ResourceManager::loadTexture(const std::string& file) {
         return textures_[file];
 
     sf::Texture *texture = new sf::Texture();
-    if (texture->loadFromFile(file)) {
+    if (texture->loadFromFile(working_dir_ + file)) {
         textures_[file] = texture;
     } else {
         fprintf(stderr, "Cant load the texture %s.\n", file.c_str());
@@ -66,7 +68,7 @@ sf::SoundBuffer* ResourceManager::loadSoundBuffer(const std::string& file) {
         return sound_buffers_[file];
 
     sf::SoundBuffer *sound_buffer = new sf::SoundBuffer();
-    if (sound_buffer->loadFromFile(file)) {
+    if (sound_buffer->loadFromFile(working_dir_ + file)) {
         sound_buffers_[file] = sound_buffer;
     } else {
         fprintf(stderr, "Cant load the sound_buffer %s.\n", file.c_str());
@@ -104,7 +106,7 @@ sf::Font* ResourceManager::loadFont(const std::string& file) {
         return fonts_[file];
 
     sf::Font *font = new sf::Font();
-    if (font->loadFromFile(file)) {
+    if (font->loadFromFile(working_dir_ + file)) {
         fonts_[file] = font;
     } else {
         fprintf(stderr, "Cant load the font %s.\n", file.c_str());
@@ -130,4 +132,13 @@ void ResourceManager::freeFont(const std::string& file) {
     } else {
         fprintf(stderr, "Can't find the font %s.\n", file.c_str());
     }
+}
+
+
+//////////////////////////////////////
+//  Directory Tools
+//////////////////////////////////////
+
+const std::string& ResourceManager::getWorkingDirectory() {
+    return working_dir_;
 }

@@ -9,7 +9,7 @@
 
 class ResourceManager {
  public:
-    ResourceManager();
+    ResourceManager(const std::string& working_dir = "./");
     ~ResourceManager();
 
     // Textures
@@ -27,7 +27,11 @@ class ResourceManager {
     sf::Font* getFont(const std::string& file);
     void freeFont(const std::string& file);
 
+    const std::string& getWorkingDirectory();
+
  private:
+    const std::string working_dir_;
+
     std::unordered_map<std::string, sf::Texture*> textures_;
     std::unordered_map<std::string, sf::SoundBuffer*> sound_buffers_;
     std::unordered_map<std::string, sf::Font*> fonts_;

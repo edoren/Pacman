@@ -1,12 +1,12 @@
 #include "Ghost.hpp"
 
-Ghost::Ghost(Name name, sf::Texture* ghost_texture) :
+Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_dir) :
         speed_(1.f),
         eatable_(false),
         name_(name),
         state_(Normal) {
     ghost_texture_ = ghost_texture;
-    this->loadJsonFile("assets/sprites/ghosts/ghosts.json", ghost_texture_);
+    this->loadJsonFile(working_dir + "assets/sprites/ghosts/ghosts.json", ghost_texture_);
 
     switch (name_) {
         case Blinky:

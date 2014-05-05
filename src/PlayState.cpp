@@ -9,10 +9,12 @@ void PlayState::init(ResourceManager* resources) {
     sf::Texture* pacman_texture = resources->loadTexture("assets/sprites/pacman/pacman.png");
     sf::Texture* ghosts_texture = resources->loadTexture("assets/sprites/ghosts/ghosts.png");
 
-    map_ = new tmx::TileMap("assets/maps/clasic.tmx");
-    pacman_ = new Pacman(pacman_texture);
+    const std::string& working_dir = resources->getWorkingDirectory();
 
-    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture);
+    map_ = new tmx::TileMap(working_dir + "assets/maps/clasic.tmx");
+    pacman_ = new Pacman(pacman_texture, working_dir);
+
+    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, working_dir);
     blinky_->setDirection(Ghost::Direction::Right);
 };
 

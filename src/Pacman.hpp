@@ -5,7 +5,7 @@
 
 class Pacman : public AnimatorJson {
  public:
-    Pacman(sf::Texture* pacman_texture);
+    Pacman(sf::Texture* pacman_texture, const std::string& working_dir);
     ~Pacman();
 
     enum Direction {

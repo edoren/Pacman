@@ -1,7 +1,7 @@
 #include "Pacman.hpp"
 
-Pacman::Pacman(sf::Texture* pacman_texture) : is_alive_(true) {
-    this->loadJsonFile("assets/sprites/pacman/pacman.json", pacman_texture);
+Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir) : is_alive_(true) {
+    this->loadJsonFile(working_dir + "assets/sprites/pacman/pacman.json", pacman_texture);
     this->setDirection(Left);
 }
 
