@@ -20,10 +20,11 @@ else()
     set(SFML_INCLUDE_DIR ${SFML_DIRECTORY}/include)
 
     set(BUILD_SHARED_LIBS FALSE)
+    add_definitions(-DSFML_STATIC)
 
     add_subdirectory(${SFML_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/SFML EXCLUDE_FROM_ALL)
     if(WIN32)
-        set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
+        set(SFML_LIBRARIES sfml-main sfml-audio sfml-graphics sfml-window sfml-system)
     else()
         set(SFML_LIBRARIES sfml-audio sfml-graphics sfml-window sfml-system)
     endif()
@@ -54,6 +55,7 @@ else()
     set(STP_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/STP)
 
     set(STP_SHARED_LIBS FALSE)
+    add_definitions(-DSTP_STATIC)
 
     add_subdirectory(${STP_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/STP EXCLUDE_FROM_ALL)
 
@@ -101,7 +103,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # create game executable
-if(WIN32 AND ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+if(HIDE_CMD)
     add_executable(${EXECUTABLE_NAME} WIN32 ${PACMAN_SRC} ${PACMAN_HEADERS})
 else()
     add_executable(${EXECUTABLE_NAME} ${PACMAN_SRC} ${PACMAN_HEADERS})

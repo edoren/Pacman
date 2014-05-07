@@ -14,6 +14,10 @@ if(CMAKE_CONFIGURATION_TYPES)
     mark_as_advanced(CMAKE_CONFIGURATION_TYPES)
 endif()
 
+if(WIN32)
+    set(HIDE_CMD TRUE CACHE BOOL "Hide the Windows CMD.")
+endif()
+
 # set CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
