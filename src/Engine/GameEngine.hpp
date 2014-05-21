@@ -6,12 +6,14 @@
 #include "SFML/Graphics.hpp"
 
 #include "Engine/ResourceManager.hpp"
+#include "Engine/Settings.hpp"
 
 class GameState;
 
 class GameEngine {
  public:
     GameEngine(sf::RenderWindow* window, const std::string& working_dir = "./");
+    ~GameEngine();
 
     void init();
     void cleanup();
@@ -30,9 +32,13 @@ class GameEngine {
     bool isRunning();
     void quit();
 
+    void startConfigFile(const std::string& config_file = "config.json");
     sf::RenderWindow* getWindow();
 
  private:
+    std::string working_dir_;
+
+    Settings* settings_;
     ResourceManager resources_;
     std::stack<GameState*> states_;
 

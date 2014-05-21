@@ -3,9 +3,15 @@
 
 GameEngine::GameEngine(sf::RenderWindow* window, const std::string& working_dir)
       : running_(true),
+        working_dir_(working_dir),
+        settings_(nullptr),
         window_(window),
         resources_(working_dir) {
+}
 
+GameEngine::~GameEngine() {
+    settings_->save();
+    delete settings_;
 }
 
 void GameEngine::init() {}
@@ -27,7 +33,7 @@ void GameEngine::changeState(GameState* state) {
 
     // store and init the new state
     states_.push(state);
-    states_.top()->init(&resources_);
+    states_.top()->init(&resources_, settings_);
 }
 
 void GameEngine::pushState(GameState* state) {
@@ -38,7 +44,7 @@ void GameEngine::pushState(GameState* state) {
 
     // store and init the new state
     states_.push(state);
-    states_.top()->init(&resources_);
+    states_.top()->init(&resources_, settings_);
 }
 
 void GameEngine::popState() {
@@ -80,6 +86,10 @@ bool GameEngine::isRunning() {
 
 void GameEngine::quit() {
     running_ = false;
+}
+
+void GameEngine::startConfigFile(const std::string& config_file) {
+    settings_ = new Settings(working_dir_ + config_file);
 }
 
 sf::RenderWindow* GameEngine::getWindow() {

@@ -6,7 +6,7 @@
 
 class GameState {
  public:
-    virtual void init(ResourceManager* resources) = 0;
+    virtual void init(ResourceManager* resources, Settings* settings) = 0;
     virtual void exit(ResourceManager* resources) = 0;
     virtual void pause() = 0;
     virtual void resume() = 0;
