@@ -11,7 +11,7 @@
 
 class PlayState : public GameState {
  public:
-    void init(ResourceManager* resources);
+    void init(ResourceManager* resources, Settings* settings);
     void exit(ResourceManager* resources);
     void pause();
     void resume();
@@ -38,8 +38,17 @@ class PlayState : public GameState {
     Ghost* blinky_;
     tmx::TileMap* map_;
 
+    Pacman::Direction next_dir_;
+
  private:
-    bool checkMapCollision();
+    bool AABBCollision(const sf::FloatRect& obj1, const sf::FloatRect& obj2);
+
+    // Update pacman and verify collisions
+    void updatePacman();
+    void updateGhost(Ghost* ghost);
+
+    bool checkMapCollision(const sf::FloatRect& collision_box);
+    bool checkFoodCollision();
 };
 
 #endif  // PLAY_STATE_HPP

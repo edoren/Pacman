@@ -9,21 +9,34 @@ class Pacman : public AnimatorJson {
     ~Pacman();
 
     enum Direction {
-        Up,
-        Left,
-        Down,
-        Right
+        Left = -2,
+        Up = -1,
+        None = 0,
+        Down = 1,
+        Right = 2
     };
 
+    bool alive;
+
+    void pause();  // Pause pacman movement and animation
+    void resume();  // Resume pacman movement and animation
+
+    bool is_paused();
+
  private:
-    bool is_alive_;
     Direction direction_;
+    sf::Vector2f velocity_;
+    bool paused_;
 
  public:
     void setDirection(Pacman::Direction direction);
+    const Pacman::Direction& getDirection() const;
+
+    const sf::Vector2f& getVelocity() const;
+
+    sf::FloatRect getCollisionBox();
 
     void updatePos();
-
 };
 
 #endif  // PACMAN_HPP

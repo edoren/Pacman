@@ -6,7 +6,7 @@ IntroState IntroState::IntroState_;
 
 IntroState::IntroState() {}
 
-void IntroState::init(ResourceManager* resources) {
+void IntroState::init(ResourceManager* resources, Settings* settings) {
     sf::Texture* sfml_texture = resources->loadTexture("assets/images/sfml-logo.png");
 
     background_ = new sf::RectangleShape(sf::Vector2f(224, 288));

@@ -15,7 +15,7 @@ MenuState::MenuState() :
         clyde_(nullptr),
         pinky_(nullptr) {}
 
-void MenuState::init(ResourceManager* resources) {
+void MenuState::init(ResourceManager* resources, Settings* settings) {
     ///////////////////////////////
     // Initialize the menu items //
     ///////////////////////////////

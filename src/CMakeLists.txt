@@ -69,6 +69,7 @@ include_directories(${SRC_DIR})
 # set pacman sources
 set(PACMAN_SRC
     ${SRC_DIR}/Engine/GameEngine.cpp
+    ${SRC_DIR}/Engine/Settings.cpp
     ${SRC_DIR}/Engine/ResourceManager.cpp
     ${SRC_DIR}/Engine/GameState.cpp
     ${SRC_DIR}/Engine/AnimatorJson.cpp
@@ -84,6 +85,7 @@ set(PACMAN_SRC
 # set pacman headers
 set(PACMAN_HEADERS
     ${SRC_DIR}/Engine/GameEngine.hpp
+    ${SRC_DIR}/Engine/Settings.hpp
     ${SRC_DIR}/Engine/ResourceManager.hpp
     ${SRC_DIR}/Engine/GameState.hpp
     ${SRC_DIR}/Engine/AnimatorJson.hpp

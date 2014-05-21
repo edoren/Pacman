@@ -1,10 +1,10 @@
 #include "Ghost.hpp"
 
 Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_dir) :
-        speed_(1.f),
         eatable_(false),
         name_(name),
-        state_(Normal) {
+        state_(Normal),
+        paused_(false) {
     ghost_texture_ = ghost_texture;
     this->loadJsonFile(working_dir + "assets/sprites/ghosts/ghosts.json", ghost_texture_);
 
@@ -28,8 +28,23 @@ Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_d
 Ghost::~Ghost() {}
 
 void Ghost::setDirection(Ghost::Direction direction) {
+    if (direction_ == direction) return;
+
     direction_ = direction;
     this->changeAnimation(state_);
+}
+
+const Ghost::Direction& Ghost::getDirection() const {
+    return direction_;
+}
+
+const sf::Vector2f& Ghost::getVelocity() const {
+    return velocity_;
+}
+
+sf::FloatRect Ghost::getCollisionBox() {
+    sf::FloatRect g_bounds = this->getGlobalBounds();
+    return sf::FloatRect(g_bounds.left + 3.f, g_bounds.top + 3.f, 8.f, 8.f);
 }
 
 void Ghost::setState(Ghost::State state) {
@@ -38,22 +53,24 @@ void Ghost::setState(Ghost::State state) {
 }
 
 void Ghost::updatePos() {
-    switch (direction_) {
+    if (paused_) return;
+
+    switch(direction_) {
         case Left:
-            this->move(sf::Vector2f(-speed_, 0));
+            velocity_ = sf::Vector2f(-1.f, 0);
             break;
         case Right:
-            this->move(sf::Vector2f(speed_, 0));
+            velocity_ = sf::Vector2f(1.f, 0);
             break;
         case Up:
-            this->move(sf::Vector2f(0, -speed_));
+            velocity_ = sf::Vector2f(0, -1.f);
             break;
         case Down:
-            this->move(sf::Vector2f(0, speed_));
-            break;
-        case Stopped:
+            velocity_ = sf::Vector2f(0, 1.f);
             break;
     }
+
+    this->move(velocity_);
 }
 
 void Ghost::changeAnimation(Ghost::State state) {
@@ -92,4 +109,18 @@ void Ghost::changeAnimation(Ghost::State state) {
             this->setAnimation(down);
             break;
     }
+}
+
+void Ghost::pause() {
+    this->pauseAnimation();
+    paused_ = true;
+}
+
+void Ghost::resume() {
+    this->resumeAnimation();
+    paused_ = false;
+}
+
+bool Ghost::is_paused() {
+    return paused_;
 }

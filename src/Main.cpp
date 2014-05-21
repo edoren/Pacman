@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     window.setFramerateLimit(60);
 
     GameEngine game(&window, working_dir);
+    game.startConfigFile("config.json");
 
     // load the game
     game.changeState(IntroState::Instance());

@@ -8,11 +8,10 @@
 class Ghost : public AnimatorJson {
  public:
     enum Direction {
-        Up,
-        Left,
-        Down,
-        Right,
-        Stopped
+        Left = -2,
+        Up = -1,
+        Down = 1,
+        Right = 2
     };
 
     enum State {
@@ -32,7 +31,7 @@ class Ghost : public AnimatorJson {
     ~Ghost();
 
  private:
-    float speed_;
+    sf::Vector2f velocity_;
     bool eatable_;
     Name name_;
     sf::Texture* ghost_texture_;
@@ -40,13 +39,33 @@ class Ghost : public AnimatorJson {
     Direction direction_;
     State state_;
 
+    bool paused_;
+
  public:
+    void pause();  // Pause the ghost movement and animation
+    void resume();  // Resume the ghost movement and animation
+
+    bool is_paused(); //
+
     void setDirection(Ghost::Direction direction);
+    const Ghost::Direction& getDirection() const; //
+
     void setState(Ghost::State state);
+
+    const sf::Vector2f& getVelocity() const; //
+
+    sf::FloatRect getCollisionBox(); //
+
     void updatePos();
 
  private:
     void changeAnimation(Ghost::State state);
+
+ private:
+
+ public:
+
+
 };
 
 #endif  // GHOST_HPP

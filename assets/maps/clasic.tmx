@@ -32,7 +32,7 @@
    eJztVkEKACAI6w1d+/8/u0c1ZmYYG3jR1swKLUXIjkaaB2+Wwyo3Zs3MVwP0KojfPB97D1Zj8kE43e+2HvPuWf8YR/mysHClJz3pSc+D+/s88WJ+Oa0Vqjmakbz67Y4bpRfd35m/lpUXYYI/OlJbGc8=
   </data>
  </layer>
- <layer name="MetaTiles" width="28" height="36" opacity="0.13">
+ <layer name="MetaTiles" width="28" height="36" visible="0" opacity="0.13">
   <data encoding="base64" compression="zlib">
    eJztlEkOgDAMA/MZ+v8nckeAxnW6QQ++ZJETx0qJiLKxNA4RGX13MzzNptTQvq/x9YCzv6PXCD7F92r8mqc3d/yi6NObL8N/7v3detL/thflU7SqyVGPttpv1vv9wZ9Z9VQv+idr9M7+Z6P5XK2I5nR2xy/qT2nBp/pQjTv/YNW+HqCzbXCcUOKUYw==
   </data>

@@ -3,12 +3,12 @@
  <image source="meta-tiles.png" width="16" height="8"/>
  <tile id="0">
   <properties>
-   <property name="collidable" value="false"/>
+   <property name="collapsible" value="f"/>
   </properties>
  </tile>
  <tile id="1">
   <properties>
-   <property name="collidable" value="true"/>
+   <property name="collapsible" value="t"/>
   </properties>
  </tile>
 </tileset>

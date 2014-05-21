@@ -11,7 +11,7 @@
 
 class MenuState : public GameState {
  public:
-    void init(ResourceManager* resources);
+    void init(ResourceManager* resources, Settings* settings);
     void exit(ResourceManager* resources);
     void pause();
     void resume();

@@ -1,6 +1,8 @@
 #include "Pacman.hpp"
 
-Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir) : is_alive_(true) {
+Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir) 
+      : alive(true),
+        paused_(false) {
     this->loadJsonFile(working_dir + "assets/sprites/pacman/pacman.json", pacman_texture);
     this->setDirection(Left);
 }
@@ -8,6 +10,8 @@ Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir) : is
 Pacman::~Pacman() {};
 
 void Pacman::setDirection(Pacman::Direction direction) {
+    if (direction_ == direction) return;
+
     direction_ = direction;
     switch(direction_) {
         case Left:
@@ -25,19 +29,50 @@ void Pacman::setDirection(Pacman::Direction direction) {
     }
 }
 
+const Pacman::Direction& Pacman::getDirection() const {
+    return direction_;
+}
+
+const sf::Vector2f& Pacman::getVelocity() const {
+    return velocity_;
+}
+
+sf::FloatRect Pacman::getCollisionBox() {
+    sf::FloatRect g_bounds = this->getGlobalBounds();
+    return sf::FloatRect(g_bounds.left + 3.f, g_bounds.top + 3.f, 8.f, 8.f);
+}
+
 void Pacman::updatePos() {
+    if (!alive || paused_) return;
+
     switch(direction_) {
         case Left:
-            this->move(sf::Vector2f(-1.f, 0));
+            velocity_ = sf::Vector2f(-1.f, 0);
             break;
         case Right:
-            this->move(sf::Vector2f(1.f, 0));
+            velocity_ = sf::Vector2f(1.f, 0);
             break;
         case Up:
-            this->move(sf::Vector2f(0, -1.f));
+            velocity_ = sf::Vector2f(0, -1.f);
             break;
         case Down:
-            this->move(sf::Vector2f(0, 1.f));
+            velocity_ = sf::Vector2f(0, 1.f);
             break;
     }
+
+    this->move(velocity_);
+}
+
+void Pacman::pause() {
+    this->pauseAnimation();
+    paused_ = true;
+}
+
+void Pacman::resume() {
+    this->resumeAnimation();
+    paused_ = false;
+}
+
+bool Pacman::is_paused() {
+    return paused_;
 }
