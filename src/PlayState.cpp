@@ -39,7 +39,7 @@ void PlayState::exit(ResourceManager* resources) {
 };
 
 void PlayState::pause() {
-}; 
+};
 
 void PlayState::resume() {
 };
@@ -99,7 +99,7 @@ bool PlayState::checkMapCollision(const sf::FloatRect& collision_box) {
 
             // Check if the tile is not an empty tile and has the collapsible property in t(true),
             // if it has, checks the collision and return true if it happens
-            if (!tile.empty() && tile.GetPropertyValue("collapsible") == "t" && 
+            if (!tile.empty() && tile.GetPropertyValue("collapsible") == "t" &&
                 this->AABBCollision(collision_box, tile.GetGlobalBounds())) {
                 return true;
             }
@@ -118,7 +118,7 @@ void PlayState::updatePacman() {
     this->checkFoodCollision();
 
     // Check if pacman is not on a Tile, if not it checks if he want to go backwards
-    if ((static_cast<int>(pacman_->getCollisionBox().left) % 8) != 0 || 
+    if ((static_cast<int>(pacman_->getCollisionBox().left) % 8) != 0 ||
         (static_cast<int>(pacman_->getCollisionBox().top) % 8) != 0) {
         if (pacman_->getDirection() == -next_dir_) {
             pacman_->setDirection(next_dir_);
@@ -128,28 +128,23 @@ void PlayState::updatePacman() {
     }
 
     // Check if the front tile is collapsible
-    if (pacman_->getDirection() == next_dir_ || next_dir_ == Pacman::Direction::None) {
-        // Move pacman to the front
-        pacman_->move(pacman_->getVelocity());
 
-        // Check if exist collision with the map
-        if (this->checkMapCollision(pacman_->getCollisionBox())) {
-            pacman_->pause(); // Pause pacman movement and animation
-        }
-
-        // Return pacman to last position
-        pacman_->move(pacman_->getVelocity() * -1.f);
-
-        return;
+    // Move pacman to the front
+    pacman_->move(pacman_->getVelocity());
+    // Check if exist collision with the map
+    if (this->checkMapCollision(pacman_->getCollisionBox())) {
+        pacman_->pause(); // Pause pacman movement and animation
     }
+    // Return pacman to last position
+    pacman_->move(pacman_->getVelocity() * -1.f);
 
-    // Resume pacman if is paused
-    if (pacman_->is_paused()) pacman_->resume();
 
     sf::Vector2f move_dir;
 
     // Select the move offset according to the pacman's direction
     switch(next_dir_) {
+        case Pacman::Direction::None:
+            return;
         case Pacman::Direction::Left:
             move_dir = sf::Vector2f(-1.f, 0);
             break;
@@ -171,6 +166,8 @@ void PlayState::updatePacman() {
     if (!this->checkMapCollision(pacman_->getCollisionBox())) {
         pacman_->setDirection(next_dir_);
         next_dir_ = Pacman::Direction::None;
+        // Resume pacman if is paused
+        if (pacman_->is_paused()) pacman_->resume();
     }
 
     // Return pacman to last position
@@ -183,7 +180,7 @@ void PlayState::updateGhost(Ghost* ghost) {
     ghost->updateAnimation();
 
     // Check if the ghost is not on a Tile, if not it checks if he want to go backwards
-    if ((static_cast<int>(ghost->getCollisionBox().left) % 8) != 0 || 
+    if ((static_cast<int>(ghost->getCollisionBox().left) % 8) != 0 ||
         (static_cast<int>(ghost->getCollisionBox().top) % 8) != 0) {
         return;
     }
@@ -250,5 +247,4 @@ bool PlayState::AABBCollision(const sf::FloatRect& obj1, const sf::FloatRect& ob
         return true;
     else
         return false;
-    
 }
