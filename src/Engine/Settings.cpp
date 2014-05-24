@@ -27,6 +27,7 @@ Settings::Settings(const std::string& file_path) {
 }
 
 Settings::~Settings() {
+    this->save();
     json_decref(root_);
 }
 

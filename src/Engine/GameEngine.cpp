@@ -10,7 +10,6 @@ GameEngine::GameEngine(sf::RenderWindow* window, const std::string& working_dir)
 }
 
 GameEngine::~GameEngine() {
-    settings_->save();
     delete settings_;
 }
 
