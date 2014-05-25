@@ -1,5 +1,7 @@
 #include "Ghost.hpp"
 
+#include "Collision.hpp"
+
 Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_dir) :
         eatable_(false),
         name_(name),
@@ -21,8 +23,8 @@ Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_d
             break;
         case Pinky:
             name_string_ = "pinky";
-            break; 
-    }   
+            break;
+    }
 }
 
 Ghost::~Ghost() {}
@@ -50,6 +52,10 @@ sf::FloatRect Ghost::getCollisionBox() {
 void Ghost::setState(Ghost::State state) {
     state_ = state;
     this->changeAnimation(state);
+}
+
+Ghost::State Ghost::getState() {
+    return state_;
 }
 
 void Ghost::updatePos() {
@@ -88,7 +94,7 @@ void Ghost::changeAnimation(Ghost::State state) {
             break;
     }
 
-    char up[15], down[15], left[15], right[15]; 
+    char up[15], down[15], left[15], right[15];
 
     sprintf(up, "%s-up", animation_name);
     sprintf(down, "%s-down", animation_name);
@@ -123,4 +129,36 @@ void Ghost::resume() {
 
 bool Ghost::is_paused() {
     return paused_;
+}
+
+void Ghost::randomMovement(tmx::TileMap *map) {
+    // Positions to check
+    std::vector<std::pair<Ghost::Direction, sf::Vector2f>> postocheck{
+        {Ghost::Direction::Left, {-1.f, 0}},
+        {Ghost::Direction::Right, {1.f, 0}},
+        {Ghost::Direction::Up, {0, -1.f}},
+        {Ghost::Direction::Down,  {0, 1.f}}
+    };
+
+    std::vector<Ghost::Direction> posible_paths;
+
+    for (const auto &pos : postocheck) {
+        if (pos.first != -this->getDirection()) {
+            // Move the ghost to the wanted direction to check collision
+            this->move(pos.second);
+
+            // Check if no exist collision with the map
+            if (!Collision::checkMapCollision(map, this->getCollisionBox())) {
+                posible_paths.push_back(pos.first);
+            }
+
+            // Return the ghost to last position
+            this->move(pos.second * -1.f);
+        }
+    }
+
+    if (posible_paths.size() == 0) return;
+
+    int rand_index = rand() % static_cast<unsigned int>(posible_paths.size());
+    this->setDirection(posible_paths[rand_index]);
 }

@@ -2,6 +2,7 @@
 #define GHOST_HPP
 
 #include "SFML/Graphics/Texture.hpp"
+#include "STP/TMXLoader.hpp"
 
 #include "Engine/AnimatorJson.hpp"
 
@@ -17,6 +18,7 @@ class Ghost : public AnimatorJson {
     enum State {
         Normal,
         Frightened,
+        InHouse,
         OnlyEyes
     };
 
@@ -48,24 +50,22 @@ class Ghost : public AnimatorJson {
     bool is_paused(); //
 
     void setDirection(Ghost::Direction direction);
-    const Ghost::Direction& getDirection() const; //
+    const Ghost::Direction& getDirection() const;
 
     void setState(Ghost::State state);
+    Ghost::State getState();
 
-    const sf::Vector2f& getVelocity() const; //
+    const sf::Vector2f& getVelocity() const;
 
-    sf::FloatRect getCollisionBox(); //
+    sf::FloatRect getCollisionBox();
 
     void updatePos();
 
+    // Ghost movement types
+    void randomMovement(tmx::TileMap *map);
+
  private:
     void changeAnimation(Ghost::State state);
-
- private:
-
- public:
-
-
 };
 
 #endif  // GHOST_HPP

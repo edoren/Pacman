@@ -74,6 +74,7 @@ set(PACMAN_SRC
     ${SRC_DIR}/Engine/GameState.cpp
     ${SRC_DIR}/Engine/AnimatorJson.cpp
     ${SRC_DIR}/Engine/Utils/Clock.cpp
+    ${SRC_DIR}/Collision.cpp
     ${SRC_DIR}/IntroState.cpp
     ${SRC_DIR}/MenuState.cpp
     ${SRC_DIR}/PlayState.cpp
@@ -90,6 +91,7 @@ set(PACMAN_HEADERS
     ${SRC_DIR}/Engine/GameState.hpp
     ${SRC_DIR}/Engine/AnimatorJson.hpp
     ${SRC_DIR}/Engine/Utils/Clock.hpp
+    ${SRC_DIR}/Collision.hpp
     ${SRC_DIR}/MenuState.hpp
     ${SRC_DIR}/IntroState.hpp
     ${SRC_DIR}/PlayState.hpp

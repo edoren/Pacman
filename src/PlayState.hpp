@@ -41,14 +41,12 @@ class PlayState : public GameState {
     Pacman::Direction next_dir_;
 
  private:
-    bool AABBCollision(const sf::FloatRect& obj1, const sf::FloatRect& obj2);
-
     // Update pacman and verify collisions
     void updatePacman();
     void updateGhost(Ghost* ghost);
 
-    bool checkMapCollision(const sf::FloatRect& collision_box);
-    bool checkFoodCollision();
+    bool checkMapCollision(tmx::TileMap *map, const sf::FloatRect& collision_box);
+    bool checkFoodCollision(tmx::TileMap *food_map);
 };
 
 #endif  // PLAY_STATE_HPP
