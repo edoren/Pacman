@@ -28,7 +28,4 @@ install:
     # Install jansson
     - sudo apt-get install libjansson-dev
 
-before_script:
-    - git submodule update --init --recursive
-
 script: cmake . && make
