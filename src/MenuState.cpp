@@ -4,7 +4,7 @@
 
 MenuState MenuState::MenuState_;
 
-MenuState::MenuState() : 
+MenuState::MenuState() :
         selected_(0),
         background_(nullptr),
         pacman_logo_(nullptr),
@@ -68,7 +68,7 @@ void MenuState::init(ResourceManager* resources, Settings* settings) {
     pinky_ = new Ghost(Ghost::Name::Pinky, ghosts_texture, working_dir);
     inky_ = new Ghost(Ghost::Name::Inky, ghosts_texture, working_dir);
     clyde_ = new Ghost(Ghost::Name::Clyde, ghosts_texture, working_dir);
-    
+
     sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
     this->setAnimationRight(start_pos);
 };
@@ -99,7 +99,7 @@ void MenuState::pause() {
 
     sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
     this->setAnimationRight(start_pos);
-}; 
+};
 
 void MenuState::resume() {
 };
@@ -117,7 +117,7 @@ void MenuState::handleEvents(GameEngine* game) {
             switch (event.key.code) {
                 case sf::Keyboard::Up:  // Change the selection up
                     options_->at(selected_).second.setColor(sf::Color::White);
-                    selected_ -= 1; 
+                    selected_ -= 1;
                     if (selected_ < 0) selected_ = options_->size() - 1;
                     options_->at(selected_).second.setColor(sf::Color::Blue);
                     break;
@@ -126,7 +126,7 @@ void MenuState::handleEvents(GameEngine* game) {
                     selected_ += 1;
                     if (selected_ >= options_->size()) selected_ = 0;
                     options_->at(selected_).second.setColor(sf::Color::Blue);
-                    break; 
+                    break;
                 case sf::Keyboard::Return:
                     game->pushState(options_->at(selected_).first);
             }
@@ -208,13 +208,13 @@ void MenuState::setAnimationRight(sf::Vector2f& right_pos) {
     inky_->setDirection(Ghost::Direction::Left);
     clyde_->setDirection(Ghost::Direction::Left);
 
-    blinky_->setState(Ghost::State::Normal);
-    pinky_->setState(Ghost::State::Normal);
-    inky_->setState(Ghost::State::Normal);
-    clyde_->setState(Ghost::State::Normal);
+    blinky_->setState(Ghost::State::Chase);
+    pinky_->setState(Ghost::State::Chase);
+    inky_->setState(Ghost::State::Chase);
+    clyde_->setState(Ghost::State::Chase);
 
     blinky_->setPosition(right_pos + distance * 1.f);
     pinky_->setPosition(right_pos + distance * 2.f);
     inky_->setPosition(right_pos + distance * 3.f);
     clyde_->setPosition(right_pos + distance * 4.f);
-}        
+}

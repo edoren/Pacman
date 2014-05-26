@@ -11,13 +11,15 @@ class Ghost : public AnimatorJson {
     enum Direction {
         Left = -2,
         Up = -1,
+        None = 0,
         Down = 1,
         Right = 2
     };
 
     enum State {
-        Normal,
-        Frightened,
+        Chase,
+        Scatter,
+        Frightened,        
         InHouse,
         OnlyEyes
     };
@@ -63,6 +65,7 @@ class Ghost : public AnimatorJson {
 
     // Ghost movement types
     void randomMovement(tmx::TileMap *map);
+    void focusMovement(tmx::TileMap *map, sf::Vector2f position);  // Move to a specific position
 
  private:
     void changeAnimation(Ghost::State state);

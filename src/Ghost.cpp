@@ -1,11 +1,13 @@
-#include "Ghost.hpp"
+#include <cmath>
+#include <limits>
 
+#include "Ghost.hpp"
 #include "Collision.hpp"
 
 Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_dir) :
         eatable_(false),
         name_(name),
-        state_(Normal),
+        state_(Ghost::State::Chase),
         paused_(false) {
     ghost_texture_ = ghost_texture;
     this->loadJsonFile(working_dir + "assets/sprites/ghosts/ghosts.json", ghost_texture_);
@@ -82,7 +84,8 @@ void Ghost::updatePos() {
 void Ghost::changeAnimation(Ghost::State state) {
     const char* animation_name;
     switch (state) {
-        case Normal:
+        case Chase:
+        case Scatter:
             animation_name = name_string_.c_str();
             break;
         case Frightened:
@@ -144,7 +147,7 @@ void Ghost::randomMovement(tmx::TileMap *map) {
 
     for (const auto &pos : postocheck) {
         if (pos.first != -this->getDirection()) {
-            // Move the ghost to the wanted direction to check collision
+            // Move the ghost to the wanted direction to check collision with the map
             this->move(pos.second);
 
             // Check if no exist collision with the map
@@ -161,4 +164,41 @@ void Ghost::randomMovement(tmx::TileMap *map) {
 
     int rand_index = rand() % static_cast<unsigned int>(posible_paths.size());
     this->setDirection(posible_paths[rand_index]);
+}
+
+void Ghost::focusMovement(tmx::TileMap *map, sf::Vector2f position) {
+    // Positions to check
+    std::vector<std::pair<Ghost::Direction, sf::Vector2f>> postocheck{
+        {Ghost::Direction::Left, {-1.f, 0}},
+        {Ghost::Direction::Right, {1.f, 0}},
+        {Ghost::Direction::Up, {0, -1.f}},
+        {Ghost::Direction::Down,  {0, 1.f}}
+    };
+
+    float short_distance = std::numeric_limits<float>::max();
+    Ghost::Direction next_direction = Ghost::Direction::None;
+
+    for (const auto &pos : postocheck) {
+        if (pos.first != -this->getDirection()) {
+            // Move the ghost to the wanted direction to check collision with the map
+            this->move(pos.second);
+
+            // Check if no exist collision with the map
+            if (!Collision::checkMapCollision(map, this->getCollisionBox())) {
+                float x_delta = position.x - this->getPosition().x;
+                float y_delta = position.y - this->getPosition().y;
+                float distance = hypot(x_delta, y_delta);
+                if (distance < short_distance) {
+                    short_distance = distance;
+                    next_direction = pos.first;
+                }
+            }
+
+            // Return the ghost to last position
+            this->move(pos.second * -1.f);
+        }
+    }
+
+    if (next_direction != Ghost::Direction::None)
+        this->setDirection(next_direction);
 }
