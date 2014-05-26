@@ -26,6 +26,8 @@ Ghost::Ghost(Name name, sf::Texture* ghost_texture, const std::string& working_d
         case Pinky:
             name_string_ = "pinky";
             break;
+        default:
+            break;
     }
 }
 
@@ -76,6 +78,8 @@ void Ghost::updatePos() {
         case Down:
             velocity_ = sf::Vector2f(0, 1.f);
             break;
+        default:
+            break;
     }
 
     this->move(velocity_);
@@ -86,6 +90,7 @@ void Ghost::changeAnimation(Ghost::State state) {
     switch (state) {
         case Chase:
         case Scatter:
+        case InHouse:
             animation_name = name_string_.c_str();
             break;
         case Frightened:
@@ -116,6 +121,8 @@ void Ghost::changeAnimation(Ghost::State state) {
             break;
         case Down:
             this->setAnimation(down);
+            break;
+        default:
             break;
     }
 }

@@ -2,11 +2,11 @@
 #include "Engine/GameState.hpp"
 
 GameEngine::GameEngine(sf::RenderWindow* window, const std::string& working_dir)
-      : running_(true),
-        working_dir_(working_dir),
+      : working_dir_(working_dir),
         settings_(nullptr),
-        window_(window),
-        resources_(working_dir) {
+        resources_(working_dir),
+        running_(true),
+        window_(window) {
 }
 
 GameEngine::~GameEngine() {

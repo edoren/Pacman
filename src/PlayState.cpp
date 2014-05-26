@@ -28,9 +28,9 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     blinky_->setPosition({112 - 3, 208 - 3});
 
     // Get the settings
-    int width = settings->getSetting("width", 224);
-    int height = settings->getSetting("height", 288);
-    int volume = settings->getSetting("volume", 100);
+    // int width = settings->getSetting("width", 224);
+    // int height = settings->getSetting("height", 288);
+    // int volume = settings->getSetting("volume", 100);
 };
 
 void PlayState::exit(ResourceManager* resources) {
@@ -68,6 +68,8 @@ void PlayState::handleEvents(GameEngine* game) {
                     break;
                 case sf::Keyboard::Right:
                     next_dir_ = Pacman::Direction::Right;
+                    break;
+                default:
                     break;
             }
         }

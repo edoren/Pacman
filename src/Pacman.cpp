@@ -26,6 +26,8 @@ void Pacman::setDirection(Pacman::Direction direction) {
         case Down:
             this->setAnimation("down");
             break;
+        default:
+            break;
     }
 }
 
@@ -57,6 +59,8 @@ void Pacman::updatePos() {
             break;
         case Down:
             velocity_ = sf::Vector2f(0, 1.f);
+            break;
+        default:
             break;
     }
 

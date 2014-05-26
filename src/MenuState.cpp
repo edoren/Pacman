@@ -5,15 +5,16 @@
 MenuState MenuState::MenuState_;
 
 MenuState::MenuState() :
-        selected_(0),
         background_(nullptr),
         pacman_logo_(nullptr),
-        options_(nullptr),
         pacman_(nullptr),
         blinky_(nullptr),
         inky_(nullptr),
         clyde_(nullptr),
-        pinky_(nullptr) {}
+        pinky_(nullptr),
+        selected_(0),
+        options_(nullptr) {
+}
 
 void MenuState::init(ResourceManager* resources, Settings* settings) {
     ///////////////////////////////
@@ -124,11 +125,13 @@ void MenuState::handleEvents(GameEngine* game) {
                 case sf::Keyboard::Down:  // Change the selection down
                     options_->at(selected_).second.setColor(sf::Color::White);
                     selected_ += 1;
-                    if (selected_ >= options_->size()) selected_ = 0;
+                    if (selected_ >= static_cast<int>(options_->size())) selected_ = 0;
                     options_->at(selected_).second.setColor(sf::Color::Blue);
                     break;
                 case sf::Keyboard::Return:
                     game->pushState(options_->at(selected_).first);
+                default:
+                    break;
             }
         }
     }
