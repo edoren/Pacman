@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         working_dir = working_dir.substr(0, working_dir.find_last_of('/') + 1);
     #endif
 
-    sf::RenderWindow window(sf::VideoMode(224, 288), "Pacman");
+    sf::RenderWindow window(sf::VideoMode(224, 288), "Pacman", sf::Style::Close);
     window.setFramerateLimit(60);
 
     GameEngine game(&window, working_dir);
