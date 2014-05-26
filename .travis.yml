@@ -13,6 +13,11 @@ install:
     - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-4.8; fi
     - if [ "$CXX" == "g++" ]; then export CXX="g++-4.8"; fi
 
+    # SFML dependencies
+    - sudo apt-get install libpthread-stubs0-dev libgl1-mesa-dev libx11-dev
+    - sudo apt-get install libxrandr-dev libfreetype6-dev libglew1.5-dev
+    - sudo apt-get install libjpeg8-dev libudev-dev libsndfile1-dev libopenal-dev
+
     # Fix clang build on linux
     - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
     - if [ "$CXX" == "clang++" ]; then svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk@181765 libcxx; fi
@@ -23,8 +28,9 @@ install:
     - if [ "$CXX" == "clang++" ]; then cd /usr/lib && sudo ln -sf libc++.so.1.0 libc++.so; fi
     - if [ "$CXX" == "clang++" ]; then sudo ln -sf libc++.so.1.0 libc++.so.1 && cd $cwd; fi
 
-    # Install zlib
+    # STP dependencies
     - sudo apt-get install zlib1g-dev
+    # - sudo apt-get install libpugixml-dev
 
     # Install jansson
     - sudo apt-get install libjansson-dev
