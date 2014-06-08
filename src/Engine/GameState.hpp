@@ -19,7 +19,7 @@ class GameState {
 
     virtual void draw(GameEngine* game) = 0;
 
-    virtual ~GameState();
+    virtual ~GameState() {};
 
  protected:
     GameState() {};
