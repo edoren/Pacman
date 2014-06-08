@@ -1,6 +1,7 @@
 #ifndef PLAY_STATE_HPP
 #define PLAY_STATE_HPP
 
+#include "SFML/Audio/Sound.hpp"
 #include "STP/TMXLoader.hpp"
 
 #include "Engine/GameState.hpp"
@@ -29,7 +30,7 @@ class PlayState : public GameState {
     }
 
  protected:
-    PlayState();
+    PlayState() {};
 
  private:
     static PlayState PlayState_;
@@ -37,6 +38,16 @@ class PlayState : public GameState {
     Pacman* pacman_;
     Ghost* blinky_;
     tmx::TileMap* map_;
+
+    // Sounds
+    sf::Sound* start_sound_;
+    sf::Sound* siren_sound_;
+    sf::Sound* chomp_sound_[2];
+
+    // Timmers
+    Clock* start_clock_;
+
+    bool is_playing_;
 
     Pacman::Direction next_dir_;
 

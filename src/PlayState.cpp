@@ -8,12 +8,16 @@
 
 PlayState PlayState::PlayState_;
 
-PlayState::PlayState() {}
-
 void PlayState::init(ResourceManager* resources, Settings* settings) {
     // Pacman and Ghosts texture is always loaded while the game is open
     sf::Texture* pacman_texture = resources->loadTexture("assets/sprites/pacman/pacman.png");
     sf::Texture* ghosts_texture = resources->loadTexture("assets/sprites/ghosts/ghosts.png");
+
+    // Load the sounds in memory
+    sf::SoundBuffer* start_sound_buffer = resources->loadSoundBuffer("assets/sounds/start-game.wav");
+    sf::SoundBuffer* siren_sound_buffer = resources->loadSoundBuffer("assets/sounds/siren.wav");
+    sf::SoundBuffer* chomp1_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp1.wav");
+    sf::SoundBuffer* chomp2_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp2.wav");
 
     const std::string& working_dir = resources->getWorkingDirectory();
 
@@ -25,18 +29,42 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, working_dir);
     blinky_->setDirection(Ghost::Direction::Right);
 
-    blinky_->setPosition({112 - 3, 208 - 3});
+    blinky_->setPosition({112 - 3, 112 - 3});
 
-    // Get the settings
-    // int width = settings->getSetting("width", 224);
-    // int height = settings->getSetting("height", 288);
-    // int volume = settings->getSetting("volume", 100);
+    // Add the sounds
+    start_sound_ = new sf::Sound(*start_sound_buffer);
+    siren_sound_ = new sf::Sound(*siren_sound_buffer);
+    chomp_sound_[0] = new sf::Sound(*chomp1_sound_buffer);
+    chomp_sound_[1] = new sf::Sound(*chomp2_sound_buffer);
+
+    siren_sound_->setLoop(true);
+
+    start_clock_ = new Clock();
+    is_playing_ = false;
+
+    // Set the settings
+    float volume = settings->getSetting("volume", 100.f);
+
+    start_sound_->setVolume(volume);
+    siren_sound_->setVolume(volume);
+    chomp_sound_[0]->setVolume(volume);
+    chomp_sound_[1]->setVolume(volume);
+
+    start_sound_->play();
 };
 
 void PlayState::exit(ResourceManager* resources) {
     delete pacman_;
     delete blinky_;
     delete map_;
+
+    // Free the sounds
+    resources->freeSoundBuffer("assets/sounds/start-game.wav");
+    resources->freeSoundBuffer("assets/sounds/siren.wav");
+    resources->freeSoundBuffer("assets/sounds/chomp1.wav");
+    resources->freeSoundBuffer("assets/sounds/chomp2.wav");
+
+    delete start_clock_;
 };
 
 void PlayState::pause() {
@@ -77,8 +105,15 @@ void PlayState::handleEvents(GameEngine* game) {
 }
 
 void PlayState::frameStarted(GameEngine* game) {
-    this->updatePacman();
-    this->updateGhost(blinky_);
+    if (start_clock_->getElapsedTime().asSeconds() >= 4.5f) {
+        static bool siren_playing = false;
+        if (!siren_playing) {
+            siren_sound_->play();
+            siren_playing = true;
+        }
+        this->updatePacman();
+        this->updateGhost(blinky_);
+    }
 }
 
 void PlayState::frameEnded(GameEngine* game) {
@@ -87,8 +122,10 @@ void PlayState::frameEnded(GameEngine* game) {
 void PlayState::draw(GameEngine* game) {
     sf::RenderWindow* window = game->getWindow();
     window->draw(*map_);
-    window->draw(*blinky_);
     window->draw(*pacman_);
+    if (start_clock_->getElapsedTime().asSeconds() >= 2.0f) {
+        window->draw(*blinky_);
+    }
 }
 
 void PlayState::updatePacman() {
@@ -97,7 +134,12 @@ void PlayState::updatePacman() {
     pacman_->updateAnimation();
 
     // Check pacman collision with the food
-    Collision::checkFoodCollision(map_, pacman_);
+    static bool chomp = 0;
+    if (Collision::checkFoodCollision(map_, pacman_)) {
+        // Play chomp sound
+        chomp_sound_[chomp]->play();
+        chomp = !chomp;
+    };
 
     // Check if pacman is not on a Tile, if not it checks if he want to go backwards
     if ((static_cast<int>(pacman_->getCollisionBox().left) % 8) != 0 ||
@@ -167,5 +209,5 @@ void PlayState::updateGhost(Ghost* ghost) {
         return;
     }
 
-    ghost->randomMovement(map_);
+    ghost->focusMovement(map_, pacman_->getPosition());
 }
