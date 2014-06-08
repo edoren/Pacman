@@ -22,7 +22,11 @@ class GameState {
     virtual ~GameState();
 
  protected:
-    GameState();
+    GameState() {};
+
+ private:
+    GameState(const GameState&) = delete;
+    GameState& operator =(const GameState&) = delete;
 };
 
 #endif  // GAME_STATE_HPP

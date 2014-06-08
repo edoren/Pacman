@@ -71,7 +71,6 @@ set(PACMAN_SRC
     ${SRC_DIR}/Engine/GameEngine.cpp
     ${SRC_DIR}/Engine/Settings.cpp
     ${SRC_DIR}/Engine/ResourceManager.cpp
-    ${SRC_DIR}/Engine/GameState.cpp
     ${SRC_DIR}/Engine/AnimatorJson.cpp
     ${SRC_DIR}/Engine/Utils/Clock.cpp
     ${SRC_DIR}/Engine/Utils/AStar.cpp
