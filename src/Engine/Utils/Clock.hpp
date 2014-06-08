@@ -5,7 +5,7 @@
 
 class Clock {
  public:
-    Clock();
+    explicit Clock(bool running = true);
 
     sf::Time getElapsedTime() const;
     void stop();

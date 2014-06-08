@@ -2,10 +2,10 @@
 
 #include "Engine/Utils/Clock.hpp"
 
-Clock::Clock() :
-        running_(true),
+Clock::Clock(bool running) :
+        running_(running),
         startTime_(this->getActualTime()),
-        pauseTime_(sf::Time::Zero),
+        pauseTime_(this->getActualTime()),
         timeBuffer_(sf::Time::Zero) {}
 
 sf::Time Clock::getElapsedTime() const {
