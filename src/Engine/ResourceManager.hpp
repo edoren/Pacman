@@ -17,7 +17,7 @@ class ResourceManager {
     sf::Texture* getTexture(const std::string& file);
     void freeTexture(const std::string& file);
 
-    // Fonts
+    // Sound Buffers
     sf::SoundBuffer* loadSoundBuffer(const std::string& file);
     sf::SoundBuffer* getSoundBuffer(const std::string& file);
     void freeSoundBuffer(const std::string& file);
