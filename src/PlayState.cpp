@@ -15,6 +15,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
 
     // Load the sounds in memory
     sf::SoundBuffer* start_sound_buffer = resources->loadSoundBuffer("assets/sounds/start-game.wav");
+    sf::SoundBuffer* lose_sound_buffer = resources->loadSoundBuffer("assets/sounds/pacman-lose.wav");
     sf::SoundBuffer* siren_sound_buffer = resources->loadSoundBuffer("assets/sounds/siren.wav");
     sf::SoundBuffer* chomp1_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp1.wav");
     sf::SoundBuffer* chomp2_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp2.wav");
@@ -33,6 +34,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
 
     // Add the sounds
     start_sound_ = new sf::Sound(*start_sound_buffer);
+    lose_sound_ = new sf::Sound(*lose_sound_buffer);
     siren_sound_ = new sf::Sound(*siren_sound_buffer);
     chomp_sound_[0] = new sf::Sound(*chomp1_sound_buffer);
     chomp_sound_[1] = new sf::Sound(*chomp2_sound_buffer);
@@ -60,6 +62,7 @@ void PlayState::exit(ResourceManager* resources) {
 
     // Free the sounds
     resources->freeSoundBuffer("assets/sounds/start-game.wav");
+    resources->freeSoundBuffer("assets/sounds/pacman-lose.wav");
     resources->freeSoundBuffer("assets/sounds/siren.wav");
     resources->freeSoundBuffer("assets/sounds/chomp1.wav");
     resources->freeSoundBuffer("assets/sounds/chomp2.wav");

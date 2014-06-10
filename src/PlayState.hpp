@@ -41,6 +41,7 @@ class PlayState : public GameState {
 
     // Sounds
     sf::Sound* start_sound_;
+    sf::Sound* lose_sound_;
     sf::Sound* siren_sound_;
     sf::Sound* chomp_sound_[2];
 
