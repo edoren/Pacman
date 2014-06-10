@@ -5,7 +5,7 @@
 Clock::Clock(bool running) :
         running_(running),
         startTime_(this->getActualTime()),
-        pauseTime_(this->getActualTime()),
+        pauseTime_(startTime_),
         timeBuffer_(sf::Time::Zero) {}
 
 sf::Time Clock::getElapsedTime() const {
