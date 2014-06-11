@@ -22,15 +22,20 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
 
     const std::string& working_dir = resources->getWorkingDirectory();
 
+    // Load the map
     map_ = new tmx::TileMap(working_dir + "assets/maps/clasic.tmx");
+
+    // Na Na Na Na Na Na Pacman!
     pacman_ = new Pacman(pacman_texture, working_dir);
+    pacman_->setPosition({105, 208 - 3});
 
-    pacman_->setPosition({112 - 3, 208 - 3});
+    sf::FloatRect house_bounds = {80, 120, 64, 40};
 
-    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, working_dir);
-    blinky_->setDirection(Ghost::Direction::Right);
-
-    blinky_->setPosition({112 - 3, 112 - 3});
+    // The Ghosts!
+    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, house_bounds, working_dir);
+    inky_ = new Ghost(Ghost::Name::Inky, ghosts_texture, house_bounds, working_dir);
+    pinky_ = new Ghost(Ghost::Name::Pinky, ghosts_texture, house_bounds, working_dir);
+    clyde_ = new Ghost(Ghost::Name::Clyde, ghosts_texture, house_bounds, working_dir);
 
     // Add the sounds
     start_sound_ = new sf::Sound(*start_sound_buffer);
@@ -47,17 +52,22 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     // Set the settings
     float volume = settings->getSetting("volume", 100.f);
 
-    start_sound_->setVolume(volume);
-    siren_sound_->setVolume(volume);
-    chomp_sound_[0]->setVolume(volume);
-    chomp_sound_[1]->setVolume(volume);
+    start_sound_->setVolume(50.f * volume/100.f);
+    siren_sound_->setVolume(40.f * volume/100.f);
+    chomp_sound_[0]->setVolume(50.f * volume/100.f);
+    chomp_sound_[1]->setVolume(50.f * volume/100.f);
 
     start_sound_->play();
 };
 
 void PlayState::exit(ResourceManager* resources) {
     delete pacman_;
+
     delete blinky_;
+    delete inky_;
+    delete pinky_;
+    delete clyde_;
+
     delete map_;
 
     // Free the sounds
@@ -109,13 +119,23 @@ void PlayState::handleEvents(GameEngine* game) {
 
 void PlayState::frameStarted(GameEngine* game) {
     if (start_clock_->getElapsedTime().asSeconds() >= 4.5f) {
-        static bool siren_playing = false;
-        if (!siren_playing) {
+        static bool first_start = true;
+        if (first_start) {
             siren_sound_->play();
-            siren_playing = true;
+
+            // Start the state timers of the ghosts
+            blinky_->state_timer.resume();
+            inky_->state_timer.resume();
+            pinky_->state_timer.resume();
+            clyde_->state_timer.resume();
+
+            first_start = false;
         }
         this->updatePacman();
         this->updateGhost(blinky_);
+        this->updateGhost(inky_);
+        this->updateGhost(pinky_);
+        this->updateGhost(clyde_);
     }
 }
 
@@ -128,6 +148,9 @@ void PlayState::draw(GameEngine* game) {
     window->draw(*pacman_);
     if (start_clock_->getElapsedTime().asSeconds() >= 2.0f) {
         window->draw(*blinky_);
+        window->draw(*inky_);
+        window->draw(*pinky_);
+        window->draw(*clyde_);
     }
 }
 
@@ -206,11 +229,5 @@ void PlayState::updateGhost(Ghost* ghost) {
     ghost->updatePos();
     ghost->updateAnimation();
 
-    // Check if the ghost is not on a Tile
-    if ((static_cast<int>(ghost->getCollisionBox().left) % 8) != 0 ||
-        (static_cast<int>(ghost->getCollisionBox().top) % 8) != 0) {
-        return;
-    }
-
-    ghost->focusMovement(map_, pacman_->getPosition());
+    ghost->movementChooser(map_, pacman_->getPosition(), pacman_->getDirection());
 }

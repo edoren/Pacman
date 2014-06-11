@@ -65,10 +65,10 @@ void MenuState::init(ResourceManager* resources, Settings* settings) {
 
     pacman_ = new Pacman(pacman_texture, resources->getWorkingDirectory());
 
-    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, working_dir);
-    pinky_ = new Ghost(Ghost::Name::Pinky, ghosts_texture, working_dir);
-    inky_ = new Ghost(Ghost::Name::Inky, ghosts_texture, working_dir);
-    clyde_ = new Ghost(Ghost::Name::Clyde, ghosts_texture, working_dir);
+    blinky_ = new Ghost(Ghost::Name::Blinky, ghosts_texture, {}, working_dir);
+    pinky_ = new Ghost(Ghost::Name::Pinky, ghosts_texture, {}, working_dir);
+    inky_ = new Ghost(Ghost::Name::Inky, ghosts_texture, {}, working_dir);
+    clyde_ = new Ghost(Ghost::Name::Clyde, ghosts_texture, {}, working_dir);
 
     sf::Vector2f start_pos(224 + 14 + 100, 245);  // x = window size + sprite size + offset
     this->setAnimationRight(start_pos);

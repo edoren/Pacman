@@ -37,6 +37,9 @@ class PlayState : public GameState {
 
     Pacman* pacman_;
     Ghost* blinky_;
+    Ghost* inky_;
+    Ghost* pinky_;
+    Ghost* clyde_;
     tmx::TileMap* map_;
 
     // Sounds
