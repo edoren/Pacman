@@ -31,7 +31,7 @@ namespace Collision {
         return false;
     }
 
-    bool checkFoodCollision(tmx::TileMap *map, Pacman* pacman) {
+    int checkFoodCollision(tmx::TileMap *map, Pacman* pacman) {
         sf::FloatRect pacman_box = pacman->getCollisionBox();
         tmx::Layer& food_map = map->GetLayer("FoodMap");
 
@@ -47,7 +47,7 @@ namespace Collision {
                     // If the tile is visible, it hide it
                     if (tile.visible && pacman_box == tile_box) {
                         tile.visible = false;
-                        return true;
+                        return std::stoi(tile.GetPropertyValue("food"));
                     }
                 }
             }
