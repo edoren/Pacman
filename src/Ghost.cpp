@@ -9,7 +9,6 @@ std::map<Ghost::Name, Ghost*> Ghost::ghosts;
 Ghost::Ghost(Name name, sf::Texture* ghost_texture, const sf::FloatRect& house_bounds, const std::string& working_dir)
       : state_timer(false),
         name_(name),
-        eatable_(false),
         speed_(1.f),
         paused_(false),
         house_bounds_(house_bounds) {

@@ -46,12 +46,9 @@ private:
     Name name_;
     std::string name_string_;
 
-    bool eatable_;
-
     float speed_;
 
     Direction direction_;
-    sf::Vector2f position_;
 
     State state_;
 
