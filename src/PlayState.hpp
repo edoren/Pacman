@@ -36,10 +36,12 @@ class PlayState : public GameState {
     static PlayState PlayState_;
 
     Pacman* pacman_;
+
     Ghost* blinky_;
     Ghost* inky_;
     Ghost* pinky_;
     Ghost* clyde_;
+
     tmx::TileMap* map_;
 
     // Sounds
@@ -47,6 +49,7 @@ class PlayState : public GameState {
     sf::Sound* lose_sound_;
     sf::Sound* siren_sound_;
     sf::Sound* chomp_sound_[2];
+    sf::Sound* intermission_sound_;
 
     // Timmers
     Clock* start_clock_;

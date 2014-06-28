@@ -19,6 +19,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     sf::SoundBuffer* siren_sound_buffer = resources->loadSoundBuffer("assets/sounds/siren.wav");
     sf::SoundBuffer* chomp1_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp1.wav");
     sf::SoundBuffer* chomp2_sound_buffer = resources->loadSoundBuffer("assets/sounds/chomp2.wav");
+    sf::SoundBuffer* intermission_sound_buffer = resources->loadSoundBuffer("assets/sounds/intermission.wav");
 
     const std::string& working_dir = resources->getWorkingDirectory();
 
@@ -43,6 +44,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     siren_sound_ = new sf::Sound(*siren_sound_buffer);
     chomp_sound_[0] = new sf::Sound(*chomp1_sound_buffer);
     chomp_sound_[1] = new sf::Sound(*chomp2_sound_buffer);
+    intermission_sound_ = new sf::Sound(*intermission_sound_buffer);
 
     siren_sound_->setLoop(true);
 
@@ -56,6 +58,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     siren_sound_->setVolume(40.f * volume/100.f);
     chomp_sound_[0]->setVolume(50.f * volume/100.f);
     chomp_sound_[1]->setVolume(50.f * volume/100.f);
+    intermission_sound_->setVolume(40.f * volume/100.f);
 
     start_sound_->play();
 };
@@ -76,6 +79,7 @@ void PlayState::exit(ResourceManager* resources) {
     resources->freeSoundBuffer("assets/sounds/siren.wav");
     resources->freeSoundBuffer("assets/sounds/chomp1.wav");
     resources->freeSoundBuffer("assets/sounds/chomp2.wav");
+    resources->freeSoundBuffer("assets/sounds/intermission.wav");
 
     delete start_clock_;
 };
@@ -118,19 +122,22 @@ void PlayState::handleEvents(GameEngine* game) {
 }
 
 void PlayState::frameStarted(GameEngine* game) {
+    static bool first_start = true;
     if (start_clock_->getElapsedTime().asSeconds() >= 4.5f) {
-        static bool first_start = true;
         if (first_start) {
-            siren_sound_->play();
-
             // Start the state timers of the ghosts
-            blinky_->state_timer.resume();
-            inky_->state_timer.resume();
-            pinky_->state_timer.resume();
-            clyde_->state_timer.resume();
+            for (auto& ghost : Ghost::ghosts) ghost.second->state_timer.resume();
 
             first_start = false;
         }
+
+        if (intermission_sound_->getPlayingOffset().asSeconds() > 0) {
+            siren_sound_->stop();
+        } else {
+            if (!first_start && siren_sound_->getPlayingOffset().asSeconds() == 0)
+                siren_sound_->play();
+        }
+
         this->updatePacman();
         this->updateGhost(blinky_);
         this->updateGhost(inky_);
@@ -147,10 +154,12 @@ void PlayState::draw(GameEngine* game) {
     window->draw(*map_);
     window->draw(*pacman_);
     if (start_clock_->getElapsedTime().asSeconds() >= 2.0f) {
-        window->draw(*blinky_);
-        window->draw(*inky_);
-        window->draw(*pinky_);
-        window->draw(*clyde_);
+        for (auto& ghost : Ghost::ghosts) {
+            sf::Vector2f pos = ghost.second->getPosition();
+            ghost.second->setPosition(floorf(pos.x), floorf(pos.y));
+            window->draw(*ghost.second);
+            ghost.second->setPosition(pos);
+        }
     }
 }
 
@@ -161,11 +170,23 @@ void PlayState::updatePacman() {
 
     // Check pacman collision with the food
     static bool chomp = 0;
-    if (Collision::checkFoodCollision(map_, pacman_)) {
+    if (int food = Collision::checkFoodCollision(map_, pacman_)) {
+        if (food == 2) {
+            intermission_sound_->play();
+            for (auto& ghost : Ghost::ghosts) ghost.second->setState(Ghost::State::Frightened);
+        }
         // Play chomp sound
         chomp_sound_[chomp]->play();
         chomp = !chomp;
     };
+
+    // Check pacman collision with each ghost
+    for (auto& ghost : Ghost::ghosts) {
+        if (Collision::AABBCollision(pacman_->getCollisionBox(), ghost.second->getCollisionBox())) {
+            if (ghost.second->getState() == Ghost::Frightened)
+                ghost.second->setState(Ghost::State::ToHouse);
+        };
+    }
 
     // Check if pacman is not on a Tile, if not it checks if he want to go backwards
     if ((static_cast<int>(pacman_->getCollisionBox().left) % 8) != 0 ||
@@ -177,7 +198,6 @@ void PlayState::updatePacman() {
         return;
     }
 
-    // Check if the front tile is collapsible
 
     // Move pacman to the front
     pacman_->move(pacman_->getVelocity());
@@ -226,8 +246,6 @@ void PlayState::updatePacman() {
 
 void PlayState::updateGhost(Ghost* ghost) {
     // Update pacman position and animation
-    ghost->updatePos();
+    ghost->updatePos(map_, pacman_->getPosition(), pacman_->getDirection());
     ghost->updateAnimation();
-
-    ghost->movementChooser(map_, pacman_->getPosition(), pacman_->getDirection());
 }

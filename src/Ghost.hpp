@@ -1,6 +1,8 @@
 #ifndef GHOST_HPP
 #define GHOST_HPP
 
+#include <map>
+
 #include "SFML/Graphics/Texture.hpp"
 #include "STP/TMXLoader.hpp"
 
@@ -22,7 +24,7 @@ class Ghost : public AnimatorJson {
         Scatter,
         Frightened,
         InHouse,
-        OnlyEyes
+        ToHouse
     };
 
     enum Name {
@@ -38,6 +40,8 @@ class Ghost : public AnimatorJson {
     // Measure the time of the current animation - Starts stopped
     Clock state_timer;
 
+    static std::map<Ghost::Name, Ghost*> ghosts;
+
 private:
     Name name_;
     std::string name_string_;
@@ -45,6 +49,7 @@ private:
     bool eatable_;
 
     float speed_;
+
     Direction direction_;
     sf::Vector2f position_;
 
@@ -58,7 +63,6 @@ private:
         HouseLeft,
         HouseMiddle,
         HouseRight,
-        HouseNone
     } house_ubication_;
 
     sf::FloatRect house_bounds_;
@@ -67,32 +71,27 @@ private:
     void pause();  // Pause the ghost movement and animation
     void resume();  // Resume the ghost movement and animation
 
-    bool is_paused(); //
+    bool is_paused();
 
     void setDirection(Ghost::Direction direction);
     const Ghost::Direction& getDirection() const;
 
     void setState(Ghost::State state);
-    Ghost::State getState();
-
-    float getSpeed() const;
-
-    void setPosition(const sf::Vector2f& pos);
-    void move(const sf::Vector2f& offset);
+    const Ghost::State& getState();
 
     sf::FloatRect getCollisionBox();
 
-    void updatePos();
-
-    void movementChooser(tmx::TileMap *map, sf::Vector2f pacman_pos, Pacman::Direction pacman_dir);
+    void updatePos(tmx::TileMap *map = nullptr, sf::Vector2f pacman_pos = {0,0}, Pacman::Direction pacman_dir = Pacman::None);
 
  private:
     void changeAnimation(Ghost::State state);
 
     // Ghost movement types
+    void movementChooser(tmx::TileMap *map, const sf::Vector2f& pacman_pos, const Pacman::Direction& pacman_dir);
     void randomMovement(tmx::TileMap *map);
-    void focusMovement(tmx::TileMap *map, sf::Vector2f target_pos);  // Move to a specific position
+    void focusMovement(tmx::TileMap *map, const sf::Vector2f& target_pos);  // Move to a specific position
     void houseMovement();
+    void toHouseMovement(tmx::TileMap *map, const sf::Vector2f& target_pos);
 };
 
 #endif  // GHOST_HPP
