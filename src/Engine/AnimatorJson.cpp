@@ -22,7 +22,8 @@ AnimatorJson::AnimatorJson() :
         frame_duration_(0),
         clock_(),
         root_(nullptr),
-        animation_(nullptr) {
+        animation_(nullptr),
+        loop_(true) {
 }
 
 ////////////////////////////////
@@ -83,11 +84,11 @@ int AnimatorJson::loadJsonFile(const std::string& json_file, sf::Texture* textur
     return this->loadJsonFile(json_file.c_str(), texture);
 }
 
-int AnimatorJson::setAnimation(const std::string& animation_name) {
+int AnimatorJson::setAnimation(const std::string& animation_name, bool loop) {
     return this->setAnimation(animation_name.c_str());
 }
 
-int AnimatorJson::setAnimation(const char* animation_name) {
+int AnimatorJson::setAnimation(const char* animation_name, bool loop) {
     if (!root_) {
         fprintf(stderr, "error: first load the json data.\n");
         return 0;
@@ -100,6 +101,7 @@ int AnimatorJson::setAnimation(const char* animation_name) {
         return 0;
     }
 
+    loop_ = loop;
     this->setFrame(0);
 
     return 1;
@@ -134,6 +136,7 @@ void AnimatorJson::setFrame(int index) {
 
 void AnimatorJson::updateAnimation() {
     if (!animation_) return;
+    if (!loop_ && static_cast<unsigned int>(frame_index_ + 1) == json_array_size(animation_)) return;
     if (clock_.getElapsedTime().asMilliseconds() >= frame_duration_) {
         this->setFrame((frame_index_ + 1) % json_array_size(animation_));
     }
@@ -195,7 +198,7 @@ int AnimatorJson::loadJsonType(json_t *data, sf::Texture* texture) {
         json_decref(root_);
         return 0;
     }
-    
+
     external_texture_ = false;
     image_file = json_string_value(image);
     sprite_texture_ = new sf::Texture();

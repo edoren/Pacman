@@ -17,15 +17,15 @@ class AnimatorJson : public sf::Sprite {
  public:
     AnimatorJson();
     virtual ~AnimatorJson();
-    
+
     int loadJsonString(const char* json_string, sf::Texture* texture = nullptr);
     int loadJsonString(const std::string& json_string, sf::Texture* texture = nullptr);
 
     int loadJsonFile(const char* json_file, sf::Texture* texture = nullptr);
     int loadJsonFile(const std::string& json_file, sf::Texture* texture = nullptr);
 
-    int setAnimation(const char* animation_name);
-    int setAnimation(const std::string& animation_name);
+    int setAnimation(const char* animation_name, bool loop = true);
+    int setAnimation(const std::string& animation_name, bool loop = true);
 
     void setFrame(int index);
 
@@ -49,6 +49,8 @@ class AnimatorJson : public sf::Sprite {
     Clock clock_;
 
     json_t *root_, *animation_;
+
+    bool loop_;
 
     ////////////////////////////////
     // Private members            //
