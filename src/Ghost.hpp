@@ -56,11 +56,13 @@ private:
 
     bool paused_;
 
-    enum {
+    enum HousePos {
         HouseLeft,
         HouseMiddle,
         HouseRight,
-    } house_ubication_;
+    };
+
+    HousePos house_ubication_;
 
     sf::FloatRect house_bounds_;
 

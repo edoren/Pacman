@@ -15,40 +15,27 @@ Ghost::Ghost(Name name, sf::Texture* ghost_texture, const sf::FloatRect& house_b
     ghost_texture_ = ghost_texture;
     this->loadJsonFile(working_dir + "assets/sprites/ghosts/ghosts.json", ghost_texture_);
 
+    auto initial_values = [&] (const char* name, const Ghost::HousePos& house_ubication, const Ghost::State& state,
+                               const Ghost::Direction initial_dir, const sf::Vector2f& initial_pos) {
+        name_string_ = name;
+        house_ubication_ = house_ubication;
+        this->setState(state);
+        this->setDirection(initial_dir);
+        this->setPosition(initial_pos);
+    };
+
     switch (name_) {
         case Blinky:
-            name_string_ = "blinky";
-            house_ubication_ = HouseMiddle;
-            this->setState(Scatter);
-            this->setDirection(Direction::Right);
-            this->setPosition({house_bounds.left + (house_bounds.width / 2) - 7,
-                               house_bounds.top - 8 - 3});
+            initial_values("blinky", HouseMiddle, Scatter, Right, {house_bounds.left + (house_bounds.width / 2) - 7, house_bounds.top - 8 - 3});
             break;
         case Inky:
-            name_string_ = "inky";
-            house_ubication_ = HouseLeft;
-            this->setState(InHouse);
-            this->setDirection(Direction::Up);
-            this->setPosition({house_bounds.left + (house_bounds.width / 4) - 7,
-                               house_bounds.top + (house_bounds.height / 2) - 7});
+            initial_values("inky", HouseLeft, InHouse, Up, {house_bounds.left + (house_bounds.width / 4) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
             break;
         case Clyde:
-            name_string_ = "clyde";
-            house_ubication_ = HouseRight;
-            this->setState(InHouse);
-            this->setDirection(Direction::Up);
-            this->setPosition({house_bounds.left + (house_bounds.width * 3/4) - 7,
-                               house_bounds.top + (house_bounds.height / 2) - 7});
+            initial_values("clyde", HouseRight, InHouse, Up, {house_bounds.left + (house_bounds.width * 3/4) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
             break;
         case Pinky:
-            name_string_ = "pinky";
-            house_ubication_ = HouseMiddle;
-            this->setState(InHouse);
-            this->setDirection(Direction::Down);
-            this->setPosition({house_bounds.left + (house_bounds.width / 2) - 7,
-                               house_bounds.top + (house_bounds.height / 2) - 7});
-            break;
-        default:
+            initial_values("pinky", HouseMiddle, InHouse, Down, {house_bounds.left + (house_bounds.width / 2) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
             break;
     }
 
@@ -370,53 +357,33 @@ void Ghost::houseMovement() {
         this->getPosition().y >= house_bounds_.top + house_bounds_.height - 9 - 14 )
         this->setDirection(static_cast<Direction>(-direction_));
 
+    auto movement = [&] (float time_in_house, const Ghost::Direction& leaving, const Ghost::Direction& out) {
+        // In the respective house position
+        if (state_timer.getElapsedTime().asSeconds() >= time_in_house) {
+            // If is in the center of the house
+            if (this->getPosition().x == house_bounds_.left + (house_bounds_.width / 2) - 7) {
+                // If is out the house
+                if (this->getPosition().y == house_bounds_.top - 8 - 3) {
+                    this->setDirection(out);
+                    this->setState(Scatter);
+                    return;
+                }
+                this->setDirection(Up);
+                return;
+            }
+            this->setDirection(leaving);
+        }
+    };
+
     switch (house_ubication_) {
         case HouseLeft:
-            if (state_timer.getElapsedTime().asSeconds() >= 4.f) {
-                // If is in the center of the house
-                if (this->getPosition().x == house_bounds_.left + (house_bounds_.width / 2) - 7) {
-                    // If is out the house
-                    if (this->getPosition().y == house_bounds_.top - 8 - 3) {
-                        this->setDirection(Right);
-                        this->setState(Scatter);
-                        return;
-                    }
-                    this->setDirection(Up);
-                    return;
-                }
-                this->setDirection(Right);
-            }
+            movement(4.f, Right, Right);
             break;
         case HouseRight:
-            if (state_timer.getElapsedTime().asSeconds() >= 6.f) {
-                // If is in the center of the house
-                if (this->getPosition().x == house_bounds_.left + (house_bounds_.width / 2) - 7) {
-                    // If is out the house
-                    if (this->getPosition().y == house_bounds_.top - 8 - 3) {
-                        this->setDirection(Left);
-                        this->setState(Scatter);
-                        return;
-                    }
-                    this->setDirection(Up);
-                    return;
-                }
-                this->setDirection(Left);
-            }
+            movement(6.f, Left, Left);
             break;
         case HouseMiddle:
-            if (state_timer.getElapsedTime().asSeconds() >= 2.f) {
-                // If is in the center of the house
-                if (this->getPosition().x == house_bounds_.left + (house_bounds_.width / 2) - 7) {
-                    // If is out the house
-                    if (this->getPosition().y == house_bounds_.top - 8 - 3) {
-                        this->setDirection(Left);
-                        this->setState(Scatter);
-                        return;
-                    }
-                    this->setDirection(Up);
-                    return;
-                }
-            }
+            movement(2.f, Up, Left);
             break;
     }
 }
@@ -428,57 +395,40 @@ void Ghost::toHouseMovement(tmx::TileMap *map, const sf::Vector2f& target_pos) {
     sf::Vector2f house_outside = {house_bounds_.left + (house_bounds_.width / 2) - 7,
                                   house_bounds_.top - 8 - 3};
 
+    auto movement = [&] (const Ghost::Direction& arrive, const Ghost::Direction& inside) {
+        // Check if the ghost is in the respective house position
+        if (this->getPosition() == ghost_house_pos) {
+            this->setDirection(arrive);
+            this->setState(InHouse);
+        }
+        // Check if the ghost is in the middle of the house
+        else if (this->getPosition() == house_middle) {
+            this->setDirection(inside);
+        }
+        // Check if the ghost is outside the house
+        else if (this->getPosition() == house_outside) {
+            this->setDirection(Down);
+        }
+    };
+
     switch (house_ubication_) {
         case HouseRight:
             ghost_house_pos = {house_bounds_.left + (house_bounds_.width * 3/4) - 7,
                                house_bounds_.top + (house_bounds_.height / 2) - 7};
+            movement(Up, Right);
             break;
         case HouseLeft:
             ghost_house_pos = {house_bounds_.left + (house_bounds_.width / 4) - 7,
                                house_bounds_.top + (house_bounds_.height / 2) - 7};
+            movement(Up, Left);
             break;
         case HouseMiddle:
-            ghost_house_pos = {house_bounds_.left + (house_bounds_.width / 2) - 7,
-                               house_bounds_.top + (house_bounds_.height / 2) - 7};
+            ghost_house_pos = house_middle;
+            movement(Down, None);
             break;
     }
 
-    // Check if the ghost is in the respective house position
-    if (this->getPosition() == ghost_house_pos) {
-        switch (house_ubication_) {
-            case HouseRight:
-                this->setDirection(Up);
-                this->setState(InHouse);
-                break;
-            case HouseLeft:
-                this->setDirection(Up);
-                this->setState(InHouse);
-                break;
-            case HouseMiddle:
-                this->setState(InHouse);
-                break;
-        }
-    }
-    // Check if the ghost is in the middle of the house
-    else if (this->getPosition() == house_middle) {
-
-        switch (house_ubication_) {
-            case HouseRight:
-                this->setDirection(Right);
-                break;
-            case HouseLeft:
-                this->setDirection(Left);
-                break;
-            case HouseMiddle:
-                this->setState(InHouse);
-                break;
-        }
-    }
-    // Check if the ghost is outside the house
-    else if (this->getPosition() == house_outside) {
-        this->setDirection(Down);
-    }
-
+    // Check if the ghost is inside the house
     if (Collision::AABBCollision(house_bounds_, this->getCollisionBox())) return;
 
     // Check if the ghost is not on a Tile
