@@ -49,8 +49,8 @@ void MenuState::init(ResourceManager* resources, Settings* settings) {
 
     for (unsigned int i = 0; i < options_->size(); i++) {
         sf::Text* text = &(options_->at(i).second);
-        text->setOrigin({text->getLocalBounds().width / 2.f, 0.f});
-        text->setPosition(menuPos + sf::Vector2f(0, i * text->getLocalBounds().height) + static_cast<float>(i) * spacing);
+        text->setOrigin({floorf(text->getLocalBounds().width / 2.f), 0.f});
+        text->setPosition(menuPos + sf::Vector2f(0, i * text->getLocalBounds().height) + (static_cast<float>(i) * spacing));
     }
 
     ///////////////////////////////

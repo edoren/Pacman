@@ -13,7 +13,7 @@ void IntroState::init(ResourceManager* resources, Settings* settings) {
     background_->setFillColor(sf::Color::Black);
 
     sfml_logo_ = new sf::Sprite(*sfml_texture);
-    sfml_logo_->setOrigin(sf::Vector2f(sfml_texture->getSize().x, sfml_texture->getSize().y) / 2.f);
+    sfml_logo_->setOrigin(sfml_texture->getSize().x / 2, floorf(sfml_texture->getSize().y / 2.f));
     sfml_logo_->setPosition(background_->getSize() / 2.f);
 
     intro_clock_ = new Clock();
