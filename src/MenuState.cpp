@@ -139,17 +139,16 @@ void MenuState::handleEvents(GameEngine* game) {
 
 void MenuState::frameStarted(GameEngine* game) {
     pacman_->updateAnimation();
-    pacman_->updatePos();
+    pacman_->move(velocity_);
 
     blinky_->updateAnimation();
     pinky_->updateAnimation();
     inky_->updateAnimation();
     clyde_->updateAnimation();
-
-    blinky_->updatePos();
-    pinky_->updatePos();
-    inky_->updatePos();
-    clyde_->updatePos();
+    blinky_->move(velocity_);
+    pinky_->move(velocity_);
+    inky_->move(velocity_);
+    clyde_->move(velocity_);
 }
 
 void MenuState::frameEnded(GameEngine* game) {
@@ -181,18 +180,15 @@ void MenuState::draw(GameEngine* game) {
 void MenuState::setAnimationLeft(sf::Vector2f& left_pos) {
     sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
 
+    velocity_ = {1, 0};
+
     pacman_->setPosition(left_pos);
-    pacman_->setDirection(Pacman::Direction::Right);
+    pacman_->setAnimation("right");
 
-    blinky_->setDirection(Ghost::Direction::Right);
-    pinky_->setDirection(Ghost::Direction::Right);
-    inky_->setDirection(Ghost::Direction::Right);
-    clyde_->setDirection(Ghost::Direction::Right);
-
-    blinky_->setState(Ghost::State::Frightened);
-    pinky_->setState(Ghost::State::Frightened);
-    inky_->setState(Ghost::State::Frightened);
-    clyde_->setState(Ghost::State::Frightened);
+    blinky_->setAnimation("frightened");
+    pinky_->setAnimation("frightened");
+    inky_->setAnimation("frightened");
+    clyde_->setAnimation("frightened");
 
     blinky_->setPosition(left_pos + distance * 1.f);
     pinky_->setPosition(left_pos + distance * 2.f);
@@ -203,18 +199,15 @@ void MenuState::setAnimationLeft(sf::Vector2f& left_pos) {
 void MenuState::setAnimationRight(sf::Vector2f& right_pos) {
     sf::Vector2f distance(14 + 6, 0);  // x = sprite size + distance
 
+    velocity_ = {-1, 0};
+
     pacman_->setPosition(right_pos);
-    pacman_->setDirection(Pacman::Direction::Left);
+    pacman_->setAnimation("left");
 
-    blinky_->setDirection(Ghost::Direction::Left);
-    pinky_->setDirection(Ghost::Direction::Left);
-    inky_->setDirection(Ghost::Direction::Left);
-    clyde_->setDirection(Ghost::Direction::Left);
-
-    blinky_->setState(Ghost::State::Chase);
-    pinky_->setState(Ghost::State::Chase);
-    inky_->setState(Ghost::State::Chase);
-    clyde_->setState(Ghost::State::Chase);
+    blinky_->setAnimation("blinky-left");
+    pinky_->setAnimation("pinky-left");
+    inky_->setAnimation("inky-left");
+    clyde_->setAnimation("clyde-left");
 
     blinky_->setPosition(right_pos + distance * 1.f);
     pinky_->setPosition(right_pos + distance * 2.f);

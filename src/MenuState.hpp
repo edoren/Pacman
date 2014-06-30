@@ -43,6 +43,8 @@ class MenuState : public GameState {
     Ghost* clyde_;
     Ghost* pinky_;
 
+    sf::Vector2f velocity_;
+
     int selected_;
     std::vector<std::pair<GameState*, sf::Text>>* options_;
 
