@@ -69,6 +69,7 @@ private:
  public:
     void pause();  // Pause the ghost movement and animation
     void resume();  // Resume the ghost movement and animation
+    void restart();
 
     bool is_paused();
 

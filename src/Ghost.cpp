@@ -9,35 +9,12 @@ std::map<Ghost::Name, Ghost*> Ghost::ghosts;
 Ghost::Ghost(Name name, sf::Texture* ghost_texture, const sf::FloatRect& house_bounds, const std::string& working_dir)
       : state_timer(false),
         name_(name),
-        speed_(1.f),
         paused_(false),
         house_bounds_(house_bounds) {
     ghost_texture_ = ghost_texture;
     this->loadJsonFile(working_dir + "assets/sprites/ghosts/ghosts.json", ghost_texture_);
 
-    auto initial_values = [&] (const char* name, const Ghost::HousePos& house_ubication, const Ghost::State& state,
-                               const Ghost::Direction initial_dir, const sf::Vector2f& initial_pos) {
-        name_string_ = name;
-        house_ubication_ = house_ubication;
-        this->setState(state);
-        this->setDirection(initial_dir);
-        this->setPosition(initial_pos);
-    };
-
-    switch (name_) {
-        case Blinky:
-            initial_values("blinky", HouseMiddle, Scatter, Right, {house_bounds.left + (house_bounds.width / 2) - 7, house_bounds.top - 8 - 3});
-            break;
-        case Inky:
-            initial_values("inky", HouseLeft, InHouse, Up, {house_bounds.left + (house_bounds.width / 4) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
-            break;
-        case Clyde:
-            initial_values("clyde", HouseRight, InHouse, Up, {house_bounds.left + (house_bounds.width * 3/4) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
-            break;
-        case Pinky:
-            initial_values("pinky", HouseMiddle, InHouse, Down, {house_bounds.left + (house_bounds.width / 2) - 7, house_bounds.top + (house_bounds.height / 2) - 7});
-            break;
-    }
+    restart();
 
     // Add the ghost to the ghost map
     ghosts[name_] = this;
@@ -182,6 +159,36 @@ void Ghost::pause() {
 void Ghost::resume() {
     this->resumeAnimation();
     paused_ = false;
+}
+
+void Ghost::restart() {
+    state_timer.stop();
+
+    this->resume();
+
+    auto initial_values = [&] (const char* name, const Ghost::HousePos& house_ubication, const Ghost::State& state,
+                               const Ghost::Direction initial_dir, const sf::Vector2f& initial_pos) {
+        name_string_ = name;
+        house_ubication_ = house_ubication;
+        this->setState(state);
+        this->setDirection(initial_dir);
+        this->setPosition(initial_pos);
+    };
+
+    switch (name_) {
+        case Blinky:
+            initial_values("blinky", HouseMiddle, Scatter, Right, {house_bounds_.left + (house_bounds_.width / 2) - 7, house_bounds_.top - 8 - 3});
+            break;
+        case Inky:
+            initial_values("inky", HouseLeft, InHouse, Up, {house_bounds_.left + (house_bounds_.width / 4) - 7, house_bounds_.top + (house_bounds_.height / 2) - 7});
+            break;
+        case Clyde:
+            initial_values("clyde", HouseRight, InHouse, Up, {house_bounds_.left + (house_bounds_.width * 3/4) - 7, house_bounds_.top + (house_bounds_.height / 2) - 7});
+            break;
+        case Pinky:
+            initial_values("pinky", HouseMiddle, InHouse, Down, {house_bounds_.left + (house_bounds_.width / 2) - 7, house_bounds_.top + (house_bounds_.height / 2) - 7});
+            break;
+    }
 }
 
 bool Ghost::is_paused() {

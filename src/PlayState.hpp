@@ -53,12 +53,15 @@ class PlayState : public GameState {
 
     // Timmers
     Clock* start_clock_;
+    Clock* die_clock_;
 
-    bool is_playing_;
+    bool pacman_die_;
 
     Pacman::Direction next_dir_;
 
  private:
+    void restart();
+
     // Update pacman and verify collisions
     void updatePacman();
     void updateGhost(Ghost* ghost);

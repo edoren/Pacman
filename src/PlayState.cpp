@@ -27,8 +27,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     map_ = new tmx::TileMap(working_dir + "assets/maps/clasic.tmx");
 
     // Na Na Na Na Na Na Pacman!
-    pacman_ = new Pacman(pacman_texture, working_dir);
-    pacman_->setPosition({105, 208 - 3});
+    pacman_ = new Pacman(pacman_texture, working_dir, {105, 208 - 3});
 
     sf::FloatRect house_bounds = {80, 120, 64, 40};
 
@@ -49,7 +48,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     siren_sound_->setLoop(true);
 
     start_clock_ = new Clock();
-    is_playing_ = false;
+    die_clock_ = new Clock(false); // Stopped clock
 
     // Set the settings
     float volume = settings->getSetting("volume", 100.f);
@@ -61,6 +60,8 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     intermission_sound_->setVolume(40.f * volume/100.f);
 
     start_sound_->play();
+
+    pacman_die_ = false;
 };
 
 void PlayState::exit(ResourceManager* resources) {
@@ -82,6 +83,7 @@ void PlayState::exit(ResourceManager* resources) {
     resources->freeSoundBuffer("assets/sounds/intermission.wav");
 
     delete start_clock_;
+    delete die_clock_;
 };
 
 void PlayState::pause() {
@@ -100,7 +102,7 @@ void PlayState::handleEvents(GameEngine* game) {
             (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)))
             game->quit();
         // Manage the pacman next movement
-        if (event.type == sf::Event::KeyPressed) {
+        if (pacman_->isAlive() && event.type == sf::Event::KeyPressed) {
             switch(event.key.code) {
                 case sf::Keyboard::Up:
                     next_dir_ = Pacman::Direction::Up;
@@ -122,20 +124,27 @@ void PlayState::handleEvents(GameEngine* game) {
 }
 
 void PlayState::frameStarted(GameEngine* game) {
-    static bool first_start = true;
     if (start_clock_->getElapsedTime().asSeconds() >= 4.5f) {
-        if (first_start) {
-            // Start the state timers of the ghosts
-            for (auto& ghost : Ghost::ghosts) ghost.second->state_timer.resume();
+        // Start the state timers of the ghosts
+        for (auto& ghost : Ghost::ghosts) ghost.second->state_timer.resume();
 
-            first_start = false;
+        // Replay the siren sound after the intermission sound finish
+        if (pacman_->isAlive()) {
+            if (intermission_sound_->getPlayingOffset().asSeconds() > 0) {
+                siren_sound_->stop();
+            } else if (siren_sound_->getPlayingOffset().asSeconds() == 0) {
+                siren_sound_->play();
+            }
         }
 
-        if (intermission_sound_->getPlayingOffset().asSeconds() > 0) {
-            siren_sound_->stop();
-        } else {
-            if (!first_start && siren_sound_->getPlayingOffset().asSeconds() == 0)
-                siren_sound_->play();
+        if (!pacman_die_ && die_clock_->getElapsedTime().asSeconds() > 0.5) {
+            lose_sound_->play();  // Play the lose sound
+            pacman_->resume();  // Resume the animation
+            pacman_die_ = true;
+        }
+
+        if (die_clock_->getElapsedTime().asSeconds() > 2.5) {
+            restart();
         }
 
         this->updatePacman();
@@ -153,7 +162,7 @@ void PlayState::draw(GameEngine* game) {
     sf::RenderWindow* window = game->getWindow();
     window->draw(*map_);
     window->draw(*pacman_);
-    if (start_clock_->getElapsedTime().asSeconds() >= 2.0f) {
+    if (start_clock_->getElapsedTime().asSeconds() >= 2.0f && die_clock_->getElapsedTime().asSeconds() < 0.5) {
         for (auto& ghost : Ghost::ghosts) {
             sf::Vector2f pos = ghost.second->getPosition();
             ghost.second->setPosition(floorf(pos.x), floorf(pos.y));
@@ -162,6 +171,16 @@ void PlayState::draw(GameEngine* game) {
         }
     }
 }
+
+void PlayState::restart() {
+    start_clock_->restart();
+    die_clock_->stop();
+
+    pacman_die_ = false;
+
+    pacman_->restart();
+    for (auto& ghost : Ghost::ghosts) ghost.second->restart();
+};
 
 void PlayState::updatePacman() {
     // Update pacman position and animation
@@ -183,8 +202,22 @@ void PlayState::updatePacman() {
     // Check pacman collision with each ghost
     for (auto& ghost : Ghost::ghosts) {
         if (Collision::AABBCollision(pacman_->getCollisionBox(), ghost.second->getCollisionBox())) {
-            if (ghost.second->getState() == Ghost::Frightened)
+            if (ghost.second->getState() == Ghost::Frightened) {
                 ghost.second->setState(Ghost::State::ToHouse);
+            } else if (ghost.second->getState() == Ghost::Chase || ghost.second->getState() == Ghost::Scatter || ghost.second->getState() == Ghost::InHouse) {
+                if (pacman_->isAlive()) {
+                    for (auto& ghost : Ghost::ghosts) ghost.second->pause();  // Pause the ghosts
+                    // Stop the sounds
+                    siren_sound_->stop();
+                    chomp_sound_[0]->stop();
+                    chomp_sound_[1]->stop();
+                    intermission_sound_->stop();
+
+                    pacman_->kill();  // Kills Pacman
+                    pacman_->pause();  // Pause the animation
+                    die_clock_->resume();
+                }
+            }
         };
     }
 
@@ -203,7 +236,8 @@ void PlayState::updatePacman() {
     pacman_->move(pacman_->getVelocity());
     // Check if exist collision with the map
     if (Collision::checkMapCollision(map_, pacman_->getCollisionBox())) {
-        pacman_->pause(); // Pause pacman movement and animation
+        if (pacman_->isAlive())
+            pacman_->pause(); // Pause pacman movement and animation
     }
     // Return pacman to last position
     pacman_->move(pacman_->getVelocity() * -1.f);

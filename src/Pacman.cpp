@@ -1,10 +1,11 @@
 #include "Pacman.hpp"
 
-Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir) 
-      : alive(true),
-        paused_(false) {
+Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir, const sf::Vector2f initial_pos)
+      : initial_pos_(initial_pos),
+        paused_(false),
+        alive_(true) {
     this->loadJsonFile(working_dir + "assets/sprites/pacman/pacman.json", pacman_texture);
-    this->setDirection(Left);
+    restart();
 }
 
 Pacman::~Pacman() {};
@@ -35,6 +36,15 @@ const Pacman::Direction& Pacman::getDirection() const {
     return direction_;
 }
 
+void Pacman::kill() {
+    alive_ = false;
+    this->setAnimation("death", false);
+}
+
+bool Pacman::isAlive() {
+    return alive_;
+}
+
 const sf::Vector2f& Pacman::getVelocity() const {
     return velocity_;
 }
@@ -45,7 +55,7 @@ sf::FloatRect Pacman::getCollisionBox() {
 }
 
 void Pacman::updatePos() {
-    if (!alive || paused_) return;
+    if (!alive_ || paused_) return;
 
     switch(direction_) {
         case Left:
@@ -76,6 +86,14 @@ void Pacman::resume() {
     this->resumeAnimation();
     paused_ = false;
 }
+
+void Pacman::restart() {
+    alive_ = true;
+    paused_ = false;
+    if (direction_ == Left) this->setAnimation("left");
+    this->setDirection(Left);
+    this->setPosition(initial_pos_);
+};
 
 bool Pacman::is_paused() {
     return paused_;

@@ -5,7 +5,7 @@
 
 class Pacman : public AnimatorJson {
  public:
-    Pacman(sf::Texture* pacman_texture, const std::string& working_dir);
+    Pacman(sf::Texture* pacman_texture, const std::string& working_dir, const sf::Vector2f initial_pos = {0, 0});
     ~Pacman();
 
     enum Direction {
@@ -16,21 +16,27 @@ class Pacman : public AnimatorJson {
         Right = 2
     };
 
-    bool alive;
-
     void pause();  // Pause pacman movement and animation
     void resume();  // Resume pacman movement and animation
+    void restart();
 
     bool is_paused();
 
  private:
+    sf::Vector2f initial_pos_;
+
     Direction direction_;
     sf::Vector2f velocity_;
     bool paused_;
 
+    bool alive_;
+
  public:
     void setDirection(Pacman::Direction direction);
     const Pacman::Direction& getDirection() const;
+
+    void kill();
+    bool isAlive();
 
     const sf::Vector2f& getVelocity() const;
 
