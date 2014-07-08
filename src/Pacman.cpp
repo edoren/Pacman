@@ -11,6 +11,9 @@ Pacman::Pacman(sf::Texture* pacman_texture, const std::string& working_dir, cons
 Pacman::~Pacman() {};
 
 void Pacman::setDirection(Pacman::Direction direction) {
+	if (this->getCollisionBox().left < 0 || this->getCollisionBox().left >= 224) return;
+	if (this->getCollisionBox().top < 0 || this->getCollisionBox().top >= 288) return;
+
     if (direction_ == direction) return;
 
     direction_ = direction;
@@ -75,6 +78,12 @@ void Pacman::updatePos() {
     }
 
     this->move(velocity_);
+
+	if (this->getPosition().x < -14) this->setPosition(224, this->getPosition().y);
+	if (this->getPosition().x > 224) this->setPosition(-14, this->getPosition().y);
+
+	if (this->getPosition().y < -14) this->setPosition(this->getPosition().x, 288);
+	if (this->getPosition().y > 288) this->setPosition(this->getPosition().x, -14);
 }
 
 void Pacman::pause() {

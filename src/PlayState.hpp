@@ -35,6 +35,9 @@ class PlayState : public GameState {
  private:
     static PlayState PlayState_;
 
+	int food_amount_;
+	float map_opacity_;
+
     Pacman* pacman_;
 
     Ghost* blinky_;
@@ -53,14 +56,19 @@ class PlayState : public GameState {
 
     // Timmers
     Clock* start_clock_;
+	Clock* win_clock_;
     Clock* die_clock_;
+	Clock* map_blink_clock_;
 
     bool pacman_die_;
 
     Pacman::Direction next_dir_;
 
  private:
-    void restart();
+	void win();
+	void lose();
+
+	void restart(bool restart_score = false);
 
     // Update pacman and verify collisions
     void updatePacman();

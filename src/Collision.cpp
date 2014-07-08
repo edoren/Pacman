@@ -10,50 +10,34 @@ namespace Collision {
             return false;
     }
 
-    bool checkMapCollision(tmx::TileMap *map, const sf::FloatRect& collision_box) {
+    bool checkMapCollision(tmx::TileMap *map, const sf::Vector2f& tile_pos) {
         tmx::Layer& meta_tiles = map->GetLayer("MetaTiles");
 
-        // Iterate over all the MetaTiles
-        for (unsigned int y = 0; y < meta_tiles.GetHeight(); ++y) {
-            for (unsigned int x = 0; x < meta_tiles.GetWidth(); ++x) {
+        if (tile_pos.x < 0 || tile_pos.x >= meta_tiles.GetWidth()) return false;
+        if (tile_pos.y < 0 || tile_pos.y >= meta_tiles.GetHeight()) return false;
 
-                tmx::Layer::Tile& tile = meta_tiles.GetTile(x, y);
+        tmx::Layer::Tile& tile = meta_tiles.GetTile(tile_pos.x, tile_pos.y);
 
-                // Check if the tile is not an empty tile and has the collapsible property in t(true),
-                // if it has, checks the collision and return true if it happens
-                if (!tile.empty() && tile.GetPropertyValue("collapsible") == "t" &&
-                    Collision::AABBCollision(collision_box, tile.GetGlobalBounds())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        if (!tile.empty() && tile.GetPropertyValue("collapsible") == "t") return true;
+        else return false;
     }
 
     int checkFoodCollision(tmx::TileMap *map, Pacman* pacman) {
-        sf::FloatRect pacman_box = pacman->getCollisionBox();
+        sf::Vector2f pacman_tile = { pacman->getCollisionBox().left / 8, pacman->getCollisionBox().top / 8 };
         tmx::Layer& food_map = map->GetLayer("FoodMap");
 
-        // Iterate over all the FoodMap tiles
-        for (unsigned int y = 0; y < food_map.GetHeight(); ++y) {
-            for (unsigned int x = 0; x < food_map.GetWidth(); ++x) {
+        if (pacman_tile.x < 0 || pacman_tile.x >= food_map.GetWidth()) return 0;
+        if (pacman_tile.y < 0 || pacman_tile.y >= food_map.GetHeight()) return 0;
 
-                tmx::Layer::Tile& tile = food_map.GetTile(x, y);
+        tmx::Layer::Tile& actual_tile = food_map.GetTile(pacman_tile.x, pacman_tile.y);
 
-                // If the tile is not an empty tile
-                if (!tile.empty()) {
-                    sf::FloatRect tile_box = tile.GetGlobalBounds();
-                    // If the tile is visible, it hide it
-                    if (tile.visible && pacman_box == tile_box) {
-                        tile.visible = false;
-                        return std::stoi(tile.GetPropertyValue("food"));
-                    }
-                }
-            }
+        if (!actual_tile.empty() && actual_tile.visible) {
+            actual_tile.visible = false;
+            const std::string& food = actual_tile.GetPropertyValue("food");
+            return std::stoi(food);
         }
 
-        return false;
+        return 0;
     }
 
 }

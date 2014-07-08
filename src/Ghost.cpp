@@ -104,6 +104,15 @@ void Ghost::updatePos(tmx::TileMap *map, sf::Vector2f pacman_pos, Pacman::Direct
 
     this->move(velocity);
 
+	if (this->getPosition().x < -14) this->setPosition(224, this->getPosition().y);
+	if (this->getPosition().x > 224) this->setPosition(-14, this->getPosition().y);
+
+	if (this->getPosition().y < -14) this->setPosition(this->getPosition().x, 288);
+	if (this->getPosition().y > 288) this->setPosition(this->getPosition().x, -14);
+
+	if (this->getCollisionBox().left < 0 || this->getCollisionBox().left >= 224) return;
+	if (this->getCollisionBox().top < 0 || this->getCollisionBox().top >= 288) return;
+
     if (map) this->movementChooser(map, pacman_pos, pacman_dir);
 }
 
@@ -112,15 +121,12 @@ void Ghost::changeAnimation(Ghost::State state) {
     switch (state) {
         case Chase:
         case Scatter:
-            animation_name = name_string_.c_str();
-            break;
         case InHouse:
             animation_name = name_string_.c_str();
             break;
         case Frightened:
             this->setAnimation("frightened");
             return;
-            break;
         case ToHouse:
             animation_name = "eyes";
             break;
@@ -292,31 +298,26 @@ void Ghost::movementChooser(tmx::TileMap *map, const sf::Vector2f& pacman_pos, c
 
 void Ghost::randomMovement(tmx::TileMap *map) {
     // Positions to check
-    std::vector<std::pair<Ghost::Direction, sf::Vector2f>> postocheck{
-        {Ghost::Direction::Left, {-speed_, 0}},
-        {Ghost::Direction::Right, {speed_, 0}},
-        {Ghost::Direction::Up, {0, -speed_}},
-        {Ghost::Direction::Down,  {0, speed_}}
+    static const std::vector<std::pair<Ghost::Direction, sf::Vector2f>> postocheck{
+        {Ghost::Direction::Left, {-1, 0}},
+        {Ghost::Direction::Right, {1, 0}},
+        {Ghost::Direction::Up, {0, -1}},
+        {Ghost::Direction::Down,  {0, 1}}
     };
 
+    sf::Vector2f ghost_tile_pos = { this->getCollisionBox().left / 8, this->getCollisionBox().top / 8 };
     std::vector<Ghost::Direction> posible_paths;
 
     for (const auto &pos : postocheck) {
         if (pos.first != -this->getDirection()) {
-            // Move the ghost to the wanted direction to check collision with the map
-            this->move(pos.second);
-
-            // Check if no exist collision with the map
-            if (!Collision::checkMapCollision(map, this->getCollisionBox())) {
+            // Check if no exist collision with the map it adds the path to the posible_paths
+            if (!Collision::checkMapCollision(map, ghost_tile_pos + pos.second)) {
                 posible_paths.push_back(pos.first);
             }
-
-            // Return the ghost to last position
-            this->move(-pos.second);
         }
     }
 
-    if (posible_paths.size() == 0) return;
+    if (posible_paths.empty()) return;
 
     int rand_index = rand() % static_cast<unsigned int>(posible_paths.size());
     this->setDirection(posible_paths[rand_index]);
@@ -325,11 +326,14 @@ void Ghost::randomMovement(tmx::TileMap *map) {
 void Ghost::focusMovement(tmx::TileMap *map, const sf::Vector2f& target_pos) {
     // Positions to check
     std::vector<std::pair<Ghost::Direction, sf::Vector2f>> postocheck{
-        {Ghost::Direction::Left, {-speed_, 0}},
-        {Ghost::Direction::Right, {speed_, 0}},
-        {Ghost::Direction::Up, {0, -speed_}},
-        {Ghost::Direction::Down,  {0, speed_}}
+        {Ghost::Direction::Left, {-1.f, 0}},
+        {Ghost::Direction::Right, {1.f, 0}},
+        {Ghost::Direction::Up, {0, -1.f}},
+        {Ghost::Direction::Down,  {0, 1.f}}
     };
+
+    sf::Vector2f ghost_tile_pos = { this->getCollisionBox().left / 8, this->getCollisionBox().top / 8 };
+    std::vector<Ghost::Direction> posible_paths;
 
     float short_distance = std::numeric_limits<float>::max();
     Ghost::Direction next_direction = Ghost::Direction::None;
@@ -340,9 +344,9 @@ void Ghost::focusMovement(tmx::TileMap *map, const sf::Vector2f& target_pos) {
             this->move(pos.second);
 
             // Check if no exist collision with the map
-            if (!Collision::checkMapCollision(map, this->getCollisionBox())) {
-                float x_delta = target_pos.x - this->getPosition().x;
-                float y_delta = target_pos.y - this->getPosition().y;
+            if (!Collision::checkMapCollision(map, ghost_tile_pos + pos.second)) {
+                float x_delta = target_pos.x - this->getCollisionBox().left;
+                float y_delta = target_pos.y - this->getCollisionBox().top;
                 float distance = hypot(x_delta, y_delta);
                 if (distance < short_distance) {
                     short_distance = distance;

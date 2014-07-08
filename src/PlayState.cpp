@@ -25,6 +25,7 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
 
     // Load the map
     map_ = new tmx::TileMap(working_dir + "assets/maps/clasic.tmx");
+	map_opacity_ = 1.f;
 
     // Na Na Na Na Na Na Pacman!
     pacman_ = new Pacman(pacman_texture, working_dir, {105, 208 - 3});
@@ -48,12 +49,15 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     siren_sound_->setLoop(true);
 
     start_clock_ = new Clock();
+	win_clock_ = new Clock(false); // Stopped clock
     die_clock_ = new Clock(false); // Stopped clock
+	map_blink_clock_ = new Clock(false); // Stopped clock
 
     // Set the settings
     float volume = settings->getSetting("volume", 100.f);
 
-    start_sound_->setVolume(50.f * volume/100.f);
+    start_sound_->setVolume(50.f * volume / 100.f);
+    lose_sound_->setVolume(50.f * volume / 100.f);
     siren_sound_->setVolume(40.f * volume/100.f);
     chomp_sound_[0]->setVolume(50.f * volume/100.f);
     chomp_sound_[1]->setVolume(50.f * volume/100.f);
@@ -62,6 +66,21 @@ void PlayState::init(ResourceManager* resources, Settings* settings) {
     start_sound_->play();
 
     pacman_die_ = false;
+
+	// Calculate the food amount
+	food_amount_ = 0;
+	tmx::Layer& food_map = map_->GetLayer("FoodMap");
+
+	for (unsigned int y = 0; y < food_map.GetHeight(); ++y) {
+		for (unsigned int x = 0; x < food_map.GetWidth(); ++x) {
+
+			tmx::Layer::Tile& tile = food_map.GetTile(x, y);
+
+			// If the tile is not an empty tile
+			if (!tile.empty())
+				food_amount_++;
+		}
+	}
 };
 
 void PlayState::exit(ResourceManager* resources) {
@@ -84,6 +103,8 @@ void PlayState::exit(ResourceManager* resources) {
 
     delete start_clock_;
     delete die_clock_;
+	delete win_clock_;
+	delete map_blink_clock_;
 };
 
 void PlayState::pause() {
@@ -102,7 +123,7 @@ void PlayState::handleEvents(GameEngine* game) {
             (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt) && sf::Keyboard::isKeyPressed(sf::Keyboard::F4)))
             game->quit();
         // Manage the pacman next movement
-        if (pacman_->isAlive() && event.type == sf::Event::KeyPressed) {
+		if (pacman_->isAlive() && win_clock_->getElapsedTime().asSeconds() <= 0.f && event.type == sf::Event::KeyPressed) {
             switch(event.key.code) {
                 case sf::Keyboard::Up:
                     next_dir_ = Pacman::Direction::Up;
@@ -156,12 +177,51 @@ void PlayState::frameStarted(GameEngine* game) {
 }
 
 void PlayState::frameEnded(GameEngine* game) {
+	tmx::Layer& food_map = map_->GetLayer("FoodMap");
+
+	if (win_clock_->getElapsedTime().asSeconds() > 2.f) {
+		///////////////////////////////////////////////
+		// Should change to another state
+		///////////////////////////////////////////////
+
+		food_amount_ = 0;
+		map_->GetLayer("PacmanMap").SetOpacity(1.f);
+
+		for (unsigned int y = 0; y < food_map.GetHeight(); ++y) {
+			for (unsigned int x = 0; x < food_map.GetWidth(); ++x) {
+
+				tmx::Layer::Tile& tile = food_map.GetTile(x, y);
+
+				// If the tile is not an empty tile
+				if (!tile.empty()) {
+					food_amount_++;
+					tile.visible = true;
+				}
+			}
+		}
+
+		this->restart(true);
+	}
 }
 
 void PlayState::draw(GameEngine* game) {
     sf::RenderWindow* window = game->getWindow();
     window->draw(*map_);
     window->draw(*pacman_);
+
+	if (win_clock_->getElapsedTime().asSeconds() > 0) {
+		tmx::Layer& pacman_map = map_->GetLayer("PacmanMap");
+		if (map_blink_clock_->getElapsedTime().asSeconds() > 0.2) {
+			pacman_map.SetOpacity(map_opacity_);
+
+			if (map_opacity_ < 1.f) map_opacity_ = 1.f;
+			else map_opacity_ = 0.1f;
+			
+			map_blink_clock_->restart();
+		}
+		return;
+	}
+
     if (start_clock_->getElapsedTime().asSeconds() >= 2.0f && die_clock_->getElapsedTime().asSeconds() < 0.5) {
         for (auto& ghost : Ghost::ghosts) {
             sf::Vector2f pos = ghost.second->getPosition();
@@ -172,13 +232,46 @@ void PlayState::draw(GameEngine* game) {
     }
 }
 
-void PlayState::restart() {
+void PlayState::win() {
+	// Stop the sounds
+	siren_sound_->stop();
+	chomp_sound_[0]->stop();
+	chomp_sound_[1]->stop();
+	intermission_sound_->stop();
+
+	for (auto& ghost : Ghost::ghosts) ghost.second->pause();  // Pause the ghosts
+	pacman_->pause();  // Pause pacman
+
+	win_clock_->resume();
+	map_blink_clock_->resume();
+};
+
+void PlayState::lose() {
+	for (auto& ghost : Ghost::ghosts) ghost.second->pause();  // Pause the ghosts
+
+	// Stop the sounds
+	siren_sound_->stop();
+	chomp_sound_[0]->stop();
+	chomp_sound_[1]->stop();
+	intermission_sound_->stop();
+
+	pacman_->kill();  // Kills Pacman
+	pacman_->pause();  // Pause the animation
+	die_clock_->resume();
+};
+
+void PlayState::restart(bool restart_score) {
     start_clock_->restart();
-    die_clock_->stop();
+	win_clock_->stop();
+	die_clock_->stop();
+	map_blink_clock_->stop();
+
+	// if (restart_score) score_ = 0;
 
     pacman_die_ = false;
 
     pacman_->restart();
+	pacman_->resume();
     for (auto& ghost : Ghost::ghosts) ghost.second->restart();
 };
 
@@ -187,18 +280,6 @@ void PlayState::updatePacman() {
     pacman_->updatePos();
     pacman_->updateAnimation();
 
-    // Check pacman collision with the food
-    static bool chomp = 0;
-    if (int food = Collision::checkFoodCollision(map_, pacman_)) {
-        if (food == 2) {
-            intermission_sound_->play();
-            for (auto& ghost : Ghost::ghosts) ghost.second->setState(Ghost::State::Frightened);
-        }
-        // Play chomp sound
-        chomp_sound_[chomp]->play();
-        chomp = !chomp;
-    };
-
     // Check pacman collision with each ghost
     for (auto& ghost : Ghost::ghosts) {
         if (Collision::AABBCollision(pacman_->getCollisionBox(), ghost.second->getCollisionBox())) {
@@ -206,22 +287,15 @@ void PlayState::updatePacman() {
                 ghost.second->setState(Ghost::State::ToHouse);
             } else if (ghost.second->getState() == Ghost::Chase || ghost.second->getState() == Ghost::Scatter || ghost.second->getState() == Ghost::InHouse) {
                 if (pacman_->isAlive()) {
-                    for (auto& ghost : Ghost::ghosts) ghost.second->pause();  // Pause the ghosts
-                    // Stop the sounds
-                    siren_sound_->stop();
-                    chomp_sound_[0]->stop();
-                    chomp_sound_[1]->stop();
-                    intermission_sound_->stop();
-
-                    pacman_->kill();  // Kills Pacman
-                    pacman_->pause();  // Pause the animation
-                    die_clock_->resume();
+					this->lose();
                 }
             }
         };
     }
 
+    /////////////////////////////////////////////////////////////////////////////////
     // Check if pacman is not on a Tile, if not it checks if he want to go backwards
+    /////////////////////////////////////////////////////////////////////////////////
     if ((static_cast<int>(pacman_->getCollisionBox().left) % 8) != 0 ||
         (static_cast<int>(pacman_->getCollisionBox().top) % 8) != 0) {
         if (pacman_->getDirection() == -next_dir_) {
@@ -232,50 +306,61 @@ void PlayState::updatePacman() {
     }
 
 
-    // Move pacman to the front
-    pacman_->move(pacman_->getVelocity());
-    // Check if exist collision with the map
-    if (Collision::checkMapCollision(map_, pacman_->getCollisionBox())) {
-        if (pacman_->isAlive())
-            pacman_->pause(); // Pause pacman movement and animation
+    //* Check pacman collision with the food *//
+    static bool chomp = 0;
+    int food = Collision::checkFoodCollision(map_, pacman_);
+    if (food) {
+        if (food_amount_ == 0) this->win();
+
+        if (food == 2) {
+            intermission_sound_->play();
+            for (auto& ghost : Ghost::ghosts) ghost.second->setState(Ghost::State::Frightened);
+        }
+
+        // Play chomp sound
+        chomp_sound_[chomp]->play();
+        chomp = !chomp;
     }
-    // Return pacman to last position
-    pacman_->move(pacman_->getVelocity() * -1.f);
 
 
-    sf::Vector2f move_dir;
+    //* Check pacman collision with the map *//
 
-    // Select the move offset according to the pacman's direction
+    // Font tile
+    sf::Vector2f front_tile_pos = {
+        (pacman_->getCollisionBox().left / 8) + pacman_->getVelocity().x, 
+        (pacman_->getCollisionBox().top / 8) + pacman_->getVelocity().y 
+    };
+    if (Collision::checkMapCollision(map_, front_tile_pos) && pacman_->isAlive()) {
+        pacman_->pause();
+    }
+
+    // Direction tile
+    sf::Vector2f next_tile_pos = {
+        (pacman_->getCollisionBox().left / 8),
+        (pacman_->getCollisionBox().top / 8)
+    };
     switch(next_dir_) {
         case Pacman::Direction::None:
             return;
         case Pacman::Direction::Left:
-            move_dir = sf::Vector2f(-1.f, 0);
+            next_tile_pos += sf::Vector2f{ -1.f, 0 };
             break;
         case Pacman::Direction::Right:
-            move_dir = sf::Vector2f(1.f, 0);
+            next_tile_pos += sf::Vector2f{ 1.f, 0 };
             break;
         case Pacman::Direction::Up:
-            move_dir = sf::Vector2f(0, -1.f);
+            next_tile_pos += sf::Vector2f{ 0, -1.f };
             break;
         case Pacman::Direction::Down:
-            move_dir = sf::Vector2f(0, 1.f);
+            next_tile_pos += sf::Vector2f{ 0, 1.f };
             break;
     }
-
-    // Move pacman to the wanted direction to check collision
-    pacman_->move(move_dir);
-
-    // Check if not exist collision with the map
-    if (!Collision::checkMapCollision(map_, pacman_->getCollisionBox())) {
+    if (!Collision::checkMapCollision(map_, next_tile_pos)) {
         pacman_->setDirection(next_dir_);
         next_dir_ = Pacman::Direction::None;
         // Resume pacman if is paused
         if (pacman_->is_paused()) pacman_->resume();
     }
-
-    // Return pacman to last position
-    pacman_->move(move_dir * -1.f);
 }
 
 void PlayState::updateGhost(Ghost* ghost) {
