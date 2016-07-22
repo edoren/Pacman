@@ -13,7 +13,7 @@ endif()
 if(SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
 else()
-    message("Building SFML from source.")
+    message(STATUS "Building SFML from source.")
     set(SFML_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/SFML)
 
     set(SFML_FOUND true)
@@ -22,7 +22,7 @@ else()
     set(BUILD_SHARED_LIBS FALSE)
     add_definitions(-DSFML_STATIC)
 
-    add_subdirectory(${SFML_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/SFML EXCLUDE_FROM_ALL)
+    add_subdirectory(${SFML_DIRECTORY} ${TEMP_DIR}/SFML EXCLUDE_FROM_ALL)
     if(WIN32)
         set(SFML_LIBRARIES sfml-main sfml-audio sfml-graphics sfml-window sfml-system)
     else()
@@ -36,14 +36,16 @@ find_package(Jansson)
 if(JANSSON_FOUND)
     include_directories(${JANSSON_INCLUDE_DIR})
 else()
-    message("Building Jansson from source.")
+    message(STATUS "Building Jansson from source.")
     set(JANSSON_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/jansson)
 
     set(JANSSON_BUILD_SHARED_LIBS OFF)
+    set(JANSSON_BUILD_DOCS OFF)
+    add_definitions(-DHAVE_SNPRINTF)
 
-    add_subdirectory(${JANSSON_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/jansson EXCLUDE_FROM_ALL)
+    add_subdirectory(${JANSSON_DIRECTORY} ${TEMP_DIR}/jansson EXCLUDE_FROM_ALL)
 
-    include_directories(${PROJECT_BINARY_DIR}/extlibs/jansson/include)
+    include_directories(${TEMP_DIR}/jansson/include)
     set(JANSSON_LIBRARY jansson)
 endif()
 
@@ -51,13 +53,13 @@ find_package(STP)
 if(STP_FOUND)
     include_directories(${STP_INCLUDE_DIR})
 else()
-    message("Building STP from source.")
+    message(STATUS "Building STP from source.")
     set(STP_DIRECTORY ${PROJECT_SOURCE_DIR}/extlibs/STP)
 
     set(STP_SHARED_LIBS FALSE)
     add_definitions(-DSTP_STATIC)
 
-    add_subdirectory(${STP_DIRECTORY} ${PROJECT_BINARY_DIR}/extlibs/STP EXCLUDE_FROM_ALL)
+    add_subdirectory(${STP_DIRECTORY} ${TEMP_DIR}/STP EXCLUDE_FROM_ALL)
 
     include_directories(${STP_DIRECTORY}/include)
     set(STP_LIBRARY STP)
@@ -124,3 +126,10 @@ target_link_libraries(${EXECUTABLE_NAME} ${STP_LIBRARY})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
                       PROJECT_LABEL "PACMAN"
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+# Copy the assets folder
+add_custom_command(
+    TARGET ${EXECUTABLE_NAME} PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/../assets" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets"
+)
