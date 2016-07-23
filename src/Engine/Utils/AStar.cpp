@@ -1,9 +1,9 @@
 #include "Engine/Utils/AStar.hpp"
 
-#include <cmath>
-
 #include <list>
 #include <algorithm>
+
+#include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Vector2 Implementation
@@ -105,7 +105,7 @@ Tile* AStar(Tile2DMatrix& map, const Vector2& start_tile, const Vector2& target_
             // Make the current tile the parent of this tile. Record the F, G, and H costs of the tile.
             if ( std::find(open_list.begin(), open_list.end(), tile) == open_list.end() ) {
                 tile->G = current_tile->G + 1;
-                tile->H = std::abs(target_tile.x - tile->position.x) + std::abs(target_tile.y - tile->position.y);
+                tile->H = std::fabs(target_tile.x - tile->position.x) + std::fabs(target_tile.y - tile->position.y);
                 tile->F = tile->G + tile->H;
                 tile->parent = current_tile;
                 open_list.push_back(tile);
