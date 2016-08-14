@@ -104,11 +104,13 @@ set(PACMAN_HEADERS
 
 # compiler language
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_definitions(-Wall)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libstdc++ -Wall")
+    else()
+        set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wall")
+    endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_definitions(-Wall)
-    set(CMAKE_CXX_FLAGS "-std=c++11")
+    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif()
 
 # create game executable

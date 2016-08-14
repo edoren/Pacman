@@ -5,6 +5,7 @@ language: cpp
 
 compiler:
     - gcc
+    - clang
 
 install:
     # Install clang c++ std library
